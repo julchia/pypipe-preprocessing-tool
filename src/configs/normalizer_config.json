@@ -1,0 +1,9 @@
+{
+    "norm_name": "preprocessor_1",
+    "norm_step": {
+        "punctuation": true,
+        "digit": true,
+        "single_word": true,
+        "upper_case": true
+    }
+}
