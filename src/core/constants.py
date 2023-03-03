@@ -5,6 +5,7 @@ NORM_CONFIG_PATH = "src/configs/normalizer_config.json"
 
 NORM_STEPS = {
     "punctuation": PunctuationProcessor,
+    "diacritic": DiacriticProcessor,
     "web_link": WebLinkProcessor,
     "email": EmailProcessor,
     "mention": MentionProcessor,

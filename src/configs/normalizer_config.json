@@ -3,6 +3,7 @@
     "extra_whitespaces_cleaner": true,
     "norm_step": {
         "punctuation": true,
+        "diacritic": true,
         "upper_case": true,
         "duplicated_letter": true,
         "web_link": true,
