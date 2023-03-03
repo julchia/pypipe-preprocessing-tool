@@ -1,10 +1,6 @@
 {
     "norm_name": "preprocessor_1",
-    "all_norm_steps": false,
     "extra_whitespaces_cleaner": true,
-    "mask_names": false,
-    "mask_mundi": false,
-    "delete_masks": false,
     "norm_step": {
         "punctuation": true,
         "upper_case": true,

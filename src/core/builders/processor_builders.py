@@ -4,6 +4,7 @@ from typing import Dict
 from omegaconf import OmegaConf
 
 from src.core.interfaces import IProcessorHandler, IProcessorBuilder
+from src.core.handlers.preprocessing_handlers import ExtraWhiteSpacesProcessor
 
 
 class PreprocessorBuilder(IProcessorBuilder):
@@ -28,6 +29,9 @@ class ProcessorBuilderDirector:
         model_conf: OmegaConf, 
         steps_to_build: Dict
     ):
+                
+        if model_conf.extra_whitespaces_cleaner:
+            builder.set_next(next_step=ExtraWhiteSpacesProcessor)
 
         for step, state in model_conf.norm_step.items():
             

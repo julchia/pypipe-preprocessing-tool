@@ -24,6 +24,11 @@ class Preprocessor(IProcessorHandler):
         return self._handle_process(text)
 
 
+class ExtraWhiteSpacesProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r"\s+", " ", text)    
+
+
 class WebLinkProcessor(Preprocessor):
     # TODO: ENT
     def _process(self, text: str) -> str:
