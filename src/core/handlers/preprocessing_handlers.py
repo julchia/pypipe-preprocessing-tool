@@ -54,7 +54,7 @@ class DigitProcessor(Preprocessor):
     
 class SingleWordProcessor(Preprocessor):
     def _process(self, text: str) -> str:
-        return re.sub(r"\s+[a-zA-Z]\s+", " ", text)
+        return re.sub(r"(?<!\S)[^aeiouy](?!\S)", " ", text)
 
 
 class UppercaseProcessor(Preprocessor):
@@ -69,7 +69,7 @@ class DuplicatedLetterProcessor(Preprocessor):
 
 class IsolatedConsonantProcessor(Preprocessor):
     def _process(self, text: str) -> str:
-        return re.sub(r"(\S)(|)(?:(?![aeiouy])[a-z]){1,}(?=\s|$)(?!\S)", "", text)
+        return re.sub(r"(?<=\s)[bcdfghjklmnpqrstvwxyz]{2,}(?=\s)", "", text)
 
 
 class QProcessor(Preprocessor):
@@ -87,8 +87,8 @@ class ReProcessor(Preprocessor):
 class LaughtProcessor(Preprocessor):
     def _process(self, text: str) -> str:
         return SubRegexBuilder(text)\
-            .sub(r"((ja|aj|ha){3,})", "jaja")\
-            .sub(r"((je|ej|he){3,})", "jeje")\
-            .sub(r"((ji|ij){3,})", "jiji")\
-            .sub(r"((jo|oj){3,})", "jojo")\
-            .sub(r"((ju|uj){3,})", "juju")
+            .sub(r"((ja|aj|ha){3,})", "ja")\
+            .sub(r"((je|ej|he){3,})", "je")\
+            .sub(r"((ji|ij){3,})", "ji")\
+            .sub(r"((jo|oj){3,})", "jo")\
+            .sub(r"((ju|uj){3,})", "ju")
