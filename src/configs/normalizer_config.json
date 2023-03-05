@@ -1,9 +1,19 @@
 {
     "norm_name": "preprocessor_1",
+    "extra_whitespaces_cleaner": true,
     "norm_step": {
         "punctuation": true,
+        "diacritic": true,
+        "upper_case": true,
+        "duplicated_letter": true,
+        "web_link": true,
+        "email": true,
+        "mention": true,
         "digit": true,
         "single_word": true,
-        "upper_case": true
+        "isolated_consonant": true,
+        "normalize_q": true,
+        "normalize_re": true,
+        "normalize_laught": true
     }
 }

@@ -17,9 +17,9 @@ class IProcessorHandler(ABC):
 class IProcessorBuilder(ABC):
     
     @abstractmethod
-    def set_next(self, next_step: IProcessorHandler) -> IProcessorBuilder:
+    def _set_next(self, next_step: IProcessorHandler) -> IProcessorBuilder:
         pass
     
     @abstractmethod
-    def build_processor(self) -> IProcessorHandler:
+    def _build_processor(self) -> IProcessorHandler:
         pass

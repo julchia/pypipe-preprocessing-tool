@@ -4,41 +4,101 @@ import re
 from unidecode import unidecode
 
 from src.core.interfaces import IProcessorHandler
+from src.core.handlers.utils import SubRegexBuilder
 
 
 class Preprocessor(IProcessorHandler):
-    def __init__(self, next_preprocessor: IProcessorHandler = None) -> None:
-        self.__next_preprocessor = next_preprocessor
+    def __init__(self, next_processor: IProcessorHandler = None) -> None:
+        self.__next_processor = next_processor
     
     def _handle_process(self, text: str) -> str | IProcessorHandler:
         
-        preprocessed_text = self._process(text)
+        processed_text = self._process(text)
         
-        if (self.__next_preprocessor is None):
-            return preprocessed_text
+        if (self.__next_processor is None):
+            return processed_text
         else:
-            return self.__next_preprocessor._handle_process(preprocessed_text)
+            return self.__next_processor._handle_process(processed_text)
         
     def preprocess_text(self, text: str) -> str:
         return self._handle_process(text)
 
 
-class Punctuation(Preprocessor):
+class ExtraWhiteSpacesProcessor(Preprocessor):
     def _process(self, text: str) -> str:
-        return re.sub(r"\W", " ", text)
-    
-
-class Digit(Preprocessor):
-    def _process(self, text: str) -> str:
-        return re.sub("\d+", "", text)
-    
-    
-class SingleWord(Preprocessor):
-    def _process(self, text: str) -> str:
-        return re.sub(r"\s+[a-zA-Z]\s+", " ", text)
+        return re.sub(r'\s+', " ", text)    
 
 
-class Uppercase(Preprocessor):
+class WebLinkProcessor(Preprocessor):
+    # TODO: ENT
     def _process(self, text: str) -> str:
-        return unidecode(text.lower())
+        return re.sub(r'(http|https|www\.)\S+|\S+.(\.com|\.ar|\.net|\.org|\.info|\.io|\.gov|\.edu|\.tv)', " ", text)    
+
+
+class EmailProcessor(Preprocessor):
+    # TODO: ENT
+    def _process(self, text: str) -> str:
+        return re.sub(r'[\w\.-]+@[\w\.-]+(\.[\w]+)+', "", text)
+
+
+class MentionProcessor(Preprocessor):
+    # TODO: ENT
+    def _process(self, text: str) -> str:
+        return re.sub(r'(@|#)[A-Za-z0-9]+', "", text)
+
+        
+class PunctuationProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'\W', " ", text)
     
+    
+class DiacriticProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return unidecode(text)
+    
+
+class DigitProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'\d+', "", text)
+    
+    
+class SingleWordProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'(?<!\S)[^aeiouy](?!\S)', " ", text)
+
+
+class UppercaseProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'[a-zA-ZáéíóúÁÉÍÓÚñÑüÜàèìòùÀÈÌÒÙäëïöüÄËÏÖÜâêîôûÂÊÎÔÛ]+', lambda x: x.group().lower(), text)
+
+
+class DuplicatedLetterProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'(?!l|r)(.)\1{1,}', r"\1", text)
+
+
+class IsolatedConsonantProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'(?<=\s)[bcdfghjklmnpqrstvwxyz]{2,}(?=\s)', "", text)
+
+
+class QProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return SubRegexBuilder(text)\
+            .sub(r'\s?(ke|k|qe|q)\s', " que ")\
+            .sub(r'\s?(kie|qie)', " quie")\
+
+
+class ReProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return re.sub(r'(?<!\S)re(?!\S)', "muy", text)
+
+
+class LaughtProcessor(Preprocessor):
+    def _process(self, text: str) -> str:
+        return SubRegexBuilder(text)\
+            .sub(r'((ja|aj|ha){3,})', "ja")\
+            .sub(r'((je|ej|he){3,})', "je")\
+            .sub(r'((ji|ij){3,})', "ji")\
+            .sub(r'((jo|oj){3,})', "jo")\
+            .sub(r'((ju|uj){3,})', "ju")

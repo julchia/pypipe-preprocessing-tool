@@ -1,16 +1,15 @@
 from src.core.constants import NORM_STEPS
 from src.core.models.config_models import norm_conf
-from src.core.builders.processor_builders import ProcessorBuilderDirector, PreprocessorBuilder
+from src.core.builders.processor_builders import ProcessorBuilderDirector
 
 
 def main() -> None:
-    preprocessor_1 = ProcessorBuilderDirector.build(
-        builder=PreprocessorBuilder(),
+    preprocessor_1 = ProcessorBuilderDirector(
         model_conf=norm_conf,
         steps_to_build=NORM_STEPS,
-    )
+    ).build_preprocessor()
     
-    text = "HOLA!!1111 mi nombre es Pedro...."
+    text = "HOLA!!1111 gente lindaaaaa!!! mi nombre essssss @Pedro re loco jjajajajjja...."
     
     preprocessed_text = preprocessor_1.preprocess_text(text=text)
     
