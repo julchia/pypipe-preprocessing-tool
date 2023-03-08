@@ -1,0 +1,30 @@
+{
+    "pipeline": {
+        "regex_normalization": {
+            "WhiteSpacesHandler": true,
+            "PunctuationHandler": true,
+            "DiacriticHandler": true,
+            "UppercaseHandler": true,
+            "DuplicatedLetterHandler": true,
+            "WebLinkHandler": true,
+            "EmailHandler": true,
+            "MentionHandler": true,
+            "DigitHandler": true,
+            "SingleWordHandler": true,
+            "IsolatedConsonantHandler": true,
+            "QHandler": true,
+            "ReHandler": true,
+            "LaughtHandler": true
+        }
+    },
+    "extra_config": {
+        "entity_masks": {
+            "web_link_mask": "<WEB_LINK>",
+            "email_mask": "<EMAIL>",
+            "url_mask": "<URL>",
+            "mentio_mask": "<MENTION>",
+            "name_mask": "<HUMAN_NAME>",
+            "mundi_mask": "<MUNDI>"
+        }
+    }
+}

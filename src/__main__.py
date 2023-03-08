@@ -1,11 +1,11 @@
-from src.core.models.config_models import preprocessing_pipeline
-from src.core.builders.process_builders import ProcessorBuilderDirector
+from src.core.models.config_models import preprocessing_conf
+from src.core.pipeline import Pipeline
 
 
-def main() -> None:
-    preprocessor_1 = ProcessorBuilderDirector(
-        pipeline=preprocessing_pipeline
-    ).build_preprocessor()
+def main() -> None:    
+    preprocessor_1 = Pipeline(
+        pipeline_conf=preprocessing_conf
+    ).get_pipeline()
     
     text = "HOLA!!1111 gente lindaaaaa!!! mi nombre essssss @Pedro re loco jjajajajjja...."
     

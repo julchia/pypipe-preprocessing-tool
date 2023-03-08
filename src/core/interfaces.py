@@ -21,5 +21,5 @@ class IProcessBuilder(ABC):
         pass
     
     @abstractmethod
-    def _build_processor(self) -> IProcessHandler:
+    def _build_process(self) -> IProcessHandler:
         pass
