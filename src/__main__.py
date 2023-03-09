@@ -7,6 +7,8 @@ def main() -> None:
         pipeline_conf=preprocessing_conf
     ).get_pipeline()
     
+    print(type(preprocessor_1))
+    
     text = "HOLA!!1111 gente lindaaaaa!!! mi nombre essssss @Pedro re loco jjajajajjja...."
     
     preprocessed_text = preprocessor_1.normalize_text(text=text)
@@ -14,5 +16,5 @@ def main() -> None:
     print(preprocessed_text)
     
 
-if __name__ == "__main__":
+if name == "main":
     main()

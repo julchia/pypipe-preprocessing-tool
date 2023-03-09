@@ -3,7 +3,7 @@ from typing import Dict
 from omegaconf import OmegaConf
 
 from src.core.interfaces import IProcessBuilder
-from src.core.handlers import regex_handlers
+from src.core.handlers import regex_handlers, featurizer_handlers
 from src.core.builders.process_builders import ProcessBuilder
 
 
@@ -27,6 +27,7 @@ class Pipeline:
         """
         
         pipe_step = self._build_regex_normalization_steps()
+        # pipe_step = self._build_featurization_steps()
         return pipe_step
     
     def _build_regex_normalization_steps(
@@ -39,6 +40,21 @@ class Pipeline:
         for handler, state in self.pipeline_conf.pipeline.regex_normalization.items():
 
             if state:
+                next_step = process_handlers.get(handler)
+                self.builder_process._set_next(next_step=next_step)
+                
+        return self.builder_process._build_process()
+    
+    def _build_featurization_steps(
+        self,
+        process_handlers: Dict = featurizer_handlers.__dict__
+        ):
+        """
+        """
+        
+        for handler, config in self.pipeline_conf.pipeline.featurization.items():
+            
+            if config.active:
                 next_step = process_handlers.get(handler)
                 self.builder_process._set_next(next_step=next_step)
                 

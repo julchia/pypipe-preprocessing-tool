@@ -15,6 +15,18 @@
             "QHandler": true,
             "ReHandler": true,
             "LaughtHandler": true
+        },
+        "featurization": {
+            "SklearnTfIdfFeaturizer": {
+                "active": true,
+                "param_1": 50,
+                "param_2": "dummy"
+            },
+            "Word2VecFeaturizer": {
+                "active": false,
+                "param_1": 75,
+                "param_2": "dummy"
+            }
         }
     },
     "extra_config": {
