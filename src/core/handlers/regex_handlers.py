@@ -1,59 +1,63 @@
 import re
 from unidecode import unidecode
 
+from omegaconf import OmegaConf
+
+from src.core.interfaces import IProcessHandler
 from src.core.handlers.process_handlers import ProcessHandler
 from src.core.handlers.utils import SubRegexBuilder
 
-    
+
 class RegexNormalizer(ProcessHandler):
     """
     """
     
+    def __init__(self, configs: OmegaConf, next_processor: IProcessHandler = None) -> None:
+        super().__init__(next_processor)
+        self._configs = configs
+        
     def normalize_text(self, text: str) -> str:
         return self._handle_process(text)
 
 
-class WhiteSpacesHandler(RegexNormalizer):
+class WhiteSpacesHandler(RegexNormalizer):    
     def _process(self, text: str) -> str:
-        return re.sub(r'\s+', " ", text)    
-
-
-class WebLinkHandler(RegexNormalizer):
-    # TODO: ENT
-    def _process(self, text: str) -> str:
-        return re.sub(r'(http|https|www\.)\S+|\S+.(\.com|\.ar|\.net|\.org|\.info|\.io|\.gov|\.edu|\.tv)', " ", text)    
-
-
-class EmailHandler(RegexNormalizer):
-    # TODO: ENT
-    def _process(self, text: str) -> str:
-        return re.sub(r'[\w\.-]+@[\w\.-]+(\.[\w]+)+', "", text)
+        return re.sub(r'\s+', self._configs.replacement, text)    
 
 
 class MentionHandler(RegexNormalizer):
-    # TODO: ENT
     def _process(self, text: str) -> str:
-        return re.sub(r'(@|#)[A-Za-z0-9]+', "", text)
+        return re.sub(r'(@|#)[A-Za-z0-9]+', self._configs.replacement, text)   
+
+
+class WebLinkHandler(RegexNormalizer):
+    def _process(self, text: str) -> str:
+        return re.sub(r'(http|https|www\.)\S+|\S+.(\.com|\.ar|\.net|\.org|\.info|\.io|\.gov|\.edu|\.tv)', self._configs.replacement, text)    
+
+
+class EmailHandler(RegexNormalizer):
+    def _process(self, text: str) -> str:
+        return re.sub(r'[\w\.-]+@[\w\.-]+(\.[\w]+)+', self._configs.replacement, text)
 
         
 class PunctuationHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
-        return re.sub(r'\W', " ", text)
+        return re.sub(r'\W', self._configs.replacement, text)
     
     
-class DiacriticHandler(RegexNormalizer):
+class DiacriticHandler(RegexNormalizer):    
     def _process(self, text: str) -> str:
         return unidecode(text)
     
 
 class DigitHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
-        return re.sub(r'\d+', "", text)
+        return re.sub(r'\d+', self._configs.replacement, text)
     
     
 class SingleWordHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
-        return re.sub(r'(?<!\S)[^aeiouy](?!\S)', " ", text)
+        return re.sub(r'(?<!\S)[^aeiouy](?!\S)', self._configs.replacement, text)
 
 
 class UppercaseHandler(RegexNormalizer):
@@ -68,7 +72,7 @@ class DuplicatedLetterHandler(RegexNormalizer):
 
 class IsolatedConsonantHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
-        return re.sub(r'(?<=\s)[bcdfghjklmnpqrstvwxyz]{2,}(?=\s)', "", text)
+        return re.sub(r'(?<=\s)[bcdfghjklmnpqrstvwxyz]{2,}(?=\s)', self._configs.replacement, text)
 
 
 class QHandler(RegexNormalizer):
@@ -80,7 +84,7 @@ class QHandler(RegexNormalizer):
 
 class ReHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
-        return re.sub(r'(?<!\S)re(?!\S)', "muy", text)
+        return re.sub(r'(?<!\S)re(?!\S)', self._configs.replacement, text)
 
 
 class LaughtHandler(RegexNormalizer):
