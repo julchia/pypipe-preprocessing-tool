@@ -1,0 +1,57 @@
+{
+    "pipeline": {
+        "regex_normalization": {
+            "WhiteSpacesHandler": {
+                "active": true,
+                "replacement": " "
+            },
+            "PunctuationHandler": {
+                "active": true,
+                "replacement": " "
+            },
+            "DiacriticHandler": {
+                "active": true
+            },
+            "UppercaseHandler": {
+                "active": true
+            },
+            "DuplicatedLetterHandler": {
+                "active": true
+            },
+            "MentionHandler": {
+                "active": true,
+                "replacement": "<MENTION>"
+            },
+            "WebLinkHandler":  {
+                "active": true,
+                "replacement": "<WEB_LINK>"
+            },
+            "EmailHandler": {
+                "active": true,
+                "replacement": "<EMAIL>"
+            },
+            "DigitHandler": {
+                "active": true,
+                "replacement": ""
+            },
+            "SingleWordHandler": {
+                "active": true,
+                "replacement": " "
+            },
+            "IsolatedConsonantHandler": {
+                "active": true,
+                "replacement": ""
+            },
+            "QHandler": {
+                "active": true
+            },
+            "ReHandler": {
+                "active": true,
+                "replacement": "muy"
+            },
+            "LaughtHandler": {
+                "active": true
+            }
+        }
+    }
+}

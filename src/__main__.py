@@ -1,17 +1,15 @@
-from src.core.constants import NORM_STEPS
-from src.core.models.config_models import norm_conf
-from src.core.builders.processor_builders import ProcessorBuilderDirector
+from src.core.models.config_models import preprocessing_conf
+from src.core.pipeline import Pipeline
 
 
-def main() -> None:
-    preprocessor_1 = ProcessorBuilderDirector(
-        model_conf=norm_conf,
-        steps_to_build=NORM_STEPS,
-    ).build_preprocessor()
+def main() -> None:    
+    preprocessor_1 = Pipeline(
+        pipeline_conf=preprocessing_conf
+    ).get_pipeline()
     
-    text = "HOLA!!1111 gente lindaaaaa!!! mi nombre essssss @Pedro re loco jjajajajjja...."
+    text = "HOLA!!1111 gente lindaaaaa!!! mi nombre essssss @Pedro re loco jjajajajjja y mi correo es pedrito@gmail.com y mi página es www.pedrito.com ...."
     
-    preprocessed_text = preprocessor_1.preprocess_text(text=text)
+    preprocessed_text = preprocessor_1.normalize_text(text=text)
     
     print(preprocessed_text)
     

@@ -1,5 +1,6 @@
 from omegaconf import OmegaConf
-from src.core.constants import NORM_CONFIG_PATH
+from src.core import constants
 
 
-norm_conf = OmegaConf.load(NORM_CONFIG_PATH)
+preprocessing_conf = OmegaConf.load(constants.PREPROCESSING_CONFIG_PATH)
+    
