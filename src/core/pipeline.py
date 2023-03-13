@@ -27,7 +27,7 @@ class Pipeline:
         """
         
         pipe_step = self._build_regex_normalization_steps()
-        # pipe_step = self._build_featurization_steps()
+        pipe_step = self._build_featurization_steps()
         return pipe_step
     
     def _build_regex_normalization_steps(
@@ -52,11 +52,11 @@ class Pipeline:
         """
         """
         
-        for handler, config in self.pipeline_conf.pipeline.featurization.items():
+        for handler, configs in self.pipeline_conf.pipeline.featurization.items():
             
-            if config.active:
+            if configs.active:
                 next_step = process_handlers.get(handler)
-                self.builder_process._set_next(next_step=next_step)
+                self.builder_process._set_next(configs=configs, next_step=next_step)
                 
         return self.builder_process._build_process()
         
