@@ -7,7 +7,7 @@
             },
             "PunctuationHandler": {
                 "active": true,
-                "replacement": " "
+                "replacement": ""
             },
             "DiacriticHandler": {
                 "active": true
@@ -20,15 +20,15 @@
             },
             "MentionHandler": {
                 "active": true,
-                "replacement": "<MENTION>"
+                "replacement": "<<MENTION>>"
             },
-            "WebLinkHandler":  {
+            "URLHandler":  {
                 "active": true,
-                "replacement": "<WEB_LINK>"
+                "replacement": "<<URL>>"
             },
             "EmailHandler": {
                 "active": true,
-                "replacement": "<EMAIL>"
+                "replacement": "<<EMAIL>>"
             },
             "DigitHandler": {
                 "active": true,
