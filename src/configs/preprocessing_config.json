@@ -1,42 +1,64 @@
 {
     "pipeline": {
         "regex_normalization": {
-            "WhiteSpacesHandler": true,
-            "PunctuationHandler": true,
-            "DiacriticHandler": true,
-            "UppercaseHandler": true,
-            "DuplicatedLetterHandler": true,
-            "WebLinkHandler": true,
-            "EmailHandler": true,
-            "MentionHandler": true,
-            "DigitHandler": true,
-            "SingleWordHandler": true,
-            "IsolatedConsonantHandler": true,
-            "QHandler": true,
-            "ReHandler": true,
-            "LaughtHandler": true
+            "WhiteSpacesHandler": {
+                "active": true,
+                "replacement": " "
+            },
+            "PunctuationHandler": {
+                "active": true,
+                "replacement": ""
+            },
+            "DiacriticHandler": {
+                "active": true
+            },
+            "UppercaseHandler": {
+                "active": true
+            },
+            "DuplicatedLetterHandler": {
+                "active": true
+            },
+            "MentionHandler": {
+                "active": true,
+                "replacement": "<<MENTION>>"
+            },
+            "URLHandler":  {
+                "active": true,
+                "replacement": "<<URL>>"
+            },
+            "EmailHandler": {
+                "active": true,
+                "replacement": "<<EMAIL>>"
+            },
+            "DigitHandler": {
+                "active": true,
+                "replacement": ""
+            },
+            "SingleWordHandler": {
+                "active": true,
+                "replacement": " "
+            },
+            "IsolatedConsonantHandler": {
+                "active": true,
+                "replacement": ""
+            },
+            "QHandler": {
+                "active": true
+            },
+            "ReHandler": {
+                "active": true,
+                "replacement": "muy"
+            },
+            "LaughtHandler": {
+                "active": true
+            }
         },
         "featurization": {
             "SklearnTfIdfFeaturizer": {
                 "active": true,
                 "param_1": 50,
                 "param_2": "dummy"
-            },
-            "Word2VecFeaturizer": {
-                "active": false,
-                "param_1": 75,
-                "param_2": "dummy"
             }
-        }
-    },
-    "extra_config": {
-        "entity_masks": {
-            "web_link_mask": "<WEB_LINK>",
-            "email_mask": "<EMAIL>",
-            "url_mask": "<URL>",
-            "mentio_mask": "<MENTION>",
-            "name_mask": "<HUMAN_NAME>",
-            "mundi_mask": "<MUNDI>"
         }
     }
 }

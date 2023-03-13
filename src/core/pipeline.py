@@ -37,11 +37,11 @@ class Pipeline:
         """
         """
         
-        for handler, state in self.pipeline_conf.pipeline.regex_normalization.items():
-
-            if state:
+        for handler, configs in self.pipeline_conf.pipeline.regex_normalization.items():
+            
+            if configs.active:
                 next_step = process_handlers.get(handler)
-                self.builder_process._set_next(next_step=next_step)
+                self.builder_process._set_next(configs=configs, next_step=next_step)
                 
         return self.builder_process._build_process()
     
