@@ -81,12 +81,12 @@ class SklearnCountVectorizer:
         }
 
     @staticmethod
-    def _get_default_model_path(file_name: str = "/vocabularies.pkl") -> str:
+    def _get_default_model_path(file_name: str = "vocabularies.pkl") -> str:
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH)
         return constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH + file_name
     
     @staticmethod
-    def _get_default_vocab_path(file_name: str = "/updated_vocab.json") -> str:
+    def _get_default_vocab_path(file_name: str = "updated_vocab.json") -> str:
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH)
         return constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH + file_name
 
