@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractclassmethod, abstractmethod
 from typing import List, Set, Dict, Any
 
@@ -9,6 +10,9 @@ from src.core.handlers import utils
 from src.core.interfaces import IProcessHandler
 from src.core.handlers.process_handlers import ProcessHandler
 from src.core.handlers import regex_handlers
+
+
+logger = logging.getLogger(__name__)
 
 
 class TextFeaturizer(ProcessHandler):
@@ -59,6 +63,8 @@ class SklearnCountVectorizer:
         configs: OmegaConf, 
         vectorizer: CountVectorizer = None
     ):
+        """
+        """
         return cls(
             configs=configs,
             vectorizer=vectorizer
@@ -66,6 +72,8 @@ class SklearnCountVectorizer:
         
     @classmethod
     def get_default_configs(cls) -> Dict[str, Any]:
+        """
+        """
         return {
             "max_features": None,
             "min_ngram": 1,
@@ -80,30 +88,48 @@ class SklearnCountVectorizer:
             "path_to_save_vocabulary": None
         }
 
+    # @classmethod
+    # def get_vocabulary_factory(cls):
+    #     # return class Vocabulary
+    #     pass
+
     @staticmethod
-    def _get_default_model_path(file_name: str = "vocabularies.pkl") -> str:
+    def _get_default_model_path(file_name: str = "/vocabularies.pkl") -> str:
+        """
+        """
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH)
         return constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH + file_name
     
     @staticmethod
-    def _get_default_vocab_path(file_name: str = "updated_vocab.json") -> str:
+    def _get_default_vocab_path(file_name: str = "/updated_vocab.json") -> str:
+        """
+        """
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH)
         return constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH + file_name
 
     @staticmethod
     def _get_loaded_vectorizer_from(path) -> None:
+        """
+        """
         try:
             loaded_vect = utils.load_data_with_pickle(
                 path=path
             )
         except FileNotFoundError:
-            print("logger.Warning(No se encontró ningún CountVectorizer model en path)")
+            logger.warning(
+                f"No 'SklearnCountVectorizer' model to load in dir: '{path}'"
+            )
             return
-        print("logger.Info(Se cargó el CountVectorizer model alojado en path)")
+        logger.info(
+            f"The 'SklearnCountVectorizer' model in '{path}' has been "
+            "successfully loaded"
+        )
         return loaded_vect
 
     @staticmethod
     def _get_stored_vocabulary_from(path: str):
+        """
+        """
         vocab = utils.open_line_by_line_txt_file(
                 path=path,
                 as_set=True
@@ -116,6 +142,8 @@ class SklearnCountVectorizer:
         return vocab
 
     def _check_if_trained_vectorizer_exists(self) -> bool:
+        """
+        """
         self.vectorizer = self._get_loaded_vectorizer_from(
             path=self._path_to_trained_model
         )
@@ -124,23 +152,39 @@ class SklearnCountVectorizer:
         return True
     
     def _check_if_stored_vocabulary_exists(self) -> bool:
+        """
+        """
         self.vocab = self._get_stored_vocabulary_from(
             path=self._path_to_stored_vocabulary
         )  
         if self.vocab is None:
-            print("logger.Warning('No se encontró ningún vocabulary en path_to_stored_vocabulary o no se encontraba en el formato correcto (.txt o .json)')")
+            logger.warning(
+                f"No 'SklearnCountVectorizer' vocabulary to load in dir: "
+                f"'{self._path_to_stored_vocabulary}' or the vocabulary found was "
+                "not in the correct format ('.txt' or '.json')"
+            )
             return False
         return True
                 
     def _set_vocabulary_creator(self) -> None:
+        """
+        """
         if self._configs.use_own_vocabulary_creator:
             self.vocab = None
-            print("logger.Info(Se preparará a CountVectorizer para crear un vocabulary nuevo)") 
+            logger.info(
+                "'SklearnCountVectorizer' will be ready to create a new "
+                "vocabulary from its own parser"
+            )
         else:
             # TODO self.vocab = class Vocabulary
-            print("logger.Info(Se preparará a Vocabulary para crear un vocabulary nuevo)") 
+            logger.info(
+                "A new vocabulary for 'SklearnCountVectorizer' "
+                "will be created from an external parser"
+            )
    
     def _load_vectorizer_params_from_configs(self) -> None:
+        """
+        """
         self._max_features = self._configs.max_features
         self._min_ngram = self._configs.min_ngram
         self._max_ngram = self._configs.max_ngram
@@ -159,10 +203,14 @@ class SklearnCountVectorizer:
         self._stop_words = None
             
     def _load_vectorizer_params_from_default(self) -> None:
+        """
+        """
         self._strip_accents = None
         self._analyzer = "word"
         
     def _create_vectorizer(self) -> CountVectorizer:
+        """
+        """
         return CountVectorizer(
             max_features = self._max_features,
             ngram_range = (self._min_ngram, self._max_ngram),
@@ -174,9 +222,13 @@ class SklearnCountVectorizer:
         )
 
     def _get_vocab_from_vectorizer(self) -> Dict[str, int]:
+        """
+        """
         return self.vectorizer.vocabulary_
 
     def _get_vocab_from_trainset(self) -> Set[str]:
+        """
+        """
         analizer = self.vectorizer.build_analyzer()
         new_vocab = set()
         for sent in self._trainset:
@@ -185,6 +237,8 @@ class SklearnCountVectorizer:
         return new_vocab
 
     def _update_loaded_vocabulary(self) -> Dict[str, int]:
+        """
+        """
         new_vocab = self._get_vocab_from_trainset()
         vocab_to_update = self._get_vocab_from_vectorizer()
         for word in new_vocab:
@@ -193,20 +247,28 @@ class SklearnCountVectorizer:
         return vocab_to_update
 
     def _train(self) -> None:
-        print("logger.Info(Comenzará el entrenamiento de CountVectorizer object)")
+        """
+        """
+        logger.info("'SklearnCountVectorizer' training has started")
         self.vectorizer.fit(self._trainset)
-        print("logger.Info(Finalizó el entrenamiento de CountVectorizer object)") 
+        logger.info("'SklearnCountVectorizer' training finished")
 
     def _train_loaded_vectorizer(self) -> None:
+        """
+        """
         self._train()
 
     def _train_vectorizer_from_scratch(self) -> None:
+        """
+        """
         self._load_vectorizer_params_from_configs()
         self._load_vectorizer_params_from_default()
         self.vectorizer = self._create_vectorizer()
         self._train()
 
     def train(self, trainset: List[str]) -> None:
+        """
+        """
         self._trainset = trainset
 
         if self.vectorizer is None:
@@ -218,24 +280,34 @@ class SklearnCountVectorizer:
         self.persist()
 
     def load_trained_vectorizer(self, vectorizer: CountVectorizer = None):
+        """
+        """
         if vectorizer:
             self.vectorizer = vectorizer
             return
         self._check_if_trained_vectorizer_exists()
-
+            
     def persist(self, use_default: bool = False) -> None:
         """
         """
         if use_default:
             path_to_save_vect = self._get_default_model_path()
-            print("logger.Info('El modelo será almacenado en path_to_save_vect')")
+            logger.info(
+                f"The 'SklearnCountVectorizer' trained model will "
+                f"be stored in dir: '{path_to_save_vect}'")
         else:
             try:
                 path_to_save_vect = self.path_to_save_model + "vocabularies.pkl"
             except TypeError:
-                print("logger.Warning('No se ha encontrado un path válido en path_to_save_model')")
+                logger.warning(
+                    f"No valid path found in '{self.path_to_save_model}' "
+                    "to store the 'SklearnCountVectorizer' trained model"
+                )
                 path_to_save_vect = self._get_default_model_path()
-            print("logger.Info('El modelo será almacenado en path_to_save_vect')")
+            logger.info(
+                f"The 'SklearnCountVectorizer' trained model will be stored " 
+                f"in '{path_to_save_vect}'"
+                )
                 
         utils.persist_data_with_pickle(
             self.vectorizer,
@@ -251,14 +323,23 @@ class SklearnCountVectorizer:
 
                 if use_default:
                     path_to_save_voc = self._get_default_vocab_path()
-                    print("logger.Info('El vocabulary será almacenado en path_to_save_voc')")
+                    logger.info(
+                        f"The updated vocabulary for 'SklearnCountVectorizer' "
+                        f"will be stored in dir: '{path_to_save_voc}'"
+                    )
                 else:
                     try:
                         path_to_save_voc = self.path_to_save_vocabulary + "updated_vocab.json"
                     except TypeError:
-                        print("logger.Warning('No se ha encontrado un path válido en path_to_save_vocabulary')")
+                        logger.warning(
+                            f"No valid path found in '{self.path_to_save_vocabulary}' "
+                            "to store the updated vocabulary for 'SklearnCountVectorizer'"
+                        )
                         path_to_save_voc = self._get_default_vocab_path()
-                    print("logger.Info('El vocabulary será almacenado en path_to_save_voc')")
+                    logger.info(
+                        f"The updated vocabulary for 'SklearnCountVectorizer' "
+                        f"will be stored in '{path_to_save_voc}'"
+                    )
                     
                 utils.persist_dict_as_json(
                     updated_vocab,
@@ -266,17 +347,24 @@ class SklearnCountVectorizer:
                 )
                 
             else:
-                print("logger.Warning('No se ha podido actualizar el stored vocabulary porque no se ha encontrado un stored vocabulary en path_to_stored_vocabulary")
+                logger.warning(
+                    f"Could not update stored vocabulary for 'SklearnCountVectorizer' "
+                    f"because no stored vocabulary was found in '{self._path_to_stored_vocabulary}'"
+                )
                 return
         
     def process(self, corpus):
         """
         """        
         if self.vectorizer is None:
-            print("logger.Warning(No se puede procesar porque no hay un vecotorizer entrenado)")
+            logger.warning(
+                "It's impossible to process the input from 'SklearnCountVectorizer' "
+                "because there is no trained model"
+            )
             return corpus
 
         corpus = self.vectorizer.transform(corpus)
         
         return corpus
             
+
