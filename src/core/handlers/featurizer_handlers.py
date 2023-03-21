@@ -11,72 +11,6 @@ from src.core.handlers.process_handlers import ProcessHandler
 from src.core.handlers import regex_handlers
 
 
-class Vocabulary:
-    """
-    """
-    
-    def __init__(self, token2idx=None, add_unk=True, unk_token="<<UNK>>") -> None:
-        """
-        """
-        
-        if token2idx is None:
-            token2idx = {}
-        self._token2idx = token2idx
-
-        self._idx2token = {
-            idx: token
-            for token, idx in self._token2idx.items()
-        }
-        
-        self._add_unk = add_unk
-        self._unk_token = unk_token
-        
-        self.unk_idx = -1
-        if add_unk:
-            self.unk_idx = self.add_token(unk_token)
-            
-    def __str__(self) -> str:
-        return f"<Vocabulary object (size={len(self)})>"
-    
-    def __len__(self) -> int:
-        return len(self._token2idx)
-        
-    def add_token(self, token):
-        """
-        """
-
-        if token in self._token2idx:
-            idx = self._token2idx[token]
-        else:
-            idx = len(self._token2idx)
-            self._token2idx[token] = idx
-            self._idx2token[idx] = token
-        return idx
-    
-    def get_idx_by_token(self, token):
-        """
-        """
-        
-        if self._add_unk:
-            return self._token2idx.get(token, self.unk_idx)
-        else:
-            return self._token2idx[token]
-        
-    def get_token_by_index(self, index):
-        """
-        """
-        
-        if index not in self._idx2token:
-            raise KeyError(f"The index {index} is not in the Vocabulary")
-        return self._idx2token[index]
-    
-    def get_tokens_from_object_head(self, show_first: int = 5) -> List:
-        return(list(self._token2idx)[0:show_first])
-    
-    def get_tokens_from_object_tail(self, show_last: int = 5) -> List:
-        return(list(self._token2idx)[-show_last:self.__len__()])
-
-
 class TextFeaturizer(ProcessHandler):
     """
     """
@@ -84,11 +18,11 @@ class TextFeaturizer(ProcessHandler):
     def __init__(
         self, configs: OmegaConf, 
         next_processor: IProcessHandler = None, 
-        vocabulary: Vocabulary = Vocabulary()
+        # vocabulary: Vocabulary = Vocabulary()
         ) -> None:
         super().__init__(next_processor)
         self._configs = configs
-        self.vocabulary = vocabulary
+        # self.vocabulary = vocabulary
     
     def featurize_text(self):
         print("texto a features")
@@ -181,23 +115,24 @@ class SklearnCountVectorizer:
             return vocab
         return vocab
 
-    def _check_if_trained_vectorizer_exists(self) -> None:
+    def _check_if_trained_vectorizer_exists(self) -> bool:
         self.vectorizer = self._get_loaded_vectorizer_from(
             path=self._path_to_trained_model
         )
         if self.vectorizer is None:
-            return
+            return False
+        return True
     
-    def _check_if_stored_vocabulary_exists(self) -> None:
+    def _check_if_stored_vocabulary_exists(self) -> bool:
         self.vocab = self._get_stored_vocabulary_from(
             path=self._path_to_stored_vocabulary
         )  
         if self.vocab is None:
             print("logger.Warning('No se encontró ningún vocabulary en path_to_stored_vocabulary o no se encontraba en el formato correcto (.txt o .json)')")
-            self._check_if_will_use_own_vocabulary_creator()
-            return
+            return False
+        return True
                 
-    def _check_if_will_use_own_vocabulary_creator(self) -> None:
+    def _set_vocabulary_creator(self) -> None:
         if self._configs.use_own_vocabulary_creator:
             self.vocab = None
             print("logger.Info(Se preparará a CountVectorizer para crear un vocabulary nuevo)") 
@@ -210,7 +145,8 @@ class SklearnCountVectorizer:
         self._min_ngram = self._configs.min_ngram
         self._max_ngram = self._configs.max_ngram
         
-        self._check_if_stored_vocabulary_exists()
+        if not self._check_if_stored_vocabulary_exists():
+            self._set_vocabulary_creator()
         
         # if regex_handlers.UppercaseHandler in self.__dict__:
         #     self._lowercase = False
@@ -265,6 +201,8 @@ class SklearnCountVectorizer:
         self._train()
 
     def _train_vectorizer_from_scratch(self) -> None:
+        self._load_vectorizer_params_from_configs()
+        self._load_vectorizer_params_from_default()
         self.vectorizer = self._create_vectorizer()
         self._train()
 
@@ -272,12 +210,10 @@ class SklearnCountVectorizer:
         self._trainset = trainset
 
         if self.vectorizer is None:
-            self._check_if_trained_vectorizer_exists()
-            self._train_loaded_vectorizer()
-        else:
-            self._load_vectorizer_params_from_configs()
-            self._load_vectorizer_params_from_default()
-            self._train_vectorizer_from_scratch()
+            if self._check_if_trained_vectorizer_exists():
+                self._train_loaded_vectorizer()
+            else:
+                self._train_vectorizer_from_scratch()
         
         self.persist()
 
@@ -295,7 +231,7 @@ class SklearnCountVectorizer:
             print("logger.Info('El modelo será almacenado en path_to_save_vect')")
         else:
             try:
-                path_to_save_vect = self.path_to_save_model + "/vocabularies.pkl"
+                path_to_save_vect = self.path_to_save_model + "vocabularies.pkl"
             except TypeError:
                 print("logger.Warning('No se ha encontrado un path válido en path_to_save_model')")
                 path_to_save_vect = self._get_default_model_path()
@@ -318,7 +254,7 @@ class SklearnCountVectorizer:
                     print("logger.Info('El vocabulary será almacenado en path_to_save_voc')")
                 else:
                     try:
-                        path_to_save_voc = self.path_to_save_vocabulary + "/updated_vocab.json"
+                        path_to_save_voc = self.path_to_save_vocabulary + "updated_vocab.json"
                     except TypeError:
                         print("logger.Warning('No se ha encontrado un path válido en path_to_save_vocabulary')")
                         path_to_save_voc = self._get_default_vocab_path()
