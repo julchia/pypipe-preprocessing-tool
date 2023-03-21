@@ -58,7 +58,7 @@ class SklearnCountVectorizer:
         self._update_stored_vocabulary = self._configs.update_stored_vocabulary
 
     @classmethod
-    def get_vectorizer_as_isolated_model(
+    def get_vectorizer_as_isolated_process(
         cls, 
         configs: OmegaConf, 
         vectorizer: CountVectorizer = None
@@ -84,8 +84,8 @@ class SklearnCountVectorizer:
             "update_stored_vocabulary": False,
             "use_own_vocabulary_creator": True,
             "unk_token": "<<UNK>>",
-            "path_to_save_model": None,
-            "path_to_save_vocabulary": None
+            "path_to_save_model": "",
+            "path_to_save_vocabulary": ""
         }
 
     # @classmethod
@@ -94,14 +94,14 @@ class SklearnCountVectorizer:
     #     pass
 
     @staticmethod
-    def _get_default_model_path(file_name: str = "/vocabularies.pkl") -> str:
+    def _get_default_model_path(file_name: str = "vocabularies.pkl") -> str:
         """
         """
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH)
         return constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH + file_name
     
     @staticmethod
-    def _get_default_vocab_path(file_name: str = "/updated_vocab.json") -> str:
+    def _get_default_vocab_path(file_name: str = "updated_vocab.json") -> str:
         """
         """
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH)
