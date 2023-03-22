@@ -1,6 +1,6 @@
 import logging
 from abc import abstractclassmethod, abstractmethod
-from typing import List, Set, Dict, Any
+from typing import List, Set, Dict
 
 from omegaconf import OmegaConf
 from sklearn.feature_extraction.text import CountVectorizer
@@ -91,10 +91,10 @@ class SklearnCountVectorizer:
         )
         
     @classmethod
-    def get_vectorizer_default_configs(cls) -> Dict[str, Any]:
+    def get_vectorizer_default_configs(cls) -> OmegaConf:
         """
         """
-        return {
+        return OmegaConf.create({
             "max_features": None,
             "min_ngram": 1,
             "max_ngram": 1,
@@ -106,7 +106,7 @@ class SklearnCountVectorizer:
             "unk_token": "<<UNK>>",
             "path_to_save_model": "",
             "path_to_save_vocabulary": ""
-        }
+        })
 
     @staticmethod
     def _get_default_model_path(file_name: str = "vocabularies.pkl") -> str:
@@ -382,4 +382,4 @@ class SklearnCountVectorizer:
         
         return corpus
             
-
+               
