@@ -1,5 +1,5 @@
 import logging
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import abstractclassmethod, abstractmethod
 from typing import List, Set, Dict, Any
 
 from omegaconf import OmegaConf
@@ -22,14 +22,34 @@ class TextFeaturizer(ProcessHandler):
     def __init__(
         self, configs: OmegaConf, 
         next_processor: IProcessHandler = None, 
-        # vocabulary: Vocabulary = Vocabulary()
         ) -> None:
         super().__init__(next_processor)
         self._configs = configs
-        # self.vocabulary = vocabulary
+
+    @classmethod
+    def get_vocabulary_factory(cls):
+        # TODO return class IVocabulary
+        pass
+
+    @abstractclassmethod
+    def get_vectorizer_as_isolated_process(cls):
+        """
+        """
     
-    def featurize_text(self):
-        print("texto a features")
+    @abstractmethod
+    def train(self):
+        """
+        """
+    
+    @abstractmethod
+    def load(self):
+        """
+        """
+        
+    @abstractmethod
+    def process(self):
+        """
+        """
 
 
 class SklearnCountVectorizer:
@@ -71,7 +91,7 @@ class SklearnCountVectorizer:
         )
         
     @classmethod
-    def get_default_configs(cls) -> Dict[str, Any]:
+    def get_vectorizer_default_configs(cls) -> Dict[str, Any]:
         """
         """
         return {
@@ -87,11 +107,6 @@ class SklearnCountVectorizer:
             "path_to_save_model": "",
             "path_to_save_vocabulary": ""
         }
-
-    # @classmethod
-    # def get_vocabulary_factory(cls):
-    #     # return class Vocabulary
-    #     pass
 
     @staticmethod
     def _get_default_model_path(file_name: str = "vocabularies.pkl") -> str:
@@ -279,7 +294,7 @@ class SklearnCountVectorizer:
         
         self.persist()
 
-    def load_trained_vectorizer(self, vectorizer: CountVectorizer = None):
+    def load(self, vectorizer: CountVectorizer = None):
         """
         """
         if vectorizer:
