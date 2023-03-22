@@ -60,13 +60,13 @@
                 "min_ngram": 1,
                 "max_ngram": 1,
                 "remove_spanish_stop_words": false,
-                "path_to_trained_model": "",
-                "path_to_stored_vocabulary": "",
+                "path_to_trained_model": null,
+                "path_to_stored_vocabulary": null,
                 "update_stored_vocabulary": false,
                 "use_own_vocabulary_creator": true,
                 "unk_token": "<<UNK>>",
-                "path_to_save_model": "",
-                "path_to_save_vocabulary": ""
+                "path_to_save_model": null,
+                "path_to_save_vocabulary": null
             }
         }
     }

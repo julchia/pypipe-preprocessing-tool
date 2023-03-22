@@ -99,24 +99,24 @@ class SklearnCountVectorizer:
             "min_ngram": 1,
             "max_ngram": 1,
             "remove_spanish_stop_words": False,
-            "path_to_trained_model": "",
-            "path_to_stored_vocabulary": "",
+            "path_to_trained_model": None,
+            "path_to_stored_vocabulary": None,
             "update_stored_vocabulary": False,
             "use_own_vocabulary_creator": True,
             "unk_token": "<<UNK>>",
-            "path_to_save_model": "",
-            "path_to_save_vocabulary": ""
+            "path_to_save_model": None,
+            "path_to_save_vocabulary": None
         })
 
     @staticmethod
-    def _get_default_model_path(file_name: str = "vocabularies.pkl") -> str:
+    def _get_default_model_path(file_name: str = "/vocabularies.pkl") -> str:
         """
         """
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH)
         return constants.COUNT_VECTORIZER_MODEL_DEFAULT_PATH + file_name
     
     @staticmethod
-    def _get_default_vocab_path(file_name: str = "updated_vocab.json") -> str:
+    def _get_default_vocab_path(file_name: str = "/updated_vocab.json") -> str:
         """
         """
         utils.create_dir_if_not_exists(constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH)
@@ -126,6 +126,8 @@ class SklearnCountVectorizer:
     def _get_loaded_vectorizer_from(path) -> None:
         """
         """
+        if path is None:
+            return
         try:
             loaded_vect = utils.load_data_with_pickle(
                 path=path
@@ -145,6 +147,8 @@ class SklearnCountVectorizer:
     def _get_stored_vocabulary_from(path: str):
         """
         """
+        if path is None:
+            return
         vocab = utils.open_line_by_line_txt_file(
                 path=path,
                 as_set=True
@@ -312,7 +316,7 @@ class SklearnCountVectorizer:
                 f"be stored in dir: '{path_to_save_vect}'")
         else:
             try:
-                path_to_save_vect = self.path_to_save_model + "vocabularies.pkl"
+                path_to_save_vect = self.path_to_save_model + "/vocabularies.pkl"
             except TypeError:
                 logger.warning(
                     f"No valid path found in '{self.path_to_save_model}' "
@@ -344,7 +348,7 @@ class SklearnCountVectorizer:
                     )
                 else:
                     try:
-                        path_to_save_voc = self.path_to_save_vocabulary + "updated_vocab.json"
+                        path_to_save_voc = self.path_to_save_vocabulary + "/updated_vocab.json"
                     except TypeError:
                         logger.warning(
                             f"No valid path found in '{self.path_to_save_vocabulary}' "
@@ -382,4 +386,4 @@ class SklearnCountVectorizer:
         
         return corpus
             
-               
+            
