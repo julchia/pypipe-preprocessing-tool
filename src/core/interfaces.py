@@ -9,13 +9,6 @@ class IProcessHandler(ABC):
     """
     """
     
-    next_processor: IProcessHandler
-    configs: OmegaConf
-        
-    @abstractmethod
-    def _process(self, apply_to: Optional(str)) -> Optional(str):
-        pass
-    
     @abstractmethod
     def _handle_process(self, apply_to: Optional(str)) -> Optional(IProcessHandler):
         pass

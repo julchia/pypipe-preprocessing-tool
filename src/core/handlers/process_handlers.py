@@ -1,4 +1,8 @@
 from __future__ import annotations
+from abc import abstractmethod
+from typing import Any
+
+from omegaconf import OmegaConf
 
 from src.core.interfaces import IProcessHandler
 
@@ -7,15 +11,24 @@ class ProcessHandler(IProcessHandler):
     """
     """
     
-    def __init__(self, next_processor: IProcessHandler = None) -> None:
+    def __init__(
+        self, 
+        configs: OmegaConf, 
+        next_processor: IProcessHandler = None
+    ) -> None:
+        self._configs = configs
         self._next_processor = next_processor
+    
+    @abstractmethod
+    def process(self, apply_to: Any) -> Any:
+        ...
+    
+    def _handle_process(self, request: Any) -> Any | IProcessHandler:
         
-    def _handle_process(self, text: str) -> str | IProcessHandler:
-        
-        processed_text = self._process(text)
+        processed_request = self.process(request)
         
         if (self._next_processor is None):
-            return processed_text
+            return processed_request
         else:
-            return self._next_processor._handle_process(processed_text)
+            return self._next_processor._handle_process(processed_request)
         
