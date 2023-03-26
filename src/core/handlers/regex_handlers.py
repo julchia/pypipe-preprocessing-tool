@@ -14,19 +14,26 @@ class RegexNormalizer(ProcessHandler):
     """
     """
     
-    def __init__(self, configs: OmegaConf, next_processor: IProcessHandler = None) -> None:
-        super().__init__(next_processor)
-        try:
-            if configs.replacement is not None: self._replacement = configs.replacement
-        except ConfigAttributeError:
-            pass
-        
     def normalize_text(self, text: str) -> str:
         return self._handle_process(text)
+    
+    def __init__(
+        self, 
+        configs: OmegaConf, 
+        next_processor: IProcessHandler = None
+        ) -> None:
+        
+        super().__init__(configs, next_processor)
+        
+        try:
+            if configs.replacement is not None: 
+                self._replacement = configs.replacement
+        except ConfigAttributeError:
+            pass
 
 
 class WhiteSpacesHandler(RegexNormalizer):    
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.WHITE_SPACE_REGEX, 
             self._replacement, 
@@ -35,7 +42,7 @@ class WhiteSpacesHandler(RegexNormalizer):
 
 
 class MentionHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.MENTION_REGEX, 
             self._replacement, 
@@ -44,7 +51,7 @@ class MentionHandler(RegexNormalizer):
 
 
 class URLHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.URL_REGEX, 
             self._replacement, 
@@ -53,7 +60,7 @@ class URLHandler(RegexNormalizer):
 
 
 class EmailHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.EMAIL_REGEX, 
             self._replacement, 
@@ -62,7 +69,7 @@ class EmailHandler(RegexNormalizer):
 
         
 class PunctuationHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.PUNCTUTATION_REGEX, 
             self._replacement, 
@@ -71,12 +78,12 @@ class PunctuationHandler(RegexNormalizer):
     
     
 class DiacriticHandler(RegexNormalizer):    
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return unidecode(text)
     
 
 class DigitHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.DIGIT_REGEX, 
             self._replacement, 
@@ -85,7 +92,7 @@ class DigitHandler(RegexNormalizer):
     
     
 class SingleWordHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.SINGLE_WORD_REGEX, 
             self._replacement, 
@@ -94,7 +101,7 @@ class SingleWordHandler(RegexNormalizer):
 
 
 class UppercaseHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.SPECIAL_CHARS_REGEX, 
             lambda x: x.group().lower(), 
@@ -103,7 +110,7 @@ class UppercaseHandler(RegexNormalizer):
 
 
 class DuplicatedLetterHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.DUPLICATED_LETTER_REGEX, 
             r"\1", 
@@ -112,7 +119,7 @@ class DuplicatedLetterHandler(RegexNormalizer):
 
 
 class IsolatedConsonantHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.ISOLATED_CONSONANT_REGEX, 
             self._replacement, 
@@ -121,14 +128,14 @@ class IsolatedConsonantHandler(RegexNormalizer):
 
 
 class QHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return SubRegexBuilder(text)\
             .sub(constants.Q_REGEX["que"], " que ")\
             .sub(constants.Q_REGEX["quie"], " quie")\
 
 
 class ReHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return re.sub(
             constants.RE_REGEX, 
             self._replacement, 
@@ -137,7 +144,7 @@ class ReHandler(RegexNormalizer):
 
 
 class LaughtHandler(RegexNormalizer):
-    def _process(self, text: str) -> str:
+    def process(self, text: str) -> str:
         return SubRegexBuilder(text)\
             .sub(constants.LAUGHT_REGEX["ja"], "ja")\
             .sub(constants.LAUGHT_REGEX["je"], "je")\

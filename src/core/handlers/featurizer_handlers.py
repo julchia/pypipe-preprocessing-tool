@@ -19,11 +19,19 @@ class TextFeaturizer(ProcessHandler):
     """
     """
     
+    def get_vector_from_text(self, text: List[str]):
+        """
+        """
+        return self._handle_process(text)
+    
     def __init__(
-        self, configs: OmegaConf, 
-        next_processor: IProcessHandler = None, 
-        ) -> None:
-        super().__init__(next_processor)
+        self, 
+        configs: OmegaConf, 
+        next_processor: IProcessHandler = None
+    ) -> None:
+        
+        super().__init__(configs, next_processor)
+        
         self._configs = configs
 
     @classmethod
@@ -35,37 +43,41 @@ class TextFeaturizer(ProcessHandler):
     def get_vectorizer_as_isolated_process(cls):
         """
         """
+        ...
     
     @abstractmethod
     def train(self):
         """
         """
+        ...
     
     @abstractmethod
     def load(self):
         """
         """
+        ...
         
     @abstractmethod
     def process(self):
         """
         """
+        ...
 
 
-class SklearnCountVectorizer:
+class SklearnCountVectorizer(TextFeaturizer):
     """
     """
     
     def __init__(
         self, 
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None
+        vectorizer: CountVectorizer = None,
+        next_processor: IProcessHandler = None
     ) -> None:
         """
         """
         
-        # provisional
-        self._configs = configs
+        super().__init__(configs, next_processor)
         
         self.vectorizer = vectorizer
         
@@ -385,5 +397,5 @@ class SklearnCountVectorizer:
         corpus = self.vectorizer.transform(corpus)
         
         return corpus
-            
+
             
