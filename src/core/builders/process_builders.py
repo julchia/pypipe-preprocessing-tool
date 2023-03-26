@@ -7,7 +7,7 @@ class ProcessBuilder(IProcessBuilder):
     """
     """
         
-    def _set_next(self, next_step: IProcessHandler, configs: OmegaConf) -> IProcessBuilder:
+    def _set_next(self, configs: OmegaConf, next_step: IProcessHandler) -> IProcessBuilder:
         """
         """
                     
