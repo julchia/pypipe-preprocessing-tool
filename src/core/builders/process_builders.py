@@ -7,12 +7,19 @@ class ProcessBuilder(IProcessBuilder):
     """
     """
         
-    def _set_next(self, configs: OmegaConf, next_step: IProcessHandler) -> IProcessBuilder:
+    def _set_next(
+        self, 
+        configs: OmegaConf, 
+        next_step: IProcessHandler
+    ) -> IProcessBuilder:
         """
         """
                     
         try:
-            self.process = next_step(configs=configs, next_processor=self.process)      
+            self.process = next_step(
+                configs=configs, 
+                next_processor=self.process
+            )      
         except AttributeError:
             self.process = next_step(configs=configs)
         
