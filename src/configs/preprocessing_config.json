@@ -1,60 +1,60 @@
 {
     "pipeline": {
         "regex_normalization": {
-            "WhiteSpacesHandler": {
+            "normalize_white_spaces": {
                 "active": true,
                 "replacement": " "
             },
-            "PunctuationHandler": {
+            "normalize_punctuation": {
                 "active": true,
                 "replacement": ""
             },
-            "DiacriticHandler": {
+            "normalize_diacritic": {
                 "active": true
             },
-            "UppercaseHandler": {
+            "normalize_lowercase": {
                 "active": true
             },
-            "DuplicatedLetterHandler": {
+            "normalize_duplicated_letter": {
                 "active": true
             },
-            "MentionHandler": {
+            "normalize_mention": {
                 "active": true,
                 "replacement": "<<MENTION>>"
             },
-            "URLHandler":  {
+            "normalize_url":  {
                 "active": true,
                 "replacement": "<<URL>>"
             },
-            "EmailHandler": {
+            "normalize_email": {
                 "active": true,
                 "replacement": "<<EMAIL>>"
             },
-            "DigitHandler": {
+            "normalize_digit": {
                 "active": true,
                 "replacement": ""
             },
-            "SingleWordHandler": {
+            "normalize_single_word": {
                 "active": true,
                 "replacement": " "
             },
-            "IsolatedConsonantHandler": {
+            "normalize_isolated_consonant": {
                 "active": true,
                 "replacement": ""
             },
-            "QHandler": {
+            "normalize_q": {
                 "active": true
             },
-            "ReHandler": {
+            "normalize_re": {
                 "active": true,
                 "replacement": "muy"
             },
-            "LaughtHandler": {
+            "normalize_laught": {
                 "active": true
             }
         },
         "featurization": {
-            "SklearnCountVectorizer": {
+            "sklearn_count_vectorizer": {
                 "active": true,
                 "max_features": null,
                 "min_ngram": 1,

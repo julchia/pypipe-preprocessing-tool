@@ -11,7 +11,7 @@ class Pipeline:
     def __init__(
         self, 
         pipeline_conf: OmegaConf, 
-        pipeline_process: Dict[str, IPipelineProcess] = constants.PIPELINE_PROCESSES
+        pipeline_process: Dict[str, IPipelineProcess] = constants.PIPELINE_PROCESSES_ALIAS
     ) -> None:
         self._pipeline_conf = pipeline_conf
         self._pipeline_process = pipeline_process

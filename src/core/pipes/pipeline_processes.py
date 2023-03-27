@@ -1,8 +1,8 @@
 from omegaconf import OmegaConf
 
+from src.core import constants
 from src.core.interfaces import IProcessHandler, IPipelineProcess
 from src.core.builders.process_builders import ProcessBuilder
-from src.core.handlers import regex_handlers, featurizer_handlers
 
 
 class RegexNormalizationProcess(IPipelineProcess):
@@ -11,7 +11,7 @@ class RegexNormalizationProcess(IPipelineProcess):
         super().__init__(
             pipeline_conf=pipeline_conf,
             process_builder=ProcessBuilder(),
-            process_handlers=regex_handlers.__dict__
+            process_handlers=constants.PROCESS_HANDLERS_ALIAS["normalization"]
         )       
     
     def _build_process_sequence(self) -> IProcessHandler:
@@ -33,7 +33,7 @@ class FeaturizationProcess(IPipelineProcess):
         super().__init__(
             pipeline_conf=pipeline_conf,
             process_builder=ProcessBuilder(),
-            process_handlers=featurizer_handlers.__dict__
+            process_handlers=constants.PROCESS_HANDLERS_ALIAS["featurization"]
         )       
     
     def _build_process_sequence(self) -> IProcessHandler:

@@ -100,7 +100,7 @@ class SingleWordHandler(RegexNormalizer):
             )
 
 
-class UppercaseHandler(RegexNormalizer):
+class LowercaseHandler(RegexNormalizer):
     def process(self, text: str) -> str:
         return re.sub(
             constants.SPECIAL_CHARS_REGEX, 
