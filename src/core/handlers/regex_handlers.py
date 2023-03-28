@@ -2,6 +2,7 @@ import re
 from unidecode import unidecode
 
 from omegaconf import OmegaConf
+from omegaconf.errors import ConfigAttributeError
 
 from src.core.interfaces import IProcessHandler
 from src.core.handlers import constants
@@ -15,7 +16,10 @@ class RegexNormalizer(ProcessHandler):
     
     def __init__(self, configs: OmegaConf, next_processor: IProcessHandler = None) -> None:
         super().__init__(next_processor)
-        self._configs = configs
+        try:
+            if configs.replacement is not None: self._replacement = configs.replacement
+        except ConfigAttributeError:
+            pass
         
     def normalize_text(self, text: str) -> str:
         return self._handle_process(text)
@@ -25,7 +29,7 @@ class WhiteSpacesHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.WHITE_SPACE_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
 
@@ -34,7 +38,7 @@ class MentionHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.MENTION_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )   
 
@@ -43,7 +47,7 @@ class URLHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.URL_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )    
 
@@ -52,7 +56,7 @@ class EmailHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.EMAIL_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
 
@@ -61,7 +65,7 @@ class PunctuationHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.PUNCTUTATION_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
     
@@ -75,7 +79,7 @@ class DigitHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.DIGIT_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
     
@@ -84,7 +88,7 @@ class SingleWordHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.SINGLE_WORD_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
 
@@ -111,7 +115,7 @@ class IsolatedConsonantHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.ISOLATED_CONSONANT_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
 
@@ -127,7 +131,7 @@ class ReHandler(RegexNormalizer):
     def _process(self, text: str) -> str:
         return re.sub(
             constants.RE_REGEX, 
-            self._configs.replacement, 
+            self._replacement, 
             text
             )
 
