@@ -2,10 +2,6 @@ from src.core.constants import PREPROCESSING_CONFIG
 from src.core.pipeline import Pipeline
 
 
-# CORREGIR TODOS LOS NOMBRES DE LOS ARCHIVOS Y REORDENARLOS
-# VER SI EL VECTORIZADOR PUEDE VECTORIZAR DESDE UN STR
-# AGRENA DESDE LA PIPELINE UNA FORMA DE EJECUTAR TODOS LOS PROCESS
-
 def main() -> None:
     
     pipe_1 = Pipeline(
