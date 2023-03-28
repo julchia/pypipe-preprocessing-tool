@@ -9,7 +9,7 @@ from src.core import constants
 from src.core.handlers import utils
 from src.core.interfaces import IProcessHandler
 from src.core.handlers.process_handlers import ProcessHandler
-from src.core.handlers import regex_handlers
+# from src.core.handlers.normalizers import regex_handlers
 
 
 logger = logging.getLogger(__name__)
@@ -397,5 +397,4 @@ class SklearnCountVectorizer(TextFeaturizer):
         corpus = self.vectorizer.transform(corpus)
         
         return corpus
-
-            
+   

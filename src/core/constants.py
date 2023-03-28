@@ -1,8 +1,9 @@
 from omegaconf import OmegaConf
 
-from src.core.pipes.pipeline_processes import *
-from src.core.handlers.regex_handlers import *
-from src.core.handlers.featurizer_handlers import *
+from src.core.pipes.featurization_processes import FeaturizationProcess
+from src.core.pipes.normalization_processes import RegexNormalizationProcess
+from src.core.handlers.featurization.featurizer_handlers import SklearnCountVectorizer
+from src.core.handlers.normalization.regex_handlers import *
 
 
 # config paths
@@ -10,8 +11,8 @@ PREPROCESSING_CONFIG_PATH = "src/configs/preprocessing_config.json"
 
 
 # data paths
-COUNT_VECTORIZER_MODEL_DEFAULT_PATH = "src/core/models/count_vectorizer"
-COUNT_VECTORIZER_VOCAB_DEFAULT_PATH = "src/core/data/corpus/count_vectorizer"
+COUNT_VECTORIZER_MODEL_DEFAULT_PATH = "src/data/models/count_vectorizer"
+COUNT_VECTORIZER_VOCAB_DEFAULT_PATH = "src/data/corpus/count_vectorizer"
 
 
 # models from omegaconf
