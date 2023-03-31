@@ -1,9 +1,10 @@
-from typing import Dict
+from __future__ import annotations
+from typing import List, Dict
 
 from omegaconf import OmegaConf
 
 from src.core import constants
-from src.core.interfaces import IProcessHandler, IPipelineProcess
+from src.core.interfaces import IPipelineProcess
 
 
 class Pipeline:
@@ -17,23 +18,15 @@ class Pipeline:
         self._pipeline_process = pipeline_process
         self.__init_pipe()
     
-    def __init_pipe(self):
-        self._pipeline: Dict[str, IProcessHandler] = {}
-        self._get_pipeline_processes()
-        self._init_pipe_processes()
+    def __init_pipe(self) -> Pipeline:
+        self._set_pipeline_processes()
         return self
     
-    def _init_pipe_processes(self):
-        self._init_regex_normalization_process()
-        self._init_featurization_process()
-    
-    def _init_regex_normalization_process(self):
-        self.regex_normalization = self._pipeline.get("regex_normalization")
-        
-    def _init_featurization_process(self):
-        self.featurization = self._pipeline.get("featurization")
-    
-    def _get_pipeline_processes(self):
+    def _set_pipeline_processes(self) -> None:
         for k, process in self._pipeline_process.items():
             if k in self._pipeline_conf.pipeline:
-                self._pipeline[k] = process(self._pipeline_conf).get_process()
+                self.__dict__[k] = process(self._pipeline_conf).get_process()
+                
+    def get_processes_order(self) -> List:
+        processes_order = list(self._pipeline_process.keys())
+        return processes_order
