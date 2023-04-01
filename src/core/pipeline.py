@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from omegaconf import OmegaConf
 
 from src.core import constants
-from src.core.interfaces import IPipelineProcess
+from src.core.interfaces import ICompoundProcessor
 
 
 class Pipeline:
@@ -12,7 +12,7 @@ class Pipeline:
     def __init__(
         self, 
         pipeline_conf: OmegaConf, 
-        pipeline_process: Dict[str, IPipelineProcess] = constants.PIPELINE_PROCESSES_ALIAS
+        pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS
     ) -> None:
         self._pipeline_conf = pipeline_conf
         self._pipeline_process = pipeline_process
@@ -23,10 +23,19 @@ class Pipeline:
         return self
     
     def _set_pipeline_processes(self) -> None:
-        for k, process in self._pipeline_process.items():
-            if k in self._pipeline_conf.pipeline:
-                self.__dict__[k] = process(self._pipeline_conf).get_process()
-                
+        for alias, process in self._pipeline_process.items():
+            if alias in self._pipeline_conf.pipeline:
+                if issubclass(process, ICompoundProcessor):
+                    self.__dict__[alias] = process(
+                        alias=alias,
+                        configs=self._pipeline_conf
+                    ).get_process()
+                else:
+                    self.__dict__[alias] = process(
+                        alias=alias,
+                        configs=self._pipeline_conf
+                    )
+                    
     def get_processes_order(self) -> List:
         processes_order = list(self._pipeline_process.keys())
         return processes_order

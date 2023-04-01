@@ -3,28 +3,30 @@ from typing import Dict, Any
 
 from omegaconf import OmegaConf
 
-from src.core.interfaces import IProcessBuilder, IProcessHandler, IPipelineProcess
+from src.core.interfaces import IProcessBuilder, IProcessHandler, ICompoundProcessor
 
 
-class PipelineProcess(IPipelineProcess):
+class CompoundProcessor(ICompoundProcessor):
     """
     """
     
     def __init__(
         self,
-        pipeline_conf: OmegaConf,
+        alias: str,
+        configs: OmegaConf,
         process_handlers: Dict[str, IProcessHandler],
         process_builder: IProcessBuilder
     ) -> None:
-        self._pipeline_conf = pipeline_conf
+        self._alias = alias
+        self._configs = configs.pipeline[self._alias]
         self._process_handlers = process_handlers
         self._process_builder = process_builder
     
     @abstractmethod  
     def _build_process_sequence(self) -> IProcessHandler:
         ...
-    
-    @abstractmethod
+        
+    @abstractmethod  
     def get_process(self) -> IProcessHandler:
         ...
     

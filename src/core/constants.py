@@ -1,7 +1,6 @@
 from omegaconf import OmegaConf
 
-from src.core.pipes.featurization_processes import FeaturizationProcess
-from src.core.pipes.normalization_processes import RegexNormalizationProcess
+from src.core.pipes.compound.normalization_processes import RegexNormCompoundProcess
 from src.core.handlers.featurization.featurizer_handlers import SklearnCountVectorizer
 from src.core.handlers.normalization.regex_handlers import *
 
@@ -20,15 +19,15 @@ PREPROCESSING_CONFIG = OmegaConf.load(PREPROCESSING_CONFIG_PATH)
 
 
 # process
-PIPELINE_PROCESSES_ALIAS = {
-    "regex_normalization": RegexNormalizationProcess,
-    "featurization": FeaturizationProcess
+PIPELINE_PROCESS_ALIAS = {
+    "regex_normalization": RegexNormCompoundProcess,
+    "sklearn_count_vect": SklearnCountVectorizer
 }
 
 
 # process handlers
-PROCESS_HANDLERS_ALIAS = {
-    "normalization": {
+COMPOUND_PROCESS_ALIAS = {
+    "regex_normalization": {
         "normalize_white_spaces": WhiteSpacesHandler,
         "normalize_punctuation": PunctuationHandler,
         "normalize_diacritic": DiacriticHandler,
@@ -43,8 +42,5 @@ PROCESS_HANDLERS_ALIAS = {
         "normalize_q": QHandler,
         "normalize_re": ReHandler,
         "normalize_laught": LaughtHandler
-    },
-    "featurization": {
-        "sklearn_count_vectorizer": SklearnCountVectorizer
     }
 }

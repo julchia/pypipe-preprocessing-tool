@@ -7,32 +7,23 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from src.core import constants
 from src.core.handlers import utils
-from src.core.interfaces import IProcessHandler
-from src.core.handlers.process_handlers import ProcessHandler
-# from src.core.handlers.normalizers import regex_handlers
 
 
 logger = logging.getLogger(__name__)
 
 
-class TextFeaturizer(ProcessHandler):
+class TextFeaturizer:
     """
     """
-    
-    def get_vector_from_text(self, text: List[str]):
-        """
-        """
-        return self._handle_process(text)
-    
+        
     def __init__(
         self, 
-        configs: OmegaConf, 
-        next_processor: IProcessHandler = None
+        alias: str,
+        configs: OmegaConf
     ) -> None:
-        
-        super().__init__(configs, next_processor)
-        
-        self._configs = configs
+               
+        self._alias = alias 
+        self._configs = configs.pipeline[self._alias]
 
     @classmethod
     def get_vocabulary_factory(cls):
@@ -69,15 +60,15 @@ class SklearnCountVectorizer(TextFeaturizer):
     """
     
     def __init__(
-        self, 
+        self,
+        alias: str,
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None,
-        next_processor: IProcessHandler = None
+        vectorizer: CountVectorizer = None
     ) -> None:
         """
         """
         
-        super().__init__(configs, next_processor)
+        super().__init__(alias, configs)
         
         self.vectorizer = vectorizer
         

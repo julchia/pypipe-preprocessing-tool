@@ -7,7 +7,7 @@ def main() -> None:
     pipe_1 = Pipeline(
         pipeline_conf=PREPROCESSING_CONFIG
     )
-          
+    
     corpus = [
         "HOLA!!1111 gente lindaaaaa!!!",
         "el nombre essssss @Pedro re loco jjajajajjja",
@@ -20,7 +20,7 @@ def main() -> None:
         norm_sent = pipe_1.regex_normalization.normalize_text(sent)
         normalized_corpus.append(norm_sent)
         
-    pipe_1.featurization.train(normalized_corpus)
+    pipe_1.sklearn_count_vect.train(normalized_corpus)
 
 if __name__ == "__main__":
     main()

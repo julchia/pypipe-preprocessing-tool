@@ -53,21 +53,19 @@
                 "active": true
             }
         },
-        "featurization": {
-            "sklearn_count_vectorizer": {
-                "active": true,
-                "max_features": null,
-                "min_ngram": 1,
-                "max_ngram": 1,
-                "remove_spanish_stop_words": false,
-                "path_to_trained_model": null,
-                "path_to_stored_vocabulary": null,
-                "update_stored_vocabulary": false,
-                "use_own_vocabulary_creator": true,
-                "unk_token": "<<UNK>>",
-                "path_to_save_model": null,
-                "path_to_save_vocabulary": null
-            }
+        "sklearn_count_vect": {
+            "active": true,
+            "max_features": null,
+            "min_ngram": 1,
+            "max_ngram": 1,
+            "remove_spanish_stop_words": false,
+            "path_to_trained_model": null,
+            "path_to_stored_vocabulary": null,
+            "update_stored_vocabulary": false,
+            "use_own_vocabulary_creator": true,
+            "unk_token": "<<UNK>>",
+            "path_to_save_model": null,
+            "path_to_save_vocabulary": null
         }
     }
 }

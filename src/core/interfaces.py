@@ -29,14 +29,14 @@ class IProcessBuilder(ABC):
         ...
     
 
-class IPipelineProcess(ABC):
+class ICompoundProcessor(ABC):
     """
     """
     
     @abstractmethod  
     def _build_process_sequence(self) -> IProcessHandler:
         ...
-    
-    @abstractmethod
+        
+    @abstractmethod  
     def get_process(self) -> IProcessHandler:
         ...
