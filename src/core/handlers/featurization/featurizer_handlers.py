@@ -17,13 +17,15 @@ class TextFeaturizer:
     """
         
     def __init__(
-        self, 
-        alias: str,
-        configs: OmegaConf
+        self,
+        configs: OmegaConf,
+        alias: str = None,
     ) -> None:
-               
-        self._alias = alias 
-        self._configs = configs.pipeline[self._alias]
+        
+        if alias is not None:
+            self._configs = configs.pipeline[alias]
+        else:
+            self._configs = configs
 
     @classmethod
     def get_vocabulary_factory(cls):
@@ -61,36 +63,41 @@ class SklearnCountVectorizer(TextFeaturizer):
     
     def __init__(
         self,
-        alias: str,
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None
+        vectorizer: CountVectorizer = None,
+        alias: str = None
     ) -> None:
         """
         """
         
-        super().__init__(alias, configs)
+        super().__init__(
+            configs=configs,
+            alias=alias
+        )
         
         self.vectorizer = vectorizer
         
-        self._path_to_trained_model = self._configs.path_to_trained_model
-        self._path_to_stored_vocabulary = self._configs.path_to_stored_vocabulary
-        
         self.path_to_save_model = self._configs.path_to_save_model 
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
+        
+        self._path_to_trained_model = self._configs.path_to_trained_model
+        self._path_to_stored_vocabulary = self._configs.path_to_stored_vocabulary
         
         self._update_stored_vocabulary = self._configs.update_stored_vocabulary
 
     @classmethod
     def get_vectorizer_as_isolated_process(
-        cls, 
+        cls,
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None
+        vectorizer: CountVectorizer = None,
+        alias: str = None,
     ):
         """
         """
         return cls(
             configs=configs,
-            vectorizer=vectorizer
+            vectorizer=vectorizer,
+            alias=alias
         )
         
     @classmethod
@@ -388,4 +395,4 @@ class SklearnCountVectorizer(TextFeaturizer):
         corpus = self.vectorizer.transform(corpus)
         
         return corpus
-   
+    

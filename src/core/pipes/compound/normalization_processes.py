@@ -8,7 +8,7 @@ from src.core.pipes.compound.compound_processor import CompoundProcessor
 
 class RegexNormCompoundProcess(CompoundProcessor):
     
-    def __init__(self, alias, configs: OmegaConf) -> None:
+    def __init__(self, alias: str, configs: OmegaConf) -> None:
         super().__init__(
             alias=alias,
             configs=configs,
