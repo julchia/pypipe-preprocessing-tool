@@ -14,13 +14,10 @@ def main() -> None:
         "mi correo es pedrito@gmail.com",
         "su página es www.pedrito.com ...."
     ]
-    
-    normalized_corpus = []
-    for sent in corpus:
-        norm_sent = pipe_1.regex_normalization.normalize_text(sent)
-        normalized_corpus.append(norm_sent)
+
+    norm_corpus = pipe_1.regex_normalization.normalize_text(corpus)
         
-    pipe_1.sklearn_count_vect.train(normalized_corpus)
+    pipe_1.sklearn_count_vect.train(norm_corpus)
 
 if __name__ == "__main__":
     main()

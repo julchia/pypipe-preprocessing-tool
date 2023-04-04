@@ -4,7 +4,6 @@ from typing import List, Dict, Any
 from omegaconf import OmegaConf
 
 from src.core import constants
-from src.core.interfaces import ICompoundProcessor
 
 
 class Pipeline:
@@ -25,16 +24,10 @@ class Pipeline:
     def _set_pipeline_processes(self) -> None:
         for alias, process in self._pipeline_process.items():
             if alias in self._pipeline_conf.pipeline:
-                if issubclass(process, ICompoundProcessor):
-                    self.__dict__[alias] = process(
-                        alias=alias,
-                        configs=self._pipeline_conf
-                    ).get_process()
-                else:
-                    self.__dict__[alias] = process(
-                        alias=alias,
-                        configs=self._pipeline_conf
-                    )
+                self.__dict__[alias] = process(
+                    alias=alias,
+                    configs=self._pipeline_conf
+                )
                     
     def get_processes_order(self) -> List:
         processes_order = list(self._pipeline_process.keys())

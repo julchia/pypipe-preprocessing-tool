@@ -1,60 +1,15 @@
 import logging
-from abc import abstractclassmethod, abstractmethod
 from typing import List, Set, Dict
 
 from omegaconf import OmegaConf
 from sklearn.feature_extraction.text import CountVectorizer
 
+from src.core.processes.featurization.text_featurizer import TextFeaturizer
 from src.core import constants
-from src.core.handlers import utils
+from src.core.processes import utils
 
 
 logger = logging.getLogger(__name__)
-
-
-class TextFeaturizer:
-    """
-    """
-        
-    def __init__(
-        self,
-        configs: OmegaConf,
-        alias: str = None,
-    ) -> None:
-        
-        if alias is not None:
-            self._configs = configs.pipeline[alias]
-        else:
-            self._configs = configs
-
-    @classmethod
-    def get_vocabulary_factory(cls):
-        # TODO return class IVocabulary
-        pass
-
-    @abstractclassmethod
-    def get_vectorizer_as_isolated_process(cls):
-        """
-        """
-        ...
-    
-    @abstractmethod
-    def train(self):
-        """
-        """
-        ...
-    
-    @abstractmethod
-    def load(self):
-        """
-        """
-        ...
-        
-    @abstractmethod
-    def process(self):
-        """
-        """
-        ...
 
 
 class SklearnCountVectorizer(TextFeaturizer):
@@ -86,8 +41,8 @@ class SklearnCountVectorizer(TextFeaturizer):
         self._update_stored_vocabulary = self._configs.update_stored_vocabulary
 
     @classmethod
-    def get_vectorizer_as_isolated_process(
-        cls,
+    def get_isolated_process(
+        cls, 
         configs: OmegaConf, 
         vectorizer: CountVectorizer = None,
         alias: str = None,
@@ -101,7 +56,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         )
         
     @classmethod
-    def get_vectorizer_default_configs(cls) -> OmegaConf:
+    def get_default_configs(cls) -> OmegaConf:
         """
         """
         return OmegaConf.create({

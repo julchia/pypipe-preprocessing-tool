@@ -1,42 +1,21 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Any, Optional
+from abc import ABC, abstractclassmethod
+
+from omegaconf import OmegaConf
 
 
-class IProcessHandler(ABC):
+class IProcess(ABC):
     """
     """
     
-    @abstractmethod
-    def process(self, apply_to: Any) -> Any:
+    @abstractclassmethod
+    def get_isolated_process(cls) -> IProcess:
+        """
+        """
         ...
     
-    @abstractmethod
-    def _handle_process(self, apply_to: Optional[Any]) -> Optional[IProcessHandler]:
-        ...
-
-
-class IProcessBuilder(ABC):
-    """
-    """
-    
-    @abstractmethod
-    def _set_next(self, next_step: IProcessHandler) -> IProcessBuilder:
-        ...
-    
-    @abstractmethod
-    def _build_process(self) -> IProcessHandler:
-        ...
-    
-
-class ICompoundProcessor(ABC):
-    """
-    """
-    
-    @abstractmethod  
-    def _build_process_sequence(self) -> IProcessHandler:
-        ...
-        
-    @abstractmethod  
-    def get_process(self) -> IProcessHandler:
+    @abstractclassmethod 
+    def get_default_configs(cls) -> OmegaConf:
+        """
+        """
         ...
