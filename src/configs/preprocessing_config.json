@@ -1,36 +1,19 @@
 {
     "pipeline": {
         "regex_normalization": {
-            "normalize_white_spaces": {
+            "normalize_laught": {
                 "active": true,
-                "replacement": " "
+                "replacement": null
             },
-            "normalize_punctuation": {
+            "normalize_re": {
                 "active": true,
-                "replacement": ""
+                "replacement": "muy"
             },
-            "normalize_diacritic": {
-                "active": true
-            },
-            "normalize_lowercase": {
-                "active": true
-            },
-            "normalize_duplicated_letter": {
-                "active": true
-            },
-            "normalize_mention": {
+            "normalize_q": {
                 "active": true,
-                "replacement": "<<MENTION>>"
+                "replacement": null
             },
-            "normalize_url":  {
-                "active": true,
-                "replacement": "<<URL>>"
-            },
-            "normalize_email": {
-                "active": true,
-                "replacement": "<<EMAIL>>"
-            },
-            "normalize_digit": {
+            "normalize_isolated_consonant": {
                 "active": true,
                 "replacement": ""
             },
@@ -38,19 +21,37 @@
                 "active": true,
                 "replacement": " "
             },
-            "normalize_isolated_consonant": {
+            "normalize_digit": {
                 "active": true,
                 "replacement": ""
             },
-            "normalize_q": {
-                "active": true
-            },
-            "normalize_re": {
+            "normalize_email": {
                 "active": true,
-                "replacement": "muy"
+                "replacement": "<<EMAIL>>"
             },
-            "normalize_laught": {
-                "active": true
+            "normalize_url":  {
+                "active": true,
+                "replacement": "<<URL>>"
+            },
+            "normalize_mention": {
+                "active": true,
+                "replacement": "<<MENTION>>"
+            },
+            "normalize_duplicated_letter": {
+                "active": true,
+                "replacement": "\\1"
+            },
+            "normalize_lowercase_diacritic": {
+                "active": true,
+                "replacement": null
+            },
+            "normalize_punctuation": {
+                "active": true,
+                "replacement": ""
+            },
+            "normalize_white_spaces": {
+                "active": true,
+                "replacement": " "
             }
         },
         "sklearn_count_vect": {
