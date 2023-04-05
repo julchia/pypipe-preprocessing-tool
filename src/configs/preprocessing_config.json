@@ -1,73 +1,72 @@
 {
     "pipeline": {
         "regex_normalization": {
-            "WhiteSpacesHandler": {
+            "normalize_laught": {
                 "active": true,
-                "replacement": " "
+                "replacement": null
             },
-            "PunctuationHandler": {
-                "active": true,
-                "replacement": ""
-            },
-            "DiacriticHandler": {
-                "active": true
-            },
-            "UppercaseHandler": {
-                "active": true
-            },
-            "DuplicatedLetterHandler": {
-                "active": true
-            },
-            "MentionHandler": {
-                "active": true,
-                "replacement": "<<MENTION>>"
-            },
-            "URLHandler":  {
-                "active": true,
-                "replacement": "<<URL>>"
-            },
-            "EmailHandler": {
-                "active": true,
-                "replacement": "<<EMAIL>>"
-            },
-            "DigitHandler": {
-                "active": true,
-                "replacement": ""
-            },
-            "SingleWordHandler": {
-                "active": true,
-                "replacement": " "
-            },
-            "IsolatedConsonantHandler": {
-                "active": true,
-                "replacement": ""
-            },
-            "QHandler": {
-                "active": true
-            },
-            "ReHandler": {
+            "normalize_re": {
                 "active": true,
                 "replacement": "muy"
             },
-            "LaughtHandler": {
-                "active": true
+            "normalize_q": {
+                "active": true,
+                "replacement": null
+            },
+            "normalize_isolated_consonant": {
+                "active": true,
+                "replacement": ""
+            },
+            "normalize_single_word": {
+                "active": true,
+                "replacement": " "
+            },
+            "normalize_digit": {
+                "active": true,
+                "replacement": ""
+            },
+            "normalize_email": {
+                "active": true,
+                "replacement": "<<EMAIL>>"
+            },
+            "normalize_url":  {
+                "active": true,
+                "replacement": "<<URL>>"
+            },
+            "normalize_mention": {
+                "active": true,
+                "replacement": "<<MENTION>>"
+            },
+            "normalize_duplicated_letter": {
+                "active": true,
+                "replacement": "\\1"
+            },
+            "normalize_lowercase_diacritic": {
+                "active": true,
+                "replacement": null
+            },
+            "normalize_punctuation": {
+                "active": true,
+                "replacement": ""
+            },
+            "normalize_white_spaces": {
+                "active": true,
+                "replacement": " "
             }
         },
-        "featurization": {
-            "SklearnCountVectorizer": {
-                "active": true,
-                "max_features": null,
-                "min_ngram": 1,
-                "max_ngram": 1,
-                "remove_spanish_stop_words": false,
-                "path_to_trained_model": null,
-                "path_to_stored_vocabulary": null,
-                "update_stored_vocabulary": false,
-                "use_own_vocabulary_creator": true,
-                "unk_token": "<<UNK>>",
-                "path_to_save_model": null,
-                "path_to_save_vocabulary": null
-            }
+        "sklearn_count_vect": {
+            "active": true,
+            "max_features": null,
+            "min_ngram": 1,
+            "max_ngram": 1,
+            "remove_spanish_stop_words": false,
+            "path_to_trained_model": null,
+            "path_to_stored_vocabulary": null,
+            "update_stored_vocabulary": false,
+            "use_own_vocabulary_creator": true,
+            "unk_token": "<<UNK>>",
+            "path_to_save_model": null,
+            "path_to_save_vocabulary": null
         }
     }
 }

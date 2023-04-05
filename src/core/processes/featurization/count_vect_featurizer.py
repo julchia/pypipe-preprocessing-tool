@@ -1,97 +1,62 @@
 import logging
-from abc import abstractclassmethod, abstractmethod
 from typing import List, Set, Dict
 
 from omegaconf import OmegaConf
 from sklearn.feature_extraction.text import CountVectorizer
 
+from src.core.processes.featurization.text_featurizer import TextFeaturizer
 from src.core import constants
-from src.core.handlers import utils
-from src.core.interfaces import IProcessHandler
-from src.core.handlers.process_handlers import ProcessHandler
-from src.core.handlers import regex_handlers
+from src.core.processes import utils
 
 
 logger = logging.getLogger(__name__)
 
 
-class TextFeaturizer(ProcessHandler):
+class SklearnCountVectorizer(TextFeaturizer):
     """
     """
     
     def __init__(
-        self, configs: OmegaConf, 
-        next_processor: IProcessHandler = None, 
-        ) -> None:
-        super().__init__(next_processor)
-        self._configs = configs
-
-    @classmethod
-    def get_vocabulary_factory(cls):
-        # TODO return class IVocabulary
-        pass
-
-    @abstractclassmethod
-    def get_vectorizer_as_isolated_process(cls):
-        """
-        """
-    
-    @abstractmethod
-    def train(self):
-        """
-        """
-    
-    @abstractmethod
-    def load(self):
-        """
-        """
-        
-    @abstractmethod
-    def process(self):
-        """
-        """
-
-
-class SklearnCountVectorizer:
-    """
-    """
-    
-    def __init__(
-        self, 
+        self,
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None
+        vectorizer: CountVectorizer = None,
+        alias: str = None
     ) -> None:
         """
         """
         
-        # provisional
-        self._configs = configs
+        super().__init__(
+            configs=configs,
+            alias=alias
+        )
         
         self.vectorizer = vectorizer
-        
-        self._path_to_trained_model = self._configs.path_to_trained_model
-        self._path_to_stored_vocabulary = self._configs.path_to_stored_vocabulary
         
         self.path_to_save_model = self._configs.path_to_save_model 
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
         
+        self._path_to_trained_model = self._configs.path_to_trained_model
+        self._path_to_stored_vocabulary = self._configs.path_to_stored_vocabulary
+        
         self._update_stored_vocabulary = self._configs.update_stored_vocabulary
 
     @classmethod
-    def get_vectorizer_as_isolated_process(
+    def get_isolated_process(
         cls, 
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None
+        vectorizer: CountVectorizer = None,
+        alias: str = None,
     ):
         """
         """
         return cls(
             configs=configs,
-            vectorizer=vectorizer
+            vectorizer=vectorizer,
+            alias=alias
         )
         
     @classmethod
-    def get_vectorizer_default_configs(cls) -> OmegaConf:
+    def get_default_configs(cls) -> OmegaConf:
         """
         """
         return OmegaConf.create({
@@ -385,5 +350,4 @@ class SklearnCountVectorizer:
         corpus = self.vectorizer.transform(corpus)
         
         return corpus
-            
-            
+    

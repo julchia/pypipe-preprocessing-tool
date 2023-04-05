@@ -1,67 +1,33 @@
-from typing import Dict
+from __future__ import annotations
+from typing import List, Dict, Any
 
 from omegaconf import OmegaConf
 
-from src.core.interfaces import IProcessBuilder
-from src.core.handlers import regex_handlers, featurizer_handlers
-from src.core.builders.process_builders import ProcessBuilder
+from src.core import constants
 
 
 class Pipeline:
-    """
-    """
     
     def __init__(
         self, 
-        pipeline_conf: OmegaConf,
-        process_builder: IProcessBuilder = ProcessBuilder()
-    ):
-        """
-        """
-        
-        self.builder_process = process_builder
-        self.pipeline_conf = pipeline_conf
+        pipeline_conf: OmegaConf, 
+        pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS
+    ) -> None:
+        self._pipeline_conf = pipeline_conf
+        self._pipeline_process = pipeline_process
     
-    def _build_pipeline_secuence(self):
-        """
-        """
-        
-        pipe_step = self._build_regex_normalization_steps()
-        pipe_step = self._build_featurization_steps()
-        return pipe_step
+    def _set_pipeline_processes(self) -> None:
+        for alias, process in self._pipeline_process.items():
+            if alias in self._pipeline_conf.pipeline:
+                self.__dict__[alias] = process(
+                    alias=alias,
+                    configs=self._pipeline_conf
+                )
     
-    def _build_regex_normalization_steps(
-        self, 
-        process_handlers: Dict = regex_handlers.__dict__
-        ):
-        """
-        """
+    def get_pipe(self) -> Pipeline:
+        self._set_pipeline_processes()
+        return self
         
-        for handler, configs in self.pipeline_conf.pipeline.regex_normalization.items():
-            
-            if configs.active:
-                next_step = process_handlers.get(handler)
-                self.builder_process._set_next(configs=configs, next_step=next_step)
-                
-        return self.builder_process._build_process()
-    
-    def _build_featurization_steps(
-        self,
-        process_handlers: Dict = featurizer_handlers.__dict__
-        ):
-        """
-        """
-        
-        for handler, configs in self.pipeline_conf.pipeline.featurization.items():
-            
-            if configs.active:
-                next_step = process_handlers.get(handler)
-                self.builder_process._set_next(configs=configs, next_step=next_step)
-                
-        return self.builder_process._build_process()
-        
-    def get_pipeline(self):
-        """
-        """
-        
-        return self._build_pipeline_secuence()
+    def get_processes_order(self) -> List:
+        processes_order = list(self._pipeline_process.keys())
+        return processes_order
