@@ -17,7 +17,7 @@ def main() -> None:
 
     pipe_1.regex_normalization.normalize_text(corpus)
         
-    pipe_1.sklearn_count_vect.train(corpus)
+    pipe_1.count_vect_featurizer.train(corpus)
 
 if __name__ == "__main__":
     main()

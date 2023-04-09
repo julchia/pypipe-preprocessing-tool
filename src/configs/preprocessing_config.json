@@ -54,7 +54,7 @@
                 "replacement": " "
             }
         },
-        "sklearn_count_vect": {
+        "count_vect_featurizer": {
             "active": true,
             "max_features": null,
             "min_ngram": 1,

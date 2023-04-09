@@ -23,6 +23,6 @@ PREPROCESSING_CONFIG = OmegaConf.load(PREPROCESSING_CONFIG_PATH)
 # processes
 PIPELINE_PROCESS_ALIAS = {
     "regex_normalization": RegexNormalizer,
-    "sklearn_count_vect": SklearnCountVectorizer
+    "count_vect_featurizer": SklearnCountVectorizer
 }
 

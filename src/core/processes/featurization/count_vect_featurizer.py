@@ -1,16 +1,17 @@
-import logging
+from __future__ import annotations
 from typing import List, Set, Dict
 
+import logging
 from omegaconf import OmegaConf
 from sklearn.feature_extraction.text import CountVectorizer
 
-from src.core.processes.featurization.text_featurizer import TextFeaturizer
 from src.core import constants
 from src.core.processes import utils
+from src.core.processes.featurization.text_featurizer import TextFeaturizer
 
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 class SklearnCountVectorizer(TextFeaturizer):
     """
@@ -19,7 +20,7 @@ class SklearnCountVectorizer(TextFeaturizer):
     def __init__(
         self,
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None,
+        featurizer: CountVectorizer = None,
         alias: str = None
     ) -> None:
         """
@@ -30,13 +31,13 @@ class SklearnCountVectorizer(TextFeaturizer):
             alias=alias
         )
         
-        self.vectorizer = vectorizer
+        self.featurizer = featurizer
         
         self.path_to_save_model = self._configs.path_to_save_model 
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
         
-        self._path_to_trained_model = self._configs.path_to_trained_model
-        self._path_to_stored_vocabulary = self._configs.path_to_stored_vocabulary
+        self._path_to_get_trained_model = self._configs.path_to_get_trained_model
+        self._path_to_get_stored_vocabulary = self._configs.path_to_get_stored_vocabulary
         
         self._update_stored_vocabulary = self._configs.update_stored_vocabulary
 
@@ -44,14 +45,14 @@ class SklearnCountVectorizer(TextFeaturizer):
     def get_isolated_process(
         cls, 
         configs: OmegaConf, 
-        vectorizer: CountVectorizer = None,
+        featurizer: CountVectorizer = None,
         alias: str = None,
-    ):
+    ) -> SklearnCountVectorizer:
         """
         """
         return cls(
             configs=configs,
-            vectorizer=vectorizer,
+            featurizer=featurizer,
             alias=alias
         )
         
@@ -64,8 +65,8 @@ class SklearnCountVectorizer(TextFeaturizer):
             "min_ngram": 1,
             "max_ngram": 1,
             "remove_spanish_stop_words": False,
-            "path_to_trained_model": None,
-            "path_to_stored_vocabulary": None,
+            "path_to_get_trained_model": None,
+            "path_to_get_stored_vocabulary": None,
             "update_stored_vocabulary": False,
             "use_own_vocabulary_creator": True,
             "unk_token": "<<UNK>>",
@@ -88,7 +89,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         return constants.COUNT_VECTORIZER_VOCAB_DEFAULT_PATH + file_name
 
     @staticmethod
-    def _get_loaded_vectorizer_from(path) -> None:
+    def _get_loaded_featurizer_from(path) -> None:
         """
         """
         if path is None:
@@ -125,13 +126,13 @@ class SklearnCountVectorizer(TextFeaturizer):
             return vocab
         return vocab
 
-    def _check_if_trained_vectorizer_exists(self) -> bool:
+    def _check_if_trained_featurizer_exists(self) -> bool:
         """
         """
-        self.vectorizer = self._get_loaded_vectorizer_from(
-            path=self._path_to_trained_model
+        self.featurizer = self._get_loaded_featurizer_from(
+            path=self._path_to_get_trained_model
         )
-        if self.vectorizer is None:
+        if self.featurizer is None:
             return False
         return True
     
@@ -139,12 +140,12 @@ class SklearnCountVectorizer(TextFeaturizer):
         """
         """
         self.vocab = self._get_stored_vocabulary_from(
-            path=self._path_to_stored_vocabulary
+            path=self._path_to_get_stored_vocabulary
         )  
         if self.vocab is None:
             logger.warning(
                 f"No 'SklearnCountVectorizer' vocabulary to load in dir: "
-                f"'{self._path_to_stored_vocabulary}' or the vocabulary found was "
+                f"'{self._path_to_get_stored_vocabulary}' or the vocabulary found was "
                 "not in the correct format ('.txt' or '.json')"
             )
             return False
@@ -166,7 +167,7 @@ class SklearnCountVectorizer(TextFeaturizer):
                 "will be created from an external parser"
             )
    
-    def _load_vectorizer_params_from_configs(self) -> None:
+    def _load_featurizer_params_from_configs(self) -> None:
         """
         """
         self._max_features = self._configs.max_features
@@ -186,13 +187,13 @@ class SklearnCountVectorizer(TextFeaturizer):
         # else:
         self._stop_words = None
             
-    def _load_vectorizer_params_from_default(self) -> None:
+    def _load_featurizer_params_from_default(self) -> None:
         """
         """
         self._strip_accents = None
         self._analyzer = "word"
         
-    def _create_vectorizer(self) -> CountVectorizer:
+    def _create_featurizer(self) -> CountVectorizer:
         """
         """
         return CountVectorizer(
@@ -205,15 +206,15 @@ class SklearnCountVectorizer(TextFeaturizer):
             stop_words = self._stop_words
         )
 
-    def _get_vocab_from_vectorizer(self) -> Dict[str, int]:
+    def _get_vocab_from_featurizer(self) -> Dict[str, int]:
         """
         """
-        return self.vectorizer.vocabulary_
+        return self.featurizer.vocabulary_
 
     def _get_vocab_from_trainset(self) -> Set[str]:
         """
         """
-        analizer = self.vectorizer.build_analyzer()
+        analizer = self.featurizer.build_analyzer()
         new_vocab = set()
         for sent in self._trainset:
             sent_to_vocab = analizer(sent)
@@ -224,7 +225,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         """
         """
         new_vocab = self._get_vocab_from_trainset()
-        vocab_to_update = self._get_vocab_from_vectorizer()
+        vocab_to_update = self._get_vocab_from_featurizer()
         for word in new_vocab:
             if word not in vocab_to_update:
                 vocab_to_update[word] = len(vocab_to_update)
@@ -234,20 +235,20 @@ class SklearnCountVectorizer(TextFeaturizer):
         """
         """
         logger.info("'SklearnCountVectorizer' training has started")
-        self.vectorizer.fit(self._trainset)
+        self.featurizer.fit(self._trainset)
         logger.info("'SklearnCountVectorizer' training finished")
 
-    def _train_loaded_vectorizer(self) -> None:
+    def _train_loaded_featurizer(self) -> None:
         """
         """
         self._train()
 
-    def _train_vectorizer_from_scratch(self) -> None:
+    def _train_featurizer_from_scratch(self) -> None:
         """
         """
-        self._load_vectorizer_params_from_configs()
-        self._load_vectorizer_params_from_default()
-        self.vectorizer = self._create_vectorizer()
+        self._load_featurizer_params_from_configs()
+        self._load_featurizer_params_from_default()
+        self.featurizer = self._create_featurizer()
         self._train()
 
     def train(self, trainset: List[str]) -> None:
@@ -255,21 +256,21 @@ class SklearnCountVectorizer(TextFeaturizer):
         """
         self._trainset = trainset
 
-        if self.vectorizer is None:
-            if self._check_if_trained_vectorizer_exists():
-                self._train_loaded_vectorizer()
+        if self.featurizer is None:
+            if self._check_if_trained_featurizer_exists():
+                self._train_loaded_featurizer()
             else:
-                self._train_vectorizer_from_scratch()
+                self._train_featurizer_from_scratch()
         
         self.persist()
 
-    def load(self, vectorizer: CountVectorizer = None):
+    def load(self, featurizer: CountVectorizer = None):
         """
         """
-        if vectorizer:
-            self.vectorizer = vectorizer
+        if featurizer:
+            self.featurizer = featurizer
             return
-        self._check_if_trained_vectorizer_exists()
+        self._check_if_trained_featurizer_exists()
             
     def persist(self, use_default: bool = False) -> None:
         """
@@ -294,7 +295,7 @@ class SklearnCountVectorizer(TextFeaturizer):
                 )
                 
         utils.persist_data_with_pickle(
-            self.vectorizer,
+            self.featurizer,
             path_to_save_vect,
             'wb'
         )
@@ -333,21 +334,21 @@ class SklearnCountVectorizer(TextFeaturizer):
             else:
                 logger.warning(
                     f"Could not update stored vocabulary for 'SklearnCountVectorizer' "
-                    f"because no stored vocabulary was found in '{self._path_to_stored_vocabulary}'"
+                    f"because no stored vocabulary was found in '{self._path_to_get_stored_vocabulary}'"
                 )
                 return
         
     def process(self, corpus):
         """
         """        
-        if self.vectorizer is None:
+        if self.featurizer is None:
             logger.warning(
                 "It's impossible to process the input from 'SklearnCountVectorizer' "
                 "because there is no trained model"
             )
             return corpus
 
-        corpus = self.vectorizer.transform(corpus)
+        corpus = self.featurizer.transform(corpus)
         
         return corpus
     
