@@ -4,7 +4,7 @@ from typing import List, Callable
 from functools import reduce
 from omegaconf import OmegaConf
 
-from src.core.processes.normalization.text_normalizer import TextNormalizer
+from src.core.processes.normalization.normalizers import TextNormalizer
 from src.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
 
 

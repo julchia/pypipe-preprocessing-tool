@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from src.core import constants
 from src.core.processes import utils
-from src.core.processes.featurization.text_featurizer import TextFeaturizer
+from src.core.processes.featurization.featurizers import TextFeaturizer
 
 
 logging.basicConfig(level=logging.INFO)

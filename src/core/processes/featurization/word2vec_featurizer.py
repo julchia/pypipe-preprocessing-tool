@@ -7,9 +7,10 @@ from gensim.models import Word2Vec, KeyedVectors
 
 from src.core import constants
 from src.core.processes import utils
-from src.core.processes.featurization.text_featurizer import TextFeaturizer
+from src.core.processes.featurization.featurizers import TextFeaturizer
 
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Word2VecFeaturizer(TextFeaturizer):
