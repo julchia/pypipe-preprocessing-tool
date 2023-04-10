@@ -1,13 +1,23 @@
 from typing import List
 
+from src.core.processes.normalization.norm_utils import punctuaction_handler
+
 
 class Vocabulary:
     """
     """
     
-    def __init__(self, token2idx=None, add_unk=True, unk_token="<<UNK>>") -> None:
+    def __init__(
+        self, 
+        token2idx=None, 
+        add_unk=True, 
+        unk_token="<<UNK>>",
+        norm_punct=False
+        ) -> None:
         """
         """
+        
+        self._norm_punct = norm_punct
         
         if token2idx is None:
             token2idx = {}
@@ -30,10 +40,15 @@ class Vocabulary:
     
     def __len__(self) -> int:
         return len(self._token2idx)
-        
-    def add_token(self, token):
+    
+    def norm_punctuation(self, token: str, repl: str = "") -> str:
+        return punctuaction_handler(text=token, repl=repl)
+    
+    def add_token(self, token: str) -> None:
         """
         """
+        if self._norm_punct:
+            token = self.norm_punctuation(token)
 
         if token in self._token2idx:
             idx = self._token2idx[token]
@@ -41,12 +56,14 @@ class Vocabulary:
             idx = len(self._token2idx)
             self._token2idx[token] = idx
             self._idx2token[idx] = token
-        return idx
     
-    def get_idx_by_token(self, token):
+    def add_tokens_from_corpus(self, corpus: List[str]) -> None:
+        for sent in corpus:
+            list(map(vocabulary.add_token, sent.split(" ")))
+    
+    def get_idx_by_token(self, token: str):
         """
         """
-        
         if self._add_unk:
             return self._token2idx.get(token, self.unk_idx)
         else:
@@ -55,7 +72,6 @@ class Vocabulary:
     def get_token_by_index(self, index):
         """
         """
-        
         if index not in self._idx2token:
             raise KeyError(f"The index {index} is not in the Vocabulary")
         return self._idx2token[index]
@@ -67,20 +83,17 @@ class Vocabulary:
         return(list(self._token2idx)[-show_last:self.__len__()])
     
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
+        
+    corpus = [
+        "hola mi nombre es juan y a mí gusta comer hamburguesas.", 
+        "a mi primo juan le encanta comer hamburguesas!!"
+    ]
     
-    # from string import punctuation
+    vocabulary = Vocabulary(norm_punct=True)
     
-    # corpus = "hola mi nombre es juan y me gusta comer hamburguesas."
+    vocabulary.add_tokens_from_corpus(corpus)
     
-    # vocabulary = Vocabulary()
-    
-    # # Si punctuationo no forma parte de la
-    # # cadena, segmentar punctuation
-    
-    # for word in corpus.split(" "):
-    #     if word not in punctuation:
-    #         vocabulary.add_token(word)
-            
-    # print(vocabulary.get_tokens_from_object_head())
-    # print(vocabulary.get_tokens_from_object_tail())
+    print(vocabulary._token2idx)
+    print(vocabulary.get_tokens_from_object_head())
+    print(vocabulary.get_tokens_from_object_tail())
