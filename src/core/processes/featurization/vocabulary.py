@@ -27,7 +27,9 @@ class Vocabulary:
         If 'corpus2sent' is True: variable 'text' is equivalent to 
         entire unique sentence.
         
-        """                  
+        """   
+        self._corpus2sent = corpus2sent
+                       
         self._norm_punct = norm_punct
         self._lower_case = lower_case
         self._diacritic = diacritic
@@ -60,7 +62,10 @@ class Vocabulary:
     
     def __iter__(self) -> Generator:
         for text in self._text2idx.keys():
-            yield text
+            if self._corpus2sent:
+                yield text.split()
+            else:
+                yield text
 
     def __init_vocab_from_iterable(
         self, 
