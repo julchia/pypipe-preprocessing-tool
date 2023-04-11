@@ -123,13 +123,15 @@ class Word2VecFeaturizer(TextFeaturizer):
         """
         """
         if self._configs.method == "cbow":
-            # TODO
-            print("Se ha seteado skipgram como arquitectura")
             self._sg = 1
+            logger.info(
+                "The skip-gram architecture to Word2Vec model was setted"
+            )
         elif self._configs.method == "skipgram":
-            # TODO
-            print("Se ha seteado cbow como arquitectura")
             self._sg = 0
+            logger.info(
+                "The cbow architecture to Word2Vec model was setted"
+            )
         
         self._featurizer_params = {
             "sentences": None,
