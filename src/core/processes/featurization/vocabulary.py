@@ -9,7 +9,7 @@ class Vocabulary:
     
     def __init__(
         self, 
-        corpus: List[str] = None,
+        corpus: List[str],
         token2idx: Dict[str, int] = None, 
         add_unk: bool = True, 
         unk_token: str = "<<UNK>>",
@@ -17,9 +17,7 @@ class Vocabulary:
         norm_punct: bool = False,
         ) -> None:
         """
-        """
-        self._corpus = corpus
-        
+        """        
         self._norm_punct = norm_punct
         self._lower_case = lower_case
         
@@ -38,25 +36,25 @@ class Vocabulary:
         self.unk_idx = -1
         if add_unk:
             self.unk_idx = self.add_token(unk_token)
+            
+        self.__init_vocab_from_iterable(self.__iter_corpus(corpus))
     
-    def __iter__(self) -> Generator:
-        if self._corpus is not None:
-            self._init_vocab_from_iterable(self._iter_corpus(self._corpus))
-        for token in self._token2idx.keys():
-            yield token
-
     def __str__(self) -> str:
         return f"<Vocabulary object (size={len(self)})>"
     
     def __len__(self) -> int:
         return len(self._token2idx)
     
-    def _iter_corpus(self, corpus: List[str]) -> Generator:
+    def __iter__(self) -> Generator:
+        for token in self._token2idx.keys():
+            yield token
+    
+    def __iter_corpus(self, corpus: List[str]) -> Generator:
         for sent in corpus:
             for word in sent.split(" "):
                 yield word
                 
-    def _init_vocab_from_iterable(self, iterable: Iterable[List[str]]) -> None:
+    def __init_vocab_from_iterable(self, iterable: Iterable[List[str]]) -> None:
         for token in iterable:
             self.add_token(token)
     
@@ -84,7 +82,7 @@ class Vocabulary:
         else:
             return self._token2idx[token]
         
-    def get_token_by_index(self, index: int):
+    def get_token_by_index(self, index: int) -> str:
         """
         """
         if index not in self._idx2token:
