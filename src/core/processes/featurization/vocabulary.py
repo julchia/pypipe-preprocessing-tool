@@ -39,7 +39,7 @@ class Vocabulary:
         if add_unk:
             self.unk_idx = self.add_token(unk_token)
     
-    def __iter__(self) -> Generator[str]:
+    def __iter__(self) -> Generator:
         if self._corpus is not None:
             self._init_vocab_from_iterable(self._iter_corpus(self._corpus))
         for token in self._token2idx.keys():
@@ -51,7 +51,7 @@ class Vocabulary:
     def __len__(self) -> int:
         return len(self._token2idx)
     
-    def _iter_corpus(self, corpus: List[str]) -> Generator[str]:
+    def _iter_corpus(self, corpus: List[str]) -> Generator:
         for sent in corpus:
             for word in sent.split(" "):
                 yield word
@@ -76,7 +76,7 @@ class Vocabulary:
             self._token2idx[token] = idx
             self._idx2token[idx] = token
     
-    def get_idx_by_token(self, token: str):
+    def get_idx_by_token(self, token: str) -> int:
         """
         """
         if self._add_unk:
@@ -84,7 +84,7 @@ class Vocabulary:
         else:
             return self._token2idx[token]
         
-    def get_token_by_index(self, index):
+    def get_token_by_index(self, index: int):
         """
         """
         if index not in self._idx2token:
