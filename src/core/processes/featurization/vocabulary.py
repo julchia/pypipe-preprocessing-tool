@@ -1,6 +1,9 @@
-from typing import List, Dict, Iterable, Generator
+from typing import List, Dict, Union, Iterable, Generator
 
-from src.core.processes.normalization.norm_utils import punctuaction_handler, lowercase_diacritic_handler
+from src.core.processes.normalization.norm_utils import (
+    punctuaction_handler, 
+    lowercase_diacritic_handler
+)
 
 
 class Vocabulary:
@@ -9,7 +12,7 @@ class Vocabulary:
     
     def __init__(
         self, 
-        corpus: List[str],
+        corpus: Union[List[str], str],
         corpus2sent: bool = False,
         text2idx: Dict[str, int] = None, 
         add_unk: bool = True, 
@@ -24,9 +27,7 @@ class Vocabulary:
         If 'corpus2sent' is True: variable 'text' is equivalent to 
         entire unique sentence.
         
-        """        
-        self._corpus2sent = corpus2sent
-        
+        """                
         self._norm_punct = norm_punct
         self._lower_case = lower_case
         self._diacritic = diacritic
@@ -46,8 +47,10 @@ class Vocabulary:
         self.unk_idx = -1
         if add_unk:
             self.unk_idx = self.add_text(unk_text)
-            
-        self.__init_vocab_from_iterable(self.__iter_corpus(corpus))
+        
+        self.__init_vocab_from_iterable(
+            self.__yield_corpus(corpus, corpus2sent)
+        )
     
     def __str__(self) -> str:
         return f"<Vocabulary object (size={len(self)})>"
@@ -59,18 +62,26 @@ class Vocabulary:
         for text in self._text2idx.keys():
             yield text
     
-    def __iter_corpus(self, corpus: List[str]) -> Generator:
-        for sent in corpus:
-            if self._corpus2sent:
-                yield sent
-            else:
-                for word in sent.split(" "):
-                    yield word
-                
-    def __init_vocab_from_iterable(self, iterable: Iterable[List[str]]) -> None:
+    @staticmethod
+    def __yield_corpus(
+        corpus: Union[List[str], str], 
+        corpus2sent: bool
+    ) -> Generator:
+        with open(corpus_dir, "r") as corpus:
+            for sent in corpus:
+                if corpus2sent:
+                    yield sent.strip("\n")
+                else:
+                    for word in sent.split(" "):
+                        yield word.strip("\n")
+        
+    def __init_vocab_from_iterable(
+        self, 
+        iterable: Iterable[List[str]]
+    ) -> None:
         for text in iterable:
             self.add_text(text)
-    
+        
     def add_text(self, text: str) -> None:
         """
         """
@@ -101,4 +112,3 @@ class Vocabulary:
         if index not in self._idx2text:
             raise KeyError(f"The index {index} is not in the Vocabulary")
         return self._idx2text[index]
-    
