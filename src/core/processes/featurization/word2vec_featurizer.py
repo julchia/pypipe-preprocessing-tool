@@ -133,13 +133,13 @@ class Word2VecFeaturizer(TextFeaturizer):
         
         self._featurizer_params = {
             "sentences": None,
-            "min_coun": self._configs.ignore_freq_higher_than,
+            "min_count": self._configs.ignore_freq_higher_than,
             "vector_size": self._configs.embeddings_size,
             "window": self._configs.window,
             "seed": self._configs.seed,
             "sg": self._sg,
             "workers": 4, # parallel only works if you have installed cpython
-            "negative": "VER",
+            # "negative": "TODO",
             "ns_exponent": 0.75
         }
     
@@ -152,11 +152,10 @@ class Word2VecFeaturizer(TextFeaturizer):
             "end_alpha": None
         }
 
-    def _prepare_vocabulary(self, corpus: List[List[str]]) -> None:
+    def _prepare_vocabulary(self) -> None:
         """
         """
-        # TODO
-        self._vocab = "Vocabulary(corpus)"
+        self._vocab = super().create_vocab(corpus=self._vocab, corpus2sent=True)
         
         if self._path_to_get_stored_vocabulary is not None:
             self.featurizer.build_vocab(
@@ -173,6 +172,7 @@ class Word2VecFeaturizer(TextFeaturizer):
     
     def _train(self) -> None:
         logger.info("'Word2VecFeaturizer' training has started")
+        self._prepare_vocabulary()
         self._load_train_params()
         self.featurizer.train(**self._train_params)
         logger.info("'Word2VecFeaturizer' training finished")
@@ -192,7 +192,7 @@ class Word2VecFeaturizer(TextFeaturizer):
     def train(self, trainset: List[str]) -> None:
         """
         """        
-        self._prepare_vocabulary(trainset)
+        self._vocab = trainset    
         
         if self.featurizer is None:
             if self._check_if_trained_featurizer_exists():
@@ -291,4 +291,3 @@ class Word2VecFeaturizer(TextFeaturizer):
         corpus = self.featurizer.wv(corpus)
         
         return corpus
-        
