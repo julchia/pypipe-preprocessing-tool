@@ -66,7 +66,6 @@ class Vocabulary:
     def __iter__(self) -> Generator:
         for text in self._text2idx.keys():
             if self._corpus2sent:
-                # yield text.split()
                 yield list(map(
                     lambda x: x.encode(self._encoding), text.split()
                 ))
