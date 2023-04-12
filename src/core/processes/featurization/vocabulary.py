@@ -14,7 +14,8 @@ class Vocabulary:
         self, 
         corpus: Union[List[str], str],
         corpus2sent: bool = False,
-        text2idx: Dict[str, int] = None, 
+        text2idx: Dict[str, int] = None,
+        encoding: str = "UTF-8",
         add_unk: bool = True, 
         unk_text: str = "<<UNK>>",
         diacritic: bool = False,
@@ -29,7 +30,9 @@ class Vocabulary:
         
         """   
         self._corpus2sent = corpus2sent
-                       
+        
+        self._encoding = encoding
+        
         self._norm_punct = norm_punct
         self._lower_case = lower_case
         self._diacritic = diacritic
@@ -63,9 +66,12 @@ class Vocabulary:
     def __iter__(self) -> Generator:
         for text in self._text2idx.keys():
             if self._corpus2sent:
-                yield text.split()
+                # yield text.split()
+                yield list(map(
+                    lambda x: x.encode(self._encoding), text.split()
+                ))
             else:
-                yield text
+                yield text.encode(self._encoding)
 
     def __init_vocab_from_iterable(
         self, 
@@ -150,3 +156,4 @@ class Vocabulary:
         if index not in self._idx2text:
             raise KeyError(f"The index {index} is not in the Vocabulary")
         return self._idx2text[index]
+
