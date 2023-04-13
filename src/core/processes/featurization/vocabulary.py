@@ -66,11 +66,9 @@ class Vocabulary:
     def __iter__(self) -> Generator:
         for text in self._text2idx.keys():
             if self._corpus2sent:
-                yield list(map(
-                    lambda x: x.encode(self._encoding), text.split()
-                ))
+                yield text.split()
             else:
-                yield text.encode(self._encoding)
+                yield text
 
     def __init_vocab_from_iterable(
         self, 
@@ -133,6 +131,8 @@ class Vocabulary:
         
         if self._norm_punct:
             text = punctuaction_handler(text=text, repl="")
+
+        text = text.encode(self._encoding)
 
         if text in self._text2idx:
             idx = self._text2idx[text]
