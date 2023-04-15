@@ -7,6 +7,7 @@
 - Vocabulary creator
 - Word2Vec featurizer
 - Run bash commands
+- Documentation for main objects
 - Write a real readme 😅
 
 ## About the project
