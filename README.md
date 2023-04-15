@@ -38,7 +38,7 @@ pipe_1 = Pipeline(
     pipeline_conf=PREPROCESSING_CONFIG
 )
 ```
-And just use the regex normalizer setted in ```src/configs/preprocessing_config.json``` over the corpus:
+And simply use the regex normalizer that is set in src/configs/preprocessing_config.json to normalize the corpus:
 
 ```
 norm_corpus = pipe_1.regex_normalization.normalize_text(corpus)
