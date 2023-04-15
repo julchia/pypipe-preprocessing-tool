@@ -52,7 +52,7 @@ We get the following output
 Then, using the same pipeline object, we can train the sklearn count vectorizer and vectorize an unseen corpus. Similar to the regex normalizer, the vectorizer was set in the configuration file to configure the vectorizer:
 
 ```
-pipe_1.count_vect_featurizer.train(norm_corpus)
+pipe_1.sklearn_count_vect.train(norm_corpus)
 
 unseen_corpus = [
     "hola gente",
@@ -60,7 +60,7 @@ unseen_corpus = [
     "el correo de pedro es MAIL"
 ]
 
-vectors = pipe_1.count_vect_featurizer.process(unseen_corpus)
+vectors = pipe_1.sklearn_count_vect.process(unseen_corpus)
 ```
 
 We get the following output:
