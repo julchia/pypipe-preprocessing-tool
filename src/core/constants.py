@@ -9,11 +9,15 @@ PREPROCESSING_CONFIG_PATH = "src/configs/preprocessing_config.json"
 
 
 # data paths
-COUNT_VECTORIZER_MODEL_DEFAULT_PATH = "src/data/models/count_vectorizer"
-COUNT_VECTORIZER_VOCAB_DEFAULT_PATH = "src/data/corpus/count_vectorizer"
+MODEL_DEFAULT_PATHS = {
+    "count_vect_featurizer": "src/data/models/count_vectorizer",
+    "word2vec_featurizer": "src/data/models/word2vec"
+}
 
-WORD2VECT_FEATURIZER_MODEL_DEFAULT_PATH = "src/data/models/word2vect"
-WORD2VECT_FEATURIZER_VOCAB_DEFAULT_PATH = "src/data/corpus/word2vect"
+VOCAB_DEFAULT_PATHS = {
+    "count_vect_featurizer": "src/data/models/word2vec",
+    "word2vec_featurizer": "src/data/corpus/word2vec"
+}
 
 
 # models from omegaconf
