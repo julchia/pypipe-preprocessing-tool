@@ -14,10 +14,22 @@ def main() -> None:
         "mi correo es pedrito@gmail.com",
         "su página es www.pedrito.com ...."
     ]
-
-    pipe_1.regex_normalization.normalize_text(corpus)
         
-    pipe_1.count_vect_featurizer.train(corpus)
+    norm_corpus = pipe_1.regex_normalization.normalize_text(corpus)
+
+    print(norm_corpus)
+    
+    pipe_1.count_vect_featurizer.train(norm_corpus)
+    
+    unseen_corpus = [
+        "hola gente",
+        "jaja su nombre es pedro",
+        "el correo de pedro es MAIL"
+    ]
+    
+    vectors = pipe_1.count_vect_featurizer.process(unseen_corpus)
+    
+    print(vectors.toarray())
 
 if __name__ == "__main__":
     main()
