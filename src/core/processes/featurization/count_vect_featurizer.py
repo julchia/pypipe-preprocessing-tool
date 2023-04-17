@@ -5,7 +5,7 @@ import logging
 from omegaconf import OmegaConf
 from sklearn.feature_extraction.text import CountVectorizer
 
-from src.core import constants
+# from src.core import constants
 from src.core.processes import utils
 from src.core.processes.featurization.featurizers import TextFeaturizer
 
@@ -352,3 +352,16 @@ class SklearnCountVectorizer(TextFeaturizer):
         
         return corpus
     
+
+if __name__ == "__main__":
+    
+    config = Word2VecFeaturizer.get_default_configs()
+    featurizer = Word2VecFeaturizer.get_isolated_process(configs=config)
+    
+    corpus = [
+            "hola gente",
+            "jaja su nombre es pedro",
+            "el correo de pedro es MAIL"
+        ]
+    
+    featurizer.train(trainset=corpus, persist=True)

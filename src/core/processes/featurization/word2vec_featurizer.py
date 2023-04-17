@@ -190,7 +190,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         self.featurizer = self._create_featurizer()
         self._train()
 
-    def train(self, trainset: List[str]) -> None:
+    def train(self, trainset: List[str], persist: bool = False) -> None:
         """
         """        
         self._vocab = trainset     
@@ -202,8 +202,9 @@ class Word2VecFeaturizer(TextFeaturizer):
                 self._train_loaded_featurizer()
             else:
                 self._train_featurizer_from_scratch()
-                
-        self.persist()
+        
+        if persist:
+            self.persist()
 
     def load(self, path_to_trained_model: str = None) -> None:
         """
