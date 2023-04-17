@@ -15,7 +15,6 @@ class Vocabulary:
         corpus: Union[List[str], str],
         corpus2sent: bool = False,
         text2idx: Dict[str, int] = None,
-        encoding: str = "UTF-8",
         add_unk: bool = True, 
         unk_text: str = "<<UNK>>",
         diacritic: bool = False,
@@ -30,8 +29,6 @@ class Vocabulary:
         
         """   
         self._corpus2sent = corpus2sent
-        
-        self._encoding = encoding
         
         self._norm_punct = norm_punct
         self._lower_case = lower_case
@@ -131,8 +128,6 @@ class Vocabulary:
         
         if self._norm_punct:
             text = punctuaction_handler(text=text, repl="")
-
-        text = text.encode(self._encoding)
 
         if text in self._text2idx:
             idx = self._text2idx[text]
