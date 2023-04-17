@@ -82,7 +82,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         return constants.WORD2VECT_FEATURIZER_MODEL_DEFAULT_PATH + file_name
     
     @staticmethod
-    def _get_default_vocab_path(file_name: str = "/updated_vocab.pkl") -> str:
+    def _get_default_vocab_path(file_name: str = "/updated_vocab.txt") -> str:
         """
         """
         utils.create_dir_if_not_exists(constants.WORD2VECT_FEATURIZER_VOCAB_DEFAULT_PATH)
@@ -109,7 +109,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         )
         return loaded_vect
     
-    def _check_if_trained_featurizer_exists(self) -> bool:
+    def _check_if_trained_featurizer_path_exists(self) -> bool:
         """
         """
         self.featurizer = self._get_loaded_featurizer_from(
@@ -157,25 +157,39 @@ class Word2VecFeaturizer(TextFeaturizer):
     def _prepare_vocabulary(self) -> None:
         """
         """
-        self._vocab = super().create_vocab(corpus=self._vocab, corpus2sent=True)
+        self._vocab = super().create_vocab(
+            corpus=self._vocab, 
+            corpus2sent=True
+        )
         
-        if self._path_to_get_stored_vocabulary is not None:
-            self.featurizer.build_vocab(
-                corpus_file=self._path_to_get_stored_vocabulary,
-                update=self._update_stored_vocabulary
-            )
+        if self.featurizer.wv.key_to_index:
+            update = self._update_stored_vocabulary
         else:
+            update = False
+               
+        if self._path_to_get_stored_vocabulary is not None: 
+            from json import load
+            
+            with open(self._path_to_get_stored_vocabulary, 'r') as f:
+                stored_vocab = load(f)
+                   
+            self.featurizer.build_vocab_from_freq(
+                word_freq=stored_vocab, 
+                update=update
+            )  
+        else:       
             self.featurizer.build_vocab(
-                corpus_iterable=self._vocab
+                corpus_iterable=self._vocab,
+                update=update
             )
     
     def _create_featurizer(self) -> Word2Vec:
         return Word2Vec(**self._featurizer_params)
     
     def _train(self) -> None:
-        logger.info("'Word2VecFeaturizer' training has started")
         self._prepare_vocabulary()
         self._load_train_params()
+        logger.info("'Word2VecFeaturizer' training has started")
         self.featurizer.train(**self._train_params)
         logger.info("'Word2VecFeaturizer' training finished")
     
@@ -194,11 +208,13 @@ class Word2VecFeaturizer(TextFeaturizer):
     def train(self, trainset: List[str]) -> None:
         """
         """        
-        self._vocab = trainset    
+        self._vocab = trainset     
         
-        if self.featurizer is None:
-            if self._check_if_trained_featurizer_exists():
-                self._train_loaded_featurizer
+        if self.featurizer is not None:
+            self._train_loaded_featurizer()
+        else:
+            if self._check_if_trained_featurizer_path_exists():
+                self._train_loaded_featurizer()
             else:
                 self._train_featurizer_from_scratch()
                 
@@ -212,19 +228,14 @@ class Word2VecFeaturizer(TextFeaturizer):
                 fname=path_to_trained_model
             )
             return
-        self._check_if_trained_featurizer_exists()
+        self._check_if_trained_featurizer_path_exists()
     
-    def persist(self, use_default: bool = False) -> None:
+    def persist(self) -> None:
         """
         """
-        if use_default:
-            path_to_save_featurizer = self._get_default_model_path()
-            logger.info(
-                f"The 'Word2VecFeaturizer' trained model will "
-                f"be stored in dir: '{path_to_save_featurizer}'")
-        else:
+        if isinstance(self.path_to_save_model, str):
             try:
-               path_to_save_featurizer = self.path_to_save_model + "/word2vec.model"
+                path_to_save_featurizer = self.path_to_save_model + "/word2vec.model"
             except TypeError:
                 logger.warning(
                     f"No valid path found in '{self.path_to_save_model}' "
@@ -235,46 +246,42 @@ class Word2VecFeaturizer(TextFeaturizer):
                 f"The 'Word2VecFeaturizer' trained model will be stored " 
                 f"in '{path_to_save_featurizer}'"
                 )
-        
-        self.featurizer.save(path_to_save_featurizer)
-        
-        if self._update_stored_vocabulary: 
-            if use_default:
-                path_to_save_voc = self._get_default_vocab_path()
-                logger.info(
-                    f"The updated vocabulary for 'Word2VecFeaturizer' "
-                    f"will be stored in dir: '{path_to_save_voc}'"
-                )
-            else:
-                try:
-                    path_to_save_voc = self.path_to_save_vocabulary + "/updated_vocab.pkl"
-                except TypeError:
-                    logger.warning(
-                        f"No valid path found in '{self.path_to_save_vocabulary}' "
-                        "to store the updated vocabulary for 'Word2VecFeaturizer'"
-                    )
-                    path_to_save_voc = self._get_default_vocab_path()
-                logger.info(
-                    f"The updated vocabulary for 'Word2VecFeaturizer' "
-                    f"will be stored in '{path_to_save_voc}'"
-                ) 
-            utils.persist_data_with_pickle(
-                self.featurizer.wv.vocab,
-                path_to_save_voc,
-                "wb"
-            )   
+            self.featurizer.save(path_to_save_featurizer)
         else:
-            logger.warning(
-                f"Could not update stored vocabulary for 'Word2VecFeaturizer' "
-                f"because no stored vocabulary was found in '{self._path_to_get_stored_vocabulary}'"
+            logger.info(
+                f"The 'Word2VecFeaturizer' trained model will not be stored "
+                "because 'path_to_save_model' is not an str object type"
             )
-            return
-
+        
+        if isinstance(self.path_to_save_vocabulary, str):
+            try:
+                path_to_save_voc = self.path_to_save_vocabulary + "/vocab.json"
+            except TypeError:
+                logger.warning(
+                    f"No valid path found in '{self.path_to_save_vocabulary}' "
+                    "to store the vocabulary for 'Word2VecFeaturizer'"
+                )
+                path_to_save_voc = self._get_default_vocab_path()
+            logger.info(
+                f"The vocabulary for 'Word2VecFeaturizer' "
+                f"will be stored in '{path_to_save_voc}'"
+            )
+            utils.persist_dict_as_json(
+                self.featurizer.wv.key_to_index,
+                path_to_save_voc
+            )
+        else:
+            logger.info(
+                f"The vocabulary for 'Word2VecFeaturizer' object will not be "
+                "stored because 'path_to_save_vocabulary' is not an str object " 
+                "type"
+            )
+                                
     def get_word_vector_object(self) -> KeyedVectors:
         if self.featurizer is None:
             logger.warning(
-                "It's impossible to process the input from 'Word2VectFeaturizer' "
-                "because there is no trained model"
+                "It's impossible to get KeyedVectors object because "
+                "there is no trained or loaded model"
             )
             return
         return self.featurizer.wv
@@ -293,3 +300,5 @@ class Word2VecFeaturizer(TextFeaturizer):
         corpus = self.featurizer.wv(corpus)
         
         return corpus
+
+    
