@@ -12,7 +12,7 @@ from src.core.processes.featurization.featurizers import TextFeaturizer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SklearnCountVectorizer(TextFeaturizer):
+class CountVecFeaturizer(TextFeaturizer):
     """
     """
     
@@ -46,7 +46,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         configs: OmegaConf, 
         featurizer: CountVectorizer = None,
         alias: str = None,
-    ) -> SklearnCountVectorizer:
+    ) -> CountVecFeaturizer:
         """
         """
         return cls(
@@ -103,7 +103,7 @@ class SklearnCountVectorizer(TextFeaturizer):
             return True
         else:
             logger.warning(
-                f"No 'SklearnCountVectorizer' vocabulary to load in dir: "
+                f"No 'CountVecFeaturizer' vocabulary to load in dir: "
                 f"'{path}', or the vocabulary file was not in the correct "
                 f"format: '.txt' or '.json'"
             )
@@ -115,13 +115,13 @@ class SklearnCountVectorizer(TextFeaturizer):
         if self._configs.use_own_vocabulary_creator:
             self.vocab = None
             logger.info(
-                "'SklearnCountVectorizer' will be ready to create a new "
+                "'CountVecFeaturizer' will be ready to create a new "
                 "vocabulary from its own parser"
             )
         else:
             # TODO self.vocab = class Vocabulary
             logger.info(
-                "A new vocabulary for 'SklearnCountVectorizer' "
+                "A new vocabulary for 'CountVecFeaturizer' "
                 "will be created from an external parser"
             )
    
@@ -192,9 +192,9 @@ class SklearnCountVectorizer(TextFeaturizer):
     def _train(self) -> None:
         """
         """
-        logger.info("'SklearnCountVectorizer' training has started")
+        logger.info("'CountVecFeaturizer' training has started")
         self.featurizer.fit(self._trainset)
-        logger.info("'SklearnCountVectorizer' training finished")
+        logger.info("'CountVecFeaturizer' training finished")
 
     def _train_loaded_featurizer(self) -> None:
         """
@@ -261,8 +261,8 @@ class SklearnCountVectorizer(TextFeaturizer):
                 )
             else:
                 logger.warning(
-                    f"Could not update stored vocabulary for 'SklearnCountVectorizer' "
-                    f"'SklearnCountVectorizer' because no stored vocabulary was found "
+                    f"Could not update stored vocabulary for 'CountVecFeaturizer' "
+                    f"'CountVecFeaturizer' because no stored vocabulary was found "
                     f"in '{self._path_to_get_stored_vocabulary}'"
                 )
                 return
@@ -283,7 +283,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         """        
         if self.featurizer is None:
             logger.warning(
-                "It's impossible to process the input from 'SklearnCountVectorizer' "
+                "It's impossible to process the input from 'CountVecFeaturizer' "
                 "because there is no trained model"
             )
             return corpus
