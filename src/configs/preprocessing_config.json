@@ -54,7 +54,7 @@
                 "replacement": " "
             }
         },
-        "count_vect_featurizer": {
+        "countvec_featurizer": {
             "active": true,
             "max_features": null,
             "min_ngram": 1,
@@ -68,7 +68,7 @@
             "path_to_get_stored_vocabulary": null,
             "update_stored_vocabulary": false
         },
-        "word2vect_featurizer": {
+        "word2vec_featurizer": {
             "active": true,
             "method": "cbow",
             "ignore_freq_higher_than": 1,
