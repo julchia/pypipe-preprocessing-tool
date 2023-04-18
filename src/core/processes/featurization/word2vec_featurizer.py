@@ -175,13 +175,13 @@ class Word2VecFeaturizer(TextFeaturizer):
         """
         self._vocab = trainset     
         
-        if self.featurizer is not None:
-            self._train_loaded_featurizer()
-        else:
+        if self.featurizer is None:
             if self._check_if_trained_featurizer_exists_and_load_it():
                 self._train_loaded_featurizer()
             else:
                 self._train_featurizer_from_scratch()
+        else:
+            self._train_loaded_featurizer()
         
         if persist:
             self.persist()
@@ -193,8 +193,8 @@ class Word2VecFeaturizer(TextFeaturizer):
             self.featurizer = Word2Vec.load(
                 fname=path_to_trained_model
             )
-            return
-        self._check_if_trained_featurizer_exists_and_load_it()
+        else:
+            self._check_if_trained_featurizer_exists_and_load_it()
     
     def persist(self) -> None:
         """
@@ -221,8 +221,8 @@ class Word2VecFeaturizer(TextFeaturizer):
     def get_word_vector_object(self) -> KeyedVectors:
         if self.featurizer is None:
             logger.warning(
-                "It's impossible to get KeyedVectors object because "
-                "there is no trained or loaded model"
+                "It's impossible to get 'KeyedVectors' from 'Word2VecFeaturizer' "
+                "object because there is no trained model"
             )
             return
         return self.featurizer.wv
@@ -232,7 +232,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         """
         if self.featurizer is None:
             logger.warning(
-                "It's impossible to process the input from 'Word2VectFeaturizer' "
+                "It's impossible to process the input from 'Word2VecFeaturizer' "
                 "because there is no trained model"
             )
             return corpus

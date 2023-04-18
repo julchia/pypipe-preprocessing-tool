@@ -219,17 +219,19 @@ class SklearnCountVectorizer(TextFeaturizer):
                 self._train_loaded_featurizer()
             else:
                 self._train_featurizer_from_scratch()
-        
+        else:
+            self._train_loaded_featurizer()
+            
         if persist:
             self.persist()
 
     def load(self, featurizer: CountVectorizer = None):
         """
         """
-        if featurizer:
+        if featurizer is not None:
             self.featurizer = featurizer
-            return
-        self._check_if_trained_featurizer_exists_and_load_it()
+        else:
+            self._check_if_trained_featurizer_exists_and_load_it()
             
     def persist(self) -> None:
         """
