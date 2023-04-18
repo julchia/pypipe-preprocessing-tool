@@ -13,8 +13,7 @@ def create_dir_if_not_exists(path: str) -> None:
 def open_line_by_line_txt_file(
     path: str, 
     mode: str = "r", 
-    as_set: bool = False
-    
+    as_set: bool = False  
 ) -> List | Set:
     """
     """
@@ -35,21 +34,20 @@ def open_json_as_dict(path: str) -> Dict[str, Any]:
 
 
 def persist_dict_as_json(
-    file: Dict[str, Any],
-    path: str, 
-    mode: str = "w",
-    indent: int = 4
+    file: Dict[str, Any], 
+    mode: str,
+    file_dir: str,
 ) -> None:
     """
     """
-    with open(path, mode) as f:
-        json.dump(file, f, indent=indent)
+    with open(file_dir, mode) as f:
+        json.dump(file, f, indent=4)
         
 
 def persist_data_with_pickle(
-    file_to_persist: str, 
-    file_dir: str, 
-    mode: str
+    file_to_persist: Any,  
+    mode: str,
+    file_dir: str
 ) -> None:
     """
     """

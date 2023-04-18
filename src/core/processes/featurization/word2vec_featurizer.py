@@ -219,53 +219,25 @@ class Word2VecFeaturizer(TextFeaturizer):
     def persist(self) -> None:
         """
         """
-        if isinstance(self.path_to_save_model, str):
-            path_to_save_featurizer = self.path_to_save_model + "/word2vec.model"
-            try:
-                self.featurizer.save(path_to_save_featurizer)
-            except FileNotFoundError:
-                logger.warning(
-                    f"No valid path found in '{self.path_to_save_model}' "
-                    "to store the 'Word2VecFeaturizer' trained model"
-                )
-                path_to_save_featurizer = super().get_default_model_path_from_constants(
-                    alias="word2vec_featurizer",
-                    file_name="/word2vec.model"
-                )
-                self.featurizer.save(path_to_save_featurizer)
-        else:
-            logger.info(
-                f"The 'Word2VecFeaturizer' trained model will not be stored "
-                "because 'path_to_save_model' is not an str object type"
-            )
+        # try to save model data
+        super().save_data(
+            callback_fn_to_save_data=self.featurizer.save,
+            path_to_save_data=self.path_to_save_model,
+            data_file_name="/word2vec.model",
+            alias="word2vec_featurizer"
+        )
         
-        if isinstance(self.path_to_save_vocabulary, str):
-            path_to_save_voc = self.path_to_save_vocabulary + "/vocab.json"
-            try:
-                utils.persist_dict_as_json(
-                    self.featurizer.wv.key_to_index,
-                    path_to_save_voc
-                )
-            except FileNotFoundError:
-                logger.warning(
-                    f"No valid path found in '{self.path_to_save_vocabulary}' "
-                    "to store the vocabulary for 'Word2VecFeaturizer'"
-                )
-                path_to_save_voc = super().get_default_vocab_path_from_constants(
-                    alias="word2vec_featurizer",
-                    file_name="/vocab.json"
-                )
-                utils.persist_dict_as_json(
-                    self.featurizer.wv.key_to_index,
-                    path_to_save_voc
-                )
-        else:
-            logger.info(
-                f"The vocabulary for 'Word2VecFeaturizer' object will not be "
-                "stored because 'path_to_save_vocabulary' is not an str object " 
-                "type"
-            )
-                                
+        # try to save vocab data
+        super().save_data(
+            self.featurizer.wv.key_to_index,
+            "w",
+            callback_fn_to_save_data=utils.persist_dict_as_json,
+            path_to_save_data=self.path_to_save_vocabulary,
+            data_file_name="/vocab.json",
+            alias="word2vec_featurizer",
+            to_save_vocab=True
+        )
+                                       
     def get_word_vector_object(self) -> KeyedVectors:
         if self.featurizer is None:
             logger.warning(

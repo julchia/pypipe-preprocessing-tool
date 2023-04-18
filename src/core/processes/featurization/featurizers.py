@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import abstractclassmethod, abstractmethod
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Callable
 
 import logging
 from omegaconf import OmegaConf
@@ -77,6 +77,44 @@ class TextFeaturizer(IProcess):
         except KeyError:
             raise ValueError(
                 f"The alias {alias} is invalid, could not access default vocab path"
+            )
+
+    def save_data(
+        self, 
+        *callback_args,
+        callback_fn_to_save_data: Callable[..., None], 
+        path_to_save_data: str, 
+        data_file_name: str,
+        alias: str,
+        to_save_vocab: bool = False 
+    ) -> None:
+        """
+        """
+        if to_save_vocab:
+            fn_to_get_default_path = self.get_default_vocab_path_from_constants
+            logger_msg_word = "vocab"
+        else:
+            fn_to_get_default_path = self.get_default_model_path_from_constants
+            logger_msg_word = "model"
+        
+        if isinstance(path_to_save_data, str):
+            path = path_to_save_data + data_file_name
+            try:
+                callback_fn_to_save_data(*callback_args, path)
+            except FileNotFoundError:
+                logger.warning(
+                    f"No valid path found in '{path_to_save_data}' to store "
+                    f"{logger_msg_word} with alias '{alias}'"
+                )
+                path = fn_to_get_default_path(
+                    alias=alias,
+                    file_name=data_file_name
+                )
+                callback_fn_to_save_data(*callback_args, path)
+        else:
+            logger.info(
+                f"The {logger_msg_word} with alias '{alias}' will not be stored "
+                f"because path '{path_to_save_data}' is not an str object type"
             )
 
     @abstractclassmethod
