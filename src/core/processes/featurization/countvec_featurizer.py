@@ -70,71 +70,44 @@ class SklearnCountVectorizer(TextFeaturizer):
             "use_own_vocabulary_creator": True,
             "unk_token": "<<UNK>>",
             "path_to_save_model": None,
-            "path_to_save_vocabulary": "pepe"
+            "path_to_save_vocabulary": None
         })
 
-    @staticmethod
-    def _get_loaded_featurizer_from(path) -> None:
+    def _check_if_trained_featurizer_exists_and_load_it(self) -> bool:
         """
         """
-        if path is None:
-            return
-        try:
-            loaded_vect = utils.load_data_with_pickle(
-                path=path
-            )
-        except FileNotFoundError:
-            logger.warning(
-                f"No 'SklearnCountVectorizer' model to load in dir: '{path}'"
-            )
-            return
-        logger.info(
-            f"The 'SklearnCountVectorizer' model in '{path}' has been "
-            "successfully loaded"
-        )
-        return loaded_vect
-
-    @staticmethod
-    def _get_stored_vocabulary_from(path: str):
-        """
-        """
-        if path is None:
-            return
-        vocab = utils.open_line_by_line_txt_file(
-                path=path,
-                as_set=True
-            )
-        if vocab is None:
-            vocab = utils.open_json_as_dict(
-                path=path
-            )
-            return vocab
-        return vocab
-
-    def _check_if_trained_featurizer_exists(self) -> bool:
-        """
-        """
-        self.featurizer = self._get_loaded_featurizer_from(
-            path=self._path_to_get_trained_model
+        self.featurizer = TextFeaturizer.data_manager.load_data_from_callable(
+            "rb",
+            callback_fn_to_load_data=utils.load_data_with_pickle,
+            path_to_load_data=self._path_to_get_trained_model
         )
         if self.featurizer is None:
             return False
         return True
     
-    def _check_if_stored_vocabulary_exists(self) -> bool:
+    def _check_if_stored_vocabulary_exists_and_load_it(self) -> bool:
         """
         """
-        self.vocab = self._get_stored_vocabulary_from(
-            path=self._path_to_get_stored_vocabulary
-        )  
-        if self.vocab is None:
+        path = self._path_to_get_stored_vocabulary
+        if TextFeaturizer.data_manager.check_if_dir_extension_is('.json', path):
+            self.vocab = TextFeaturizer.data_manager.load_data_from_callable(
+                callback_fn_to_load_data=utils.open_json_as_dict,
+                path_to_load_data=path
+            )
+            return True
+        elif TextFeaturizer.data_manager.check_if_dir_extension_is('.txt', path):
+            self.vocab = TextFeaturizer.data_manager.load_data_from_callable(
+                callback_fn_to_load_data=utils.open_line_by_line_txt_file,
+                path_to_load_data=path
+            )
+            return True
+        else:
             logger.warning(
                 f"No 'SklearnCountVectorizer' vocabulary to load in dir: "
-                f"'{self._path_to_get_stored_vocabulary}' or the vocabulary found was "
-                "not in the correct format ('.txt' or '.json')"
+                f"'{path}', or the vocabulary file was not in the correct "
+                f"format: '.txt' or '.json'"
             )
             return False
-        return True
                 
     def _set_vocabulary_creator(self) -> None:
         """
@@ -159,7 +132,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         self._min_ngram = self._configs.min_ngram
         self._max_ngram = self._configs.max_ngram
         
-        if not self._check_if_stored_vocabulary_exists():
+        if not self._check_if_stored_vocabulary_exists_and_load_it():
             self._set_vocabulary_creator()
         
         # if regex_handlers.UppercaseHandler in self.__dict__:
@@ -242,7 +215,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         self._trainset = trainset
 
         if self.featurizer is None:
-            if self._check_if_trained_featurizer_exists():
+            if self._check_if_trained_featurizer_exists_and_load_it():
                 self._train_loaded_featurizer()
             else:
                 self._train_featurizer_from_scratch()
@@ -256,13 +229,13 @@ class SklearnCountVectorizer(TextFeaturizer):
         if featurizer:
             self.featurizer = featurizer
             return
-        self._check_if_trained_featurizer_exists()
+        self._check_if_trained_featurizer_exists_and_load_it()
             
     def persist(self) -> None:
         """
         """
         # try to save model
-        super().save_data(
+        TextFeaturizer.data_manager.save_data_from_callable(
             self.featurizer,
             "wb",
             callback_fn_to_save_data=utils.persist_data_with_pickle,
@@ -275,7 +248,7 @@ class SklearnCountVectorizer(TextFeaturizer):
         if self._update_stored_vocabulary: 
             if self.vocab is not None:
                 updated_vocab = self._update_loaded_vocabulary()
-                super().save_data(
+                TextFeaturizer.data_manager.save_data_from_callable(
                     updated_vocab,
                     "w",
                     callback_fn_to_save_data=utils.persist_dict_as_json,
@@ -293,7 +266,7 @@ class SklearnCountVectorizer(TextFeaturizer):
                 return
         else:
             vec_vocab = self._get_vocab_from_featurizer()  
-            super().save_data(
+            TextFeaturizer.data_manager.save_data_from_callable(
                 vec_vocab,
                 "w",
                 callback_fn_to_save_data=utils.persist_dict_as_json,
@@ -316,4 +289,4 @@ class SklearnCountVectorizer(TextFeaturizer):
         corpus = self.featurizer.transform(corpus)
         
         return corpus
-    
+

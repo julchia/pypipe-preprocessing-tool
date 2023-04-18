@@ -67,38 +67,18 @@ class Word2VecFeaturizer(TextFeaturizer):
             "epochs": 5,
             "seed": None,
             "path_to_save_model": None,
-            "path_to_save_vocabulary": "pepe",
+            "path_to_save_vocabulary": None,
             "path_to_get_trained_model": None,
             "path_to_get_stored_vocabulary": None,
             "update_stored_vocabulary": False
         })
-        
-    @staticmethod
-    def _get_loaded_featurizer_from(path) -> None:
+            
+    def _check_if_trained_featurizer_exists_and_load_it(self) -> bool:
         """
         """
-        if path is None:
-            return
-        try:
-            loaded_vect = Word2Vec.load(
-                fname=path
-            )
-        except FileNotFoundError:
-            logger.warning(
-                f"No 'Word2VecFeaturizer' model to load in dir: '{path}'"
-            )
-            return
-        logger.info(
-            f"The 'Word2VecFeaturizer' model in '{path}' has been "
-            "successfully loaded"
-        )
-        return loaded_vect
-    
-    def _check_if_trained_featurizer_path_exists(self) -> bool:
-        """
-        """
-        self.featurizer = self._get_loaded_featurizer_from(
-            path=self._path_to_trained_model
+        self.featurizer = TextFeaturizer.data_manager.load_data_from_callable(
+            callback_fn_to_load_data=Word2Vec.load,
+            path_to_load_data=self._path_to_trained_model
         )
         if self.featurizer is None:
             return False
@@ -192,13 +172,13 @@ class Word2VecFeaturizer(TextFeaturizer):
 
     def train(self, trainset: List[str], persist: bool = False) -> None:
         """
-        """        
+        """
         self._vocab = trainset     
         
         if self.featurizer is not None:
             self._train_loaded_featurizer()
         else:
-            if self._check_if_trained_featurizer_path_exists():
+            if self._check_if_trained_featurizer_exists_and_load_it():
                 self._train_loaded_featurizer()
             else:
                 self._train_featurizer_from_scratch()
@@ -214,13 +194,13 @@ class Word2VecFeaturizer(TextFeaturizer):
                 fname=path_to_trained_model
             )
             return
-        self._check_if_trained_featurizer_path_exists()
+        self._check_if_trained_featurizer_exists_and_load_it()
     
     def persist(self) -> None:
         """
         """
         # try to save model data
-        super().save_data(
+        TextFeaturizer.data_manager.save_data_from_callable(
             callback_fn_to_save_data=self.featurizer.save,
             path_to_save_data=self.path_to_save_model,
             data_file_name="/word2vec.model",
@@ -228,7 +208,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         )
         
         # try to save vocab data
-        super().save_data(
+        TextFeaturizer.data_manager.save_data_from_callable(
             self.featurizer.wv.key_to_index,
             "w",
             callback_fn_to_save_data=utils.persist_dict_as_json,

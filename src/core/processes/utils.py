@@ -11,25 +11,25 @@ def create_dir_if_not_exists(path: str) -> None:
 
 
 def open_line_by_line_txt_file(
-    path: str, 
+    file_dir: str, 
     mode: str = "r", 
     as_set: bool = False  
 ) -> List | Set:
     """
     """
-    if path.endswith('.txt'):
-        with open(path, mode) as f:
+    if file_dir.endswith('.txt'):
+        with open(file_dir, mode) as f:
             txt = [line.strip("\n") for line in f]
             if as_set:
                 return set(txt)
             return txt
 
 
-def open_json_as_dict(path: str) -> Dict[str, Any]:
+def open_json_as_dict(file_dir: str) -> Dict[str, Any]:
     """
     """
-    if path.endswith('.json'):
-        with open(path) as f:
+    if file_dir.endswith('.json'):
+        with open(file_dir) as f:
             return json.load(f)
 
 
@@ -56,11 +56,11 @@ def persist_data_with_pickle(
         
 
 def load_data_with_pickle(
-    path: str,
-    mode: str = "rb"
+    mode: str,
+    file_dir: str
 ) -> None:
     """
     """
-    return pickle.load(open(path, mode))
+    return pickle.load(open(file_dir, mode))
     
     
