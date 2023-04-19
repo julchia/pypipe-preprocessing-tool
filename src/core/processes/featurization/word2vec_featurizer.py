@@ -32,16 +32,31 @@ class Word2VecFeaturizer(TextFeaturizer):
         
         self.featurizer = featurizer
         
-
         self._unk_token = self._configs.unk_token
+        
+        self._update_stored_vocabulary = self._configs.update_stored_vocabulary
         
         self.path_to_save_model = self._configs.path_to_save_model
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
+        self.path_to_save_vectors = self._configs.path_to_save_vectors
         
         self._path_to_trained_model = self._configs.path_to_get_trained_model
-        self._path_to_get_stored_vocabulary = self._configs.path_to_get_stored_vocabulary
         
-        self._update_stored_vocabulary = self._configs.update_stored_vocabulary
+        self._path_to_get_trained_vectors = self._configs.path_to_get_trained_vectors
+        
+        if self._configs.path_to_get_stored_vocabulary is not None:
+            if self._path_to_get_trained_vectors is not None:
+                logger.warning(
+                    "In 'Word2VecFeaturizer' config file, one path has "
+                    "detected for load vocabulary and another for load "
+                    "pre-trained vectors. For model training, the pre-trained "
+                    "vectors will be prioritized. If you want to use "
+                    "the vocabulary, remove the path for pre-trained "
+                    "vectors from the config file."
+                )
+                self._path_to_get_stored_vocabulary = None
+            else:
+                self._path_to_get_stored_vocabulary = self._configs.path_to_get_stored_vocabulary
         
     @classmethod
     def get_isolated_process(
@@ -121,7 +136,40 @@ class Word2VecFeaturizer(TextFeaturizer):
             "start_alpha": None,
             "end_alpha": None
         }
-
+    
+    def _load_vectors(self, path_to_vectors: str) -> KeyedVectors:
+        """
+        """
+        if utils.check_if_dir_extension_is('.bin', path_to_vectors):
+            return KeyedVectors.load_word2vec_format(path_to_vectors, binary=True)
+        else:
+            return KeyedVectors.load(path_to_vectors)
+    
+    def _prepare_vocabulary_from_loaded_vocab(self, update: bool) -> None:
+        """
+        """
+        from json import load
+        
+        with open(self._path_to_get_stored_vocabulary, 'r') as f:
+            stored_vocab = load(f)
+            
+        self.featurizer.build_vocab_from_freq(
+            word_freq=stored_vocab, 
+            update=update
+        )  
+    
+    def _prepare_vocabulary_from_pretrained_vectors(self, update: bool) -> None:
+        """
+        """
+        wv = self._load_vectors(self._path_to_get_trained_vectors)
+        
+        self.featurizer.build_vocab_from_freq(
+            word_freq=wv.key_to_index, 
+            update=update
+        )
+        
+        self.featurizer.wv.vectors = wv.vectors
+        
     def _prepare_vocabulary(self) -> None:
         """
         """
@@ -136,16 +184,10 @@ class Word2VecFeaturizer(TextFeaturizer):
         else:
             update = False
                
-        if self._path_to_get_stored_vocabulary is not None: 
-            from json import load
-            
-            with open(self._path_to_get_stored_vocabulary, 'r') as f:
-                stored_vocab = load(f)
-                   
-            self.featurizer.build_vocab_from_freq(
-                word_freq=stored_vocab, 
-                update=update
-            )  
+        if self._path_to_get_trained_vectors is not None:
+            self._prepare_vocabulary_from_pretrained_vectors(update)
+        elif self._path_to_get_stored_vocabulary is not None:
+            self._prepare_vocabulary_from_loaded_vocab(update)
         else:       
             self.featurizer.build_vocab(
                 corpus_iterable=self._vocab,
@@ -207,8 +249,17 @@ class Word2VecFeaturizer(TextFeaturizer):
         TextFeaturizer.data_manager.save_data_from_callable(
             callback_fn_to_save_data=self.featurizer.save,
             path_to_save_data=self.path_to_save_model,
-            data_file_name="/word2vec.model",
+            data_file_name="/word2vec_model.model",
             alias="word2vec_featurizer"
+        )
+        
+        # try to save model vectors
+        TextFeaturizer.data_manager.save_data_from_callable(
+            callback_fn_to_save_data=self.featurizer.wv.save,
+            path_to_save_data=self.path_to_save_vectors,
+            data_file_name="/word2vec_vectors.kv",
+            alias="word2vec_featurizer",
+            to_save_vocab=True
         )
         
         # try to save vocab data
@@ -217,10 +268,15 @@ class Word2VecFeaturizer(TextFeaturizer):
             "w",
             callback_fn_to_save_data=utils.persist_dict_as_json,
             path_to_save_data=self.path_to_save_vocabulary,
-            data_file_name="/vocab.json",
+            data_file_name="/word2vec_vocab.json",
             alias="word2vec_featurizer",
             to_save_vocab=True
         )
+                
+    def load_vectors(self, path_to_vectors: str) -> KeyedVectors:
+        """
+        """
+        return self._load_vectors(path_to_vectors)
                                        
     def get_word_vector_object(self) -> Optional[KeyedVectors]:
         if self.featurizer is None:

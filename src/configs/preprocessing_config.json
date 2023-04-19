@@ -79,8 +79,10 @@
             "unk_token": "<<UNK>>",
             "path_to_save_model": null,
             "path_to_save_vocabulary": null,
+            "path_to_save_vectors": null,
             "path_to_get_trained_model": null,
             "path_to_get_stored_vocabulary": null,
+            "path_to_get_trained_vectors": null,
             "update_stored_vocabulary": false
 
         }
