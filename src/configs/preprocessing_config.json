@@ -76,6 +76,7 @@
             "window": 5,
             "epochs": 5,
             "seed": null,
+            "unk_token": "<<UNK>>",
             "path_to_save_model": null,
             "path_to_save_vocabulary": null,
             "path_to_get_trained_model": null,

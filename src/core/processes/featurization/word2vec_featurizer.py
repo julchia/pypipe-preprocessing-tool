@@ -32,6 +32,9 @@ class Word2VecFeaturizer(TextFeaturizer):
         
         self.featurizer = featurizer
         
+
+        self._unk_token = self._configs.unk_token
+        
         self.path_to_save_model = self._configs.path_to_save_model
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
         
@@ -124,7 +127,8 @@ class Word2VecFeaturizer(TextFeaturizer):
         """
         self._vocab = super().create_vocab(
             corpus=self._vocab, 
-            corpus2sent=True
+            corpus2sent=True,
+            unk_text=self._unk_token
         )
         
         if self.featurizer.wv.key_to_index:
