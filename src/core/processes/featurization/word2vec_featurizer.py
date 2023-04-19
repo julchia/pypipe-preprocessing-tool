@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Union, Optional
 
 import logging
 from omegaconf import OmegaConf
@@ -222,7 +222,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             to_save_vocab=True
         )
                                        
-    def get_word_vector_object(self) -> KeyedVectors:
+    def get_word_vector_object(self) -> Optional[KeyedVectors]:
         if self.featurizer is None:
             logger.warning(
                 "It's impossible to get 'KeyedVectors' from 'Word2VecFeaturizer' "
@@ -231,18 +231,16 @@ class Word2VecFeaturizer(TextFeaturizer):
             return
         return self.featurizer.wv
     
-    def process(self, corpus):
+    def get_vector_by_key(self, key: Union[str, List[str]]):
         """
+        return <class 'numpy.ndarray'>
         """
         if self.featurizer is None:
             logger.warning(
-                "It's impossible to process the input from 'Word2VecFeaturizer' "
-                "because there is no trained model"
+                "It's impossible to get vector items from 'Word2VecFeaturizer' "
+                "object because there is no trained model"
             )
-            return corpus
+            return
+        else:
+            return self.featurizer.wv.__getitem__(key)
         
-        # TODO chequear input type para wv
-        corpus = self.featurizer.wv(corpus)
-        
-        return corpus
-
