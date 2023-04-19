@@ -32,6 +32,8 @@ class CountVecFeaturizer(TextFeaturizer):
         
         self.featurizer = featurizer
         
+        self._unk_token = self._configs.unk_token
+        
         self.path_to_save_model = self._configs.path_to_save_model 
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
         
@@ -113,36 +115,32 @@ class CountVecFeaturizer(TextFeaturizer):
         """
         """
         if self._configs.use_own_vocabulary_creator:
+            if self._unk_token is not None:
+                self._trainset.append(self._unk_token)
             self.vocab = None
             logger.info(
                 "'CountVecFeaturizer' will be ready to create a new "
                 "vocabulary from its own parser"
             )
         else:
-            # TODO self.vocab = class Vocabulary
+            self.vocab = super().create_vocab(
+                corpus=self._trainset, 
+            )
             logger.info(
                 "A new vocabulary for 'CountVecFeaturizer' "
-                "will be created from an external parser"
+                "will be created from Vocabulary object"
             )
    
     def _load_featurizer_params_from_configs(self) -> None:
         """
         """
+        if not self._check_if_stored_vocabulary_exists_and_load_it():
+            self._set_vocabulary_creator()        
+
         self._max_features = self._configs.max_features
         self._min_ngram = self._configs.min_ngram
         self._max_ngram = self._configs.max_ngram
-        
-        if not self._check_if_stored_vocabulary_exists_and_load_it():
-            self._set_vocabulary_creator()
-        
-        # if regex_handlers.UppercaseHandler in self.__dict__:
-        #     self._lowercase = False
-        # else:
         self._lowercase = False
-            
-        # if self._configs.remove_spanish_stop_words:
-        #     self._stop_words = "CONSTANTE_CON_SPANISH_STOP_WORDS"
-        # else:
         self._stop_words = None
             
     def _load_featurizer_params_from_default(self) -> None:
