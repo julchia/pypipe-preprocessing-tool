@@ -77,7 +77,7 @@ class TextFeaturizer(IProcess):
         ...
         
     @abstractmethod
-    def process(self):
+    def persist(self):
         """
         """
         ...
