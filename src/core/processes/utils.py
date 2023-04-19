@@ -62,5 +62,15 @@ def load_data_with_pickle(
     """
     """
     return pickle.load(open(file_dir, mode))
+
+
+def check_if_dir_extension_is(to_check: str, dir_path: str) -> bool:
+    if dir_path is None:
+        return
+    extension = os.path.splitext(dir_path)[1].lower()
+    if extension in to_check:
+        return True
+    else:
+        return False
     
     

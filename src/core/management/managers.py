@@ -14,17 +14,7 @@ logger = logging.getLogger(__name__)
 class ModelDataManager:
     """
     """
-    
-    @staticmethod    
-    def check_if_dir_extension_is(to_check: str, dir_path: str) -> bool:
-        if dir_path is None:
-            return
-        extension = os.path.splitext(dir_path)[1].lower()
-        if extension in to_check:
-            return True
-        else:
-            return False
-    
+        
     @staticmethod
     def get_default_model_path_from_constants(alias: str, file_name: str) -> str:
         try:
@@ -95,6 +85,10 @@ class ModelDataManager:
             path = path_to_save_data + data_file_name
             try:
                 callback_fn_to_save_data(*callback_args, path)
+                logger.info(
+                    f"{logger_msg_word} alias '{alias}' will be stored "
+                    f"in path '{path_to_save_data}{data_file_name}'"
+                )
             except FileNotFoundError:
                 logger.warning(
                     f"No valid path found in '{path_to_save_data}' to store "
@@ -105,9 +99,10 @@ class ModelDataManager:
                     file_name=data_file_name
                 )
                 callback_fn_to_save_data(*callback_args, path)
+                logger.info(
+                    f"{logger_msg_word} alias '{alias}' will be stored "
+                    f"in path '{path_to_save_data}{data_file_name}'"
+                )
         else:
-            logger.info(
-                f"The {logger_msg_word} with alias '{alias}' will not be stored "
-                f"because path '{path_to_save_data}' is not an str object type"
-            )
+            return
 
