@@ -91,13 +91,13 @@ class CountVecFeaturizer(TextFeaturizer):
         """
         """
         path = self._path_to_get_stored_vocabulary
-        if TextFeaturizer.data_manager.check_if_dir_extension_is('.json', path):
+        if utils.check_if_dir_extension_is('.json', path):
             self.vocab = TextFeaturizer.data_manager.load_data_from_callable(
                 callback_fn_to_load_data=utils.open_json_as_dict,
                 path_to_load_data=path
             )
             return True
-        elif TextFeaturizer.data_manager.check_if_dir_extension_is('.txt', path):
+        elif utils.check_if_dir_extension_is('.txt', path):
             self.vocab = TextFeaturizer.data_manager.load_data_from_callable(
                 callback_fn_to_load_data=utils.open_line_by_line_txt_file,
                 path_to_load_data=path
@@ -132,36 +132,26 @@ class CountVecFeaturizer(TextFeaturizer):
                 "will be created from Vocabulary object"
             )
    
-    def _load_featurizer_params_from_configs(self) -> None:
+    def _load_featurizer_params(self) -> None:
         """
         """
         if not self._check_if_stored_vocabulary_exists_and_load_it():
             self._set_vocabulary_creator()        
-
-        self._max_features = self._configs.max_features
-        self._min_ngram = self._configs.min_ngram
-        self._max_ngram = self._configs.max_ngram
-        self._lowercase = False
-        self._stop_words = None
-            
-    def _load_featurizer_params_from_default(self) -> None:
-        """
-        """
-        self._strip_accents = None
-        self._analyzer = "word"
         
+        self._featurizer_params = {
+            "max_features": self._configs.max_features,
+            "ngram_range": (self._configs.min_ngram, self._configs.max_ngram),
+            "vocabulary": self.vocab,
+            "lowercase": False,
+            "stop_words": None,
+            "strip_accents": None,
+            "analyzer": "word"
+        }
+                    
     def _create_featurizer(self) -> CountVectorizer:
         """
         """
-        return CountVectorizer(
-            max_features = self._max_features,
-            ngram_range = (self._min_ngram, self._max_ngram),
-            vocabulary = self.vocab,
-            lowercase = self._lowercase,
-            strip_accents = self._strip_accents,
-            analyzer = self._analyzer,
-            stop_words = self._stop_words
-        )
+        return CountVectorizer(**self._featurizer_params)
 
     def _get_vocab_from_featurizer(self) -> Dict[str, int]:
         """
@@ -203,8 +193,7 @@ class CountVecFeaturizer(TextFeaturizer):
     def _train_featurizer_from_scratch(self) -> None:
         """
         """
-        self._load_featurizer_params_from_configs()
-        self._load_featurizer_params_from_default()
+        self._load_featurizer_params()
         self.featurizer = self._create_featurizer()
         self._train()
 
