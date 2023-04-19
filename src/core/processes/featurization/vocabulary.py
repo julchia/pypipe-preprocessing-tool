@@ -44,10 +44,18 @@ class Vocabulary:
         }
         
         self._add_unk = add_unk
+                
+        if unk_text is not None and not isinstance(unk_text, str):
+            raise ValueError(
+                "Invalid unk token object type. Expected str "
+                f"but {type(unk_text)} was received"
+            )
+        
         self._unk_text = unk_text
         
         self.unk_idx = -1
-        if add_unk:
+                
+        if unk_text is not None:
             self.unk_idx = self.add_text(unk_text)
         
         self.__init_vocab_from_iterable(
@@ -119,7 +127,7 @@ class Vocabulary:
                 else:
                     for word in line.split():
                         yield word.strip()
-        
+    
     def add_text(self, text: str) -> None:
         """
         """

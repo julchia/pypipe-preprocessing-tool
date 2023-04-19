@@ -32,8 +32,7 @@ class CountVecFeaturizer(TextFeaturizer):
         
         self.featurizer = featurizer
         
-        if isinstance(self._configs.unk_token, str):
-            self._unk_token = self._configs.unk_token
+        self._unk_token = self._configs.unk_token
         
         self.path_to_save_model = self._configs.path_to_save_model 
         self.path_to_save_vocabulary = self._configs.path_to_save_vocabulary
@@ -125,7 +124,7 @@ class CountVecFeaturizer(TextFeaturizer):
             )
         else:
             self.vocab = super().create_vocab(
-                corpus=self._trainset, 
+                corpus=self._trainset,
                 unk_text=self._unk_token
             )
             logger.info(
