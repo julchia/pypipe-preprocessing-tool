@@ -15,11 +15,11 @@ def main() -> None:
         "su página es www.pedrito.com ...."
     ]
         
-    norm_corpus = pipe_1.regex_normalization.normalize_text(corpus)
+    norm_corpus = pipe_1.regex_norm.normalize_text(corpus)
     
-    pipe_1.word2vec_featurizer.train(norm_corpus, persist=True)
+    pipe_1.word2vec.train(norm_corpus, persist=True)
     
-    vector = pipe_1.word2vec_featurizer.get_vector_by_key("gente")
+    vector = pipe_1.word2vec.get_vector_by_key("gente")
         
 if __name__ == "__main__":
     main()
