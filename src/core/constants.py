@@ -10,8 +10,8 @@ PREPROCESSING_CONFIG = OmegaConf.load(paths.PREPROCESSING_CONFIG_PATH)
 
 
 PIPELINE_PROCESS_ALIAS = {
-    "regex_normalization": RegexNormalizer,
-    "countvec_featurizer": CountVecFeaturizer,
-    "word2vec_featurizer": Word2VecFeaturizer
+    "regex_norm": RegexNormalizer,
+    "countvec": CountVecFeaturizer,
+    "word2vec": Word2VecFeaturizer
 }
 

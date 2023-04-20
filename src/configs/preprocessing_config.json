@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "regex_normalization": {
+        "regex_norm": {
             "normalize_laught": {
                 "active": true,
                 "replacement": null
@@ -54,7 +54,7 @@
                 "replacement": " "
             }
         },
-        "countvec_featurizer": {
+        "countvec": {
             "active": true,
             "max_features": null,
             "min_ngram": 1,
@@ -68,7 +68,7 @@
             "path_to_get_stored_vocabulary": null,
             "update_stored_vocabulary": false
         },
-        "word2vec_featurizer": {
+        "word2vec": {
             "active": true,
             "method": "cbow",
             "ignore_freq_higher_than": 1,
