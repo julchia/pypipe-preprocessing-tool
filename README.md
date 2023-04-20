@@ -4,8 +4,8 @@
 
 ## In progess:
 
-- Vocabulary creator
-- Word2Vec featurizer
+- Sequence process from pipeline
+- Unit tests
 - Run bash commands
 - Documentation for main objects
 - Write a real readme 😅
