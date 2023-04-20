@@ -1,7 +1,7 @@
 from src.core.constants import PREPROCESSING_CONFIG
 from src.core.pipeline import Pipeline
 
-
+ 
 def main() -> None:
     
     pipe_1 = Pipeline(
@@ -16,20 +16,10 @@ def main() -> None:
     ]
         
     norm_corpus = pipe_1.regex_normalization.normalize_text(corpus)
-
-    print(norm_corpus)
     
-    pipe_1.count_vect_featurizer.train(norm_corpus)
+    pipe_1.word2vec_featurizer.train(norm_corpus, persist=True)
     
-    unseen_corpus = [
-        "hola gente",
-        "jaja su nombre es pedro",
-        "el correo de pedro es MAIL"
-    ]
-    
-    vectors = pipe_1.count_vect_featurizer.process(unseen_corpus)
-    
-    print(vectors.toarray())
-
+    vector = pipe_1.word2vec_featurizer.get_vector_by_key("gente")
+        
 if __name__ == "__main__":
     main()
