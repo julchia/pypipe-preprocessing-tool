@@ -41,10 +41,10 @@ class Word2VecFeaturizer(TextFeaturizer):
         self.path_to_save_vectors = self._configs.path_to_save_vectors
         
         self._path_to_trained_model = self._configs.path_to_get_trained_model
-        
         self._path_to_get_trained_vectors = self._configs.path_to_get_trained_vectors
-        
-        if self._configs.path_to_get_stored_vocabulary is not None:
+        self._path_to_get_stored_vocabulary = self._configs.path_to_get_stored_vocabulary
+                
+        if self._path_to_get_stored_vocabulary is not None:
             if self._path_to_get_trained_vectors is not None:
                 logger.warning(
                     "In 'Word2VecFeaturizer' config file, one path has "
@@ -55,8 +55,6 @@ class Word2VecFeaturizer(TextFeaturizer):
                     "vectors from the config file."
                 )
                 self._path_to_get_stored_vocabulary = None
-            else:
-                self._path_to_get_stored_vocabulary = self._configs.path_to_get_stored_vocabulary
         
     @classmethod
     def get_isolated_process(
