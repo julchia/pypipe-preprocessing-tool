@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import List, Callable
+from typing import List, Callable, Union, Iterable
 
 from functools import reduce
 from omegaconf import OmegaConf
 
-from src.core.processes.normalization.text_normalizer import TextNormalizer
+from src.core.processes.normalization.normalizers import TextNormalizer
 from src.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
 
 
@@ -129,7 +129,10 @@ class RegexNormalizer(TextNormalizer):
         """
         self.compile_handlers.append((handler, repl))
         
-    def normalize_text(self, corpus: List[str]) -> List[str]:
+    def normalize_text(
+        self, 
+        corpus: Union[Iterable[str], List[str]]
+    ) -> List[str]:
         """
         """
         if not isinstance(corpus, List):
@@ -139,13 +142,13 @@ class RegexNormalizer(TextNormalizer):
         
         self._compile_regex_handlers()
         
-        for i, sent in enumerate(corpus):
-            corpus[i] = reduce(
-                self._normalize, 
-                self.compile_handlers, 
-                sent
+        norm_corpus = []
+        
+        for sent in corpus:
+            norm_corpus.append(
+                reduce(self._normalize, self.compile_handlers, sent)
             )
             
-        return corpus
+        return norm_corpus
     
     

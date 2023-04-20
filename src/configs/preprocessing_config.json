@@ -54,19 +54,37 @@
                 "replacement": " "
             }
         },
-        "sklearn_count_vect": {
+        "countvec_featurizer": {
             "active": true,
             "max_features": null,
             "min_ngram": 1,
             "max_ngram": 1,
             "remove_spanish_stop_words": false,
-            "path_to_trained_model": null,
-            "path_to_stored_vocabulary": null,
-            "update_stored_vocabulary": false,
+            "unk_token": "<<UNK>>",
             "use_own_vocabulary_creator": true,
+            "path_to_save_model": null,
+            "path_to_save_vocabulary": null,
+            "path_to_get_trained_model": null,
+            "path_to_get_stored_vocabulary": null,
+            "update_stored_vocabulary": false
+        },
+        "word2vec_featurizer": {
+            "active": true,
+            "method": "cbow",
+            "ignore_freq_higher_than": 1,
+            "embeddings_size": 64,
+            "window": 5,
+            "epochs": 5,
+            "seed": null,
             "unk_token": "<<UNK>>",
             "path_to_save_model": null,
-            "path_to_save_vocabulary": null
+            "path_to_save_vocabulary": null,
+            "path_to_save_vectors": null,
+            "path_to_get_trained_model": null,
+            "path_to_get_stored_vocabulary": null,
+            "path_to_get_trained_vectors": null,
+            "update_stored_vocabulary": false
+
         }
     }
 }
