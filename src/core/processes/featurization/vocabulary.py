@@ -1,5 +1,6 @@
-from typing import List, Dict, Union, Iterable, Generator
+from typing import List, Dict, Union, Iterable, Generator, Callable
 
+from src.core.management.managers import CorpusLazyManager
 from src.core.processes.normalization.norm_utils import (
     punctuaction_handler, 
     lowercase_diacritic_handler
@@ -19,7 +20,9 @@ class Vocabulary:
         unk_text: str = "<<UNK>>",
         diacritic: bool = False,
         lower_case: bool = False,
-        norm_punct: bool = False
+        norm_punct: bool = False,
+        corpus_iterator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
+        
         ) -> None:
         """
         If 'corpus2sent' is False: variable 'text' is equivalent to 
@@ -27,7 +30,9 @@ class Vocabulary:
         If 'corpus2sent' is True: variable 'text' is equivalent to 
         entire unique sentence.
         
-        """   
+        """
+        self._corpus_iterator = corpus_iterator
+        
         self._corpus2sent = corpus2sent
         
         self._norm_punct = norm_punct
@@ -59,7 +64,7 @@ class Vocabulary:
             self.unk_idx = self.add_text(unk_text)
         
         self.__init_vocab_from_iterable(
-            self._yield_corpus(corpus, corpus2sent)
+            self._corpus_iterator(corpus)
         )
     
     def __str__(self) -> str:
@@ -71,9 +76,8 @@ class Vocabulary:
     def __iter__(self) -> Generator:
         for text in self._text2idx.keys():
             if self._corpus2sent:
-                yield text.split()
-            else:
-                yield text
+                text = text.split()
+            yield text
 
     def __init_vocab_from_iterable(
         self, 
@@ -81,53 +85,7 @@ class Vocabulary:
     ) -> None:
         for text in iterable:
             self.add_text(text)
-            
-    def _yield_corpus(
-        self,
-        corpus: str, 
-        corpus2sent: bool
-    ) -> Generator:
-        if isinstance(corpus, list):
-            generator = self._yield_corpus_from_list(
-                corpus, 
-                corpus2sent
-            )
-        elif isinstance(corpus, str):
-            generator = self._yield_corpus_from_file(
-                corpus, 
-                corpus2sent
-            )
-        else:
-            raise ValueError(
-                "Invalid corpus type. Expected list or str."
-            )
-        yield from generator
-    
-    @staticmethod                 
-    def _yield_corpus_from_list(
-        corpus: List[str], 
-        corpus2sent: bool
-    ) -> Generator:
-        for line in corpus:
-            if corpus2sent:
-                yield line
-            else:
-                for word in line.split():
-                    yield word
-    
-    @staticmethod
-    def _yield_corpus_from_file(
-        corpus: str, 
-        corpus2sent: bool
-    ) -> Generator:
-        with open(corpus, "r") as f:
-            for line in f:
-                if corpus2sent:
-                    yield line.strip()
-                else:
-                    for word in line.split():
-                        yield word.strip()
-    
+
     def add_text(self, text: str) -> None:
         """
         """
