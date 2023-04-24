@@ -1,4 +1,4 @@
-PREPROCESSING_CONFIG_PATH = "src/configs/preprocessing_config.json"
+PREPROCESSING_CONFIG_PATH = "src/configs/preprocessing.json"
 
 
 MODEL_DEFAULT_PATHS = {
