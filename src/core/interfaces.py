@@ -21,7 +21,7 @@ class IProcess(ABC):
         ...
     
     
-class IPipeHandler(ABC):
+class IProcessHandler(ABC):
     """
     """
     
