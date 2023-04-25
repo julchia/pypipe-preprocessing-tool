@@ -8,7 +8,8 @@ from src.core.management.managers import CorpusLazyManager
 
 
 class Pipeline:
-    
+    """
+    """
     def __init__(
         self, 
         pipeline_conf: OmegaConf, 
@@ -20,6 +21,8 @@ class Pipeline:
         self._corpus_iterator = corpus_iterator
     
     def _set_pipeline_processes(self) -> None:
+        """
+        """
         for alias, spec in self._pipeline_process.items():
             if alias in self._pipeline_conf.pipeline:
                 if self._pipeline_conf.pipeline[alias].active:
@@ -30,6 +33,8 @@ class Pipeline:
                     )
                 
     def create_pipeline(self) -> Pipeline:
+        """
+        """
         self._set_pipeline_processes()
         return self
     
@@ -47,8 +52,4 @@ class Pipeline:
                 processed_corpus = active_handler.process(processed_corpus)
     
         return processed_corpus
-        
-    def get_processes_order(self) -> List[str]:
-        processes_order = list(self._pipeline_process.keys())
-        return processes_order
-
+    
