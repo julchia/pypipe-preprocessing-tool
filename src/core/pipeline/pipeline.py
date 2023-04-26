@@ -18,11 +18,11 @@ class Pipeline:
         self, 
         pipeline_conf: OmegaConf, 
         pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS,
-        corpus_iterator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
+        corpus_generator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
     ) -> None:
         self._pipeline_conf = pipeline_conf
         self._pipeline_process = pipeline_process
-        self._corpus_iterator = corpus_iterator
+        self._corpus_generator = corpus_generator
         self._pipiline_was_created: bool = False
     
     def _set_pipeline_processes(self) -> None:
@@ -42,7 +42,9 @@ class Pipeline:
         self, 
         corpus: Union[List[str], str]
     ) -> Optional[Any]:
-        processed_corpus = self._corpus_iterator(corpus)
+        """
+        """
+        processed_corpus = self._corpus_generator(corpus)
         for alias, spec in self._pipeline_process.items():
             if alias in self.__dict__:
                 handler, _ = spec
