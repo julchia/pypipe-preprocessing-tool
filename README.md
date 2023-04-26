@@ -40,6 +40,7 @@ And simply use the regex normalizer that is set in configurations to normalize t
 
 ```
 norm_corpus = pipe_1.regex_norm.normalize_text(corpus)
+
 ```
 We get the following output
 
@@ -59,6 +60,7 @@ unseen_corpus = [
 ]
 
 vectors = pipe_1.countvec.process(unseen_corpus)
+
 ```
 
 We get the following output:

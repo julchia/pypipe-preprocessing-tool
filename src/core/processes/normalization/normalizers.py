@@ -1,11 +1,51 @@
 from __future__ import annotations
-from typing import List, Callable
+from abc import abstractclassmethod, abstractmethod
+from typing import List, Union, Callable, Iterable, Generator
 
+import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
-from src.core.processes.normalization.text_normalizer import TextNormalizer
+from src.core.interfaces import IProcess
+from src.core.management.managers import CorpusLazyManager
 from src.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class TextNormalizer(IProcess):
+    """
+    """
+    def __init__(
+        self, 
+        configs: OmegaConf, 
+        alias: str = None
+        ) -> None:
+        
+        if alias is not None:
+            self._configs = configs.pipeline[alias]
+        else:
+            self._configs = configs
+    
+    @abstractclassmethod
+    def get_isolated_process(cls) -> IProcess:
+        ...
+    
+    @abstractclassmethod 
+    def get_default_configs(cls) -> OmegaConf:
+        """
+        """
+        ...
+    
+    @abstractmethod
+    def normalize_text(
+        self, 
+        corpus: Union[List[str], Iterable]
+    ) -> Union[List[str], CorpusLazyManager]:
+        """
+        """
+        ...
 
 
 class RegexNormalizer(TextNormalizer):
@@ -18,7 +58,7 @@ class RegexNormalizer(TextNormalizer):
         configs: OmegaConf, 
         alias: str = None
     ) -> None:
-           
+        
         super().__init__(
             configs=configs,
             alias=alias
@@ -99,12 +139,12 @@ class RegexNormalizer(TextNormalizer):
     def _compile_regex_handlers(self) -> None:
         """
         """
-        for regex_handler, config in self._configs.items():
-            if config.active:
+        for regex_handler, spec in self._configs.handlers.items():
+            if self._configs.active:
                 if regex_handler in RegexNormalizer.regex_handlers:
                     handler = RegexNormalizer.regex_handlers.get(regex_handler)
                     self.compile_handlers.append(
-                        (handler, config.replacement)
+                        (handler, spec.replacement)
                     )
     
     def _normalize(
@@ -119,7 +159,27 @@ class RegexNormalizer(TextNormalizer):
             text=text,
             repl=repl
         )
+
+    def _standard_normalization(self, corpus: List[str]) -> List[str]:
+        norm_corpus = []
+        for sent in corpus:
+            norm_corpus.append(
+                reduce(
+                    self._normalize, 
+                    self.compile_handlers, 
+                    sent
+                )
+            )
+        return norm_corpus
     
+    def _lazy_normalization(self, corpus: Iterable) -> Generator:
+        for sent in corpus:
+            yield reduce(
+                self._normalize, 
+                self.compile_handlers, 
+                sent
+            )
+
     def add_regex_handler(
         self, 
         handler: Callable[[str, str], str], 
@@ -128,24 +188,25 @@ class RegexNormalizer(TextNormalizer):
         """
         """
         self.compile_handlers.append((handler, repl))
-        
-    def normalize_text(self, corpus: List[str]) -> List[str]:
+    
+    def normalize_text(
+        self, 
+        corpus: Union[List[str], Iterable]
+    ) -> Union[List[str], CorpusLazyManager]:
         """
         """
-        if not isinstance(corpus, List):
+        if not isinstance(corpus, (Iterable, List)):
             raise ValueError(
-                f"List object type expected, {type(corpus)} object received."
+                f"Invalid input type. Expected Iterable or List[str]. "
+                f"Received {type(corpus)}"
             )
+        
+        logger.info("'RegexNormalizer' normalization has started")
         
         self._compile_regex_handlers()
-        
-        for i, sent in enumerate(corpus):
-            corpus[i] = reduce(
-                self._normalize, 
-                self.compile_handlers, 
-                sent
-            )
-            
-        return corpus
-    
-    
+                
+        if isinstance(corpus, List):
+            return self._standard_normalization(corpus=corpus)
+        else:
+            return CorpusLazyManager(self._lazy_normalization(corpus=corpus))
+

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractclassmethod, abstractmethod
 
 from omegaconf import OmegaConf
 
@@ -19,3 +19,15 @@ class IProcess(ABC):
         """
         """
         ...
+    
+    
+class IProcessHandler(ABC):
+    """
+    """
+    
+    @abstractmethod
+    def process(self):
+        """
+        """
+        ...
+    
