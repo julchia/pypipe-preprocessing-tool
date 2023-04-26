@@ -1,16 +1,54 @@
-import os
-from typing import Any, Optional, Callable
+from types import GeneratorType
+from typing import List, Any, Union, Optional, Callable, Generator
+
+import logging
 
 from src.core import paths
 from src.core.processes import utils
-
-import logging
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+class CorpusLazyManager:
+    """
+    """
+    def __init__(self, corpus: Union[List[str], str]) -> None:
+        self._corpus = corpus
+        
+    def __iter__(self) -> Generator:
+        """
+        """
+        type_handler = {
+            list: self._yield_corpus_from_list,
+            str: self._yield_corpus_from_file,
+            GeneratorType: lambda: self._corpus
+        }
+        
+        if type(self._corpus) not in type_handler:
+            raise ValueError(
+                f"Invalid input type. Expected list, str or GeneratorType. "
+                f"Received {type(self._corpus)}"
+            )
+            
+        generator = type_handler[type(self._corpus)]()
+        
+        yield from generator
+        
+    def _yield_corpus_from_list(self) -> Generator:
+        """
+        """
+        for line in self._corpus:
+            yield line
     
+    def _yield_corpus_from_file(self) -> Generator:
+        """
+        """
+        with open(self._corpus, "r") as f:
+            for line in f:
+                yield line.strip()
+
+   
 class ModelDataManager:
     """
     """
