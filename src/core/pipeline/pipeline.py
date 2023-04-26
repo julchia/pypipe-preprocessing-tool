@@ -16,25 +16,31 @@ class Pipeline:
     """
     def __init__(
         self, 
-        pipeline_conf: OmegaConf, 
+        config_path: str, 
         pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS,
         corpus_generator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
     ) -> None:
-        self._pipeline_conf = pipeline_conf
+        self._config = self._format_config(config=config_path)
         self._pipeline_process = pipeline_process
         self._corpus_generator = corpus_generator
         self._pipiline_was_created: bool = False
+    
+    @staticmethod
+    def _format_config(config: str):
+        """
+        """
+        return OmegaConf.load(config)
     
     def _set_pipeline_processes(self) -> None:
         """
         """
         for alias, spec in self._pipeline_process.items():
-            if alias in self._pipeline_conf.pipeline:
-                if self._pipeline_conf.pipeline[alias].active:
+            if alias in self._config.pipeline:
+                if self._config.pipeline[alias].active:
                     _, processor = spec
                     self.__dict__[alias] = processor(
                         alias=alias,
-                        configs=self._pipeline_conf
+                        configs=self._config
                     )
             self._pipiline_was_created = True
         
