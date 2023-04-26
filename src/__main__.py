@@ -1,12 +1,12 @@
 from src.core.constants import PREPROCESSING_CONFIG
-from src.core.pipeline import Pipeline
+from src.core.pipeline.pipeline import Pipeline
 
  
 def main() -> None:
     
     pipe_1 = Pipeline(
         pipeline_conf=PREPROCESSING_CONFIG
-    ).get_pipe()
+    ).create_pipeline()
     
     corpus = [
         "HOLA!!1111 gente lindaaaaa!!!",
@@ -14,12 +14,19 @@ def main() -> None:
         "mi correo es pedrito@gmail.com",
         "su página es www.pedrito.com ...."
     ]
-        
-    norm_corpus = pipe_1.regex_norm.normalize_text(corpus)
     
-    pipe_1.word2vec.train(norm_corpus, persist=True)
+    pipe_1.process_corpus_sequentially(corpus=corpus)
     
-    vector = pipe_1.word2vec.get_vector_by_key("gente")
-        
+    unseen_corpus = [
+        "hola gente",
+        "jaja su nombre es pedro",
+        "el correo de pedro es MAIL"
+    ]
+    
+    vectors = pipe_1.countvec.process(unseen_corpus)
+
+    print(vectors.toarray())
+
+
 if __name__ == "__main__":
     main()
