@@ -1,11 +1,11 @@
-from src.core.constants import PREPROCESSING_CONFIG
+from src.core import paths
 from src.core.pipeline.pipeline import Pipeline
 
  
 def main() -> None:
     
     pipe_1 = Pipeline(
-        pipeline_conf=PREPROCESSING_CONFIG
+        config_path=paths.PREPROCESSING_CONFIG_PATH
     ).create_pipeline()
     
     corpus = [
