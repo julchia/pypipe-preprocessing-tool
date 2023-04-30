@@ -3,7 +3,7 @@ from abc import abstractclassmethod, abstractmethod
 from typing import List, Dict, Set, Union, Optional
 
 import logging
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, DictConfig
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import Word2Vec, KeyedVectors
 
@@ -62,7 +62,7 @@ class TextFeaturizer(IProcess):
         ...
     
     @abstractclassmethod 
-    def get_default_configs(cls) -> OmegaConf:
+    def get_default_configs(cls) -> DictConfig:
         """
         """
         ...
@@ -114,6 +114,8 @@ class CountVecFeaturizer(TextFeaturizer):
         self._path_to_get_trained_model = self._configs.path_to_get_trained_model
         self._path_to_get_stored_vocabulary = self._configs.path_to_get_stored_vocabulary
         
+        self._use_own_vocabulary_creator = self._configs.use_own_vocabulary_creator
+        
         self._update_stored_vocabulary = self._configs.update_stored_vocabulary
 
     @classmethod
@@ -132,7 +134,7 @@ class CountVecFeaturizer(TextFeaturizer):
         )
         
     @classmethod
-    def get_default_configs(cls) -> OmegaConf:
+    def get_default_configs(cls) -> DictConfig:
         """
         """
         return OmegaConf.create({
@@ -170,13 +172,11 @@ class CountVecFeaturizer(TextFeaturizer):
                 callback_fn_to_load_data=utils.open_json_as_dict,
                 path_to_load_data=path
             )
-            return True
         elif utils.check_if_dir_extension_is('.txt', path):
             self.vocab = TextFeaturizer.data_manager.load_data_from_callable(
                 callback_fn_to_load_data=utils.open_line_by_line_txt_file,
                 path_to_load_data=path
             )
-            return True
         else:
             logger.warning(
                 f"No 'CountVecFeaturizer' vocabulary to load in dir: "
@@ -184,11 +184,15 @@ class CountVecFeaturizer(TextFeaturizer):
                 f"format: '.txt' or '.json'"
             )
             return False
+        if self.vocab is not None:
+            return True
+        else:
+            return False
                 
     def _set_vocabulary_creator(self) -> None:
         """
         """
-        if self._configs.use_own_vocabulary_creator:
+        if self._use_own_vocabulary_creator:
             # if self._unk_token is not None:
             #     self._trainset.append(self._unk_token)
             self.vocab = None
@@ -250,6 +254,7 @@ class CountVecFeaturizer(TextFeaturizer):
         for word in new_vocab:
             if word not in vocab_to_update:
                 vocab_to_update[word] = len(vocab_to_update)
+        print(vocab_to_update)
         return vocab_to_update
 
     def _train(self) -> None:
@@ -271,7 +276,7 @@ class CountVecFeaturizer(TextFeaturizer):
         self.featurizer = self._create_featurizer()
         self._train()
 
-    def train(self, trainset: List[str], persist: bool = True) -> None:
+    def train(self, trainset: List[str]) -> None:
         """
         """
         self._trainset = trainset
@@ -283,24 +288,33 @@ class CountVecFeaturizer(TextFeaturizer):
                 self._train_featurizer_from_scratch()
         else:
             self._train_loaded_featurizer()
-            
-        if persist:
-            self.persist()
 
     def load(self, featurizer: CountVectorizer = None):
         """
         """
-        if featurizer is not None:
+        if isinstance(featurizer, CountVectorizer):
             self.featurizer = featurizer
         else:
             self._check_if_trained_featurizer_exists_and_load_it()
-            
-    def persist(self) -> None:
+    
+    def _persist_vocab(self, vocab: Dict[int, str]) -> None:
         """
         """
-        # try to save model
         TextFeaturizer.data_manager.save_data_from_callable(
-            self.featurizer,
+            vocab,
+            "w",
+            callback_fn_to_save_data=utils.persist_dict_as_json,
+            path_to_save_data=self.path_to_save_vocabulary,
+            data_file_name="/vocab.json",
+            alias="countvec_featurizer",
+            to_save_vocab=True
+        )
+        
+    def _persist_model(self, model: CountVectorizer) -> None:
+        """
+        """
+        TextFeaturizer.data_manager.save_data_from_callable(
+            model,
             "wb",
             callback_fn_to_save_data=utils.persist_data_with_pickle,
             path_to_save_data=self.path_to_save_model,
@@ -308,38 +322,29 @@ class CountVecFeaturizer(TextFeaturizer):
             alias="countvec_featurizer"
         )
             
-        # try to save vocab data
-        if self._update_stored_vocabulary: 
-            if self.vocab is not None:
-                updated_vocab = self._update_loaded_vocabulary()
-                TextFeaturizer.data_manager.save_data_from_callable(
-                    updated_vocab,
-                    "w",
-                    callback_fn_to_save_data=utils.persist_dict_as_json,
-                    path_to_save_data=self.path_to_save_vocabulary,
-                    data_file_name="/vocab.json",
-                    alias="countvec_featurizer",
-                    to_save_vocab=True
-                )
+    def persist(self, model=True, vocab=False) -> None:
+        """
+        """
+        if model:
+            self._persist_model(model=self.featurizer)
+            
+        if vocab:
+            if self._update_stored_vocabulary: 
+                if self.vocab is not None:
+                    updated_vocab = self._update_loaded_vocabulary()
+                    self._persist_vocab(vocab=updated_vocab)
+                else:
+                    logger.warning(
+                        f"Could not update stored vocabulary for 'CountVecFeaturizer' "
+                        f"'CountVecFeaturizer' because no stored vocabulary was found "
+                        f"in '{self._path_to_get_stored_vocabulary}'"
+                    )
+                    return
             else:
-                logger.warning(
-                    f"Could not update stored vocabulary for 'CountVecFeaturizer' "
-                    f"'CountVecFeaturizer' because no stored vocabulary was found "
-                    f"in '{self._path_to_get_stored_vocabulary}'"
-                )
-                return
-        else:
-            vec_vocab = self._get_vocab_from_featurizer()  
-            TextFeaturizer.data_manager.save_data_from_callable(
-                vec_vocab,
-                "w",
-                callback_fn_to_save_data=utils.persist_dict_as_json,
-                path_to_save_data=self.path_to_save_vocabulary,
-                data_file_name="/vocab.json",
-                alias="countvec_featurizer",
-                to_save_vocab=True
-            )
-                
+                vec_vocab = self._get_vocab_from_featurizer()
+                self._persist_vocab(vocab=vec_vocab)
+    
+    # ver qué devuelve 
     def process(self, corpus):
         """
         """        
