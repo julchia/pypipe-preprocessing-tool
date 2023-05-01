@@ -1,8 +1,9 @@
 from __future__ import annotations
-from typing import List, Dict, Set, Union, Optional
+from typing import List, Dict, Set, Any, Union, Optional
 
 import logging
 from omegaconf import OmegaConf, DictConfig
+from numpy import ndarray
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import Word2Vec, KeyedVectors
 
@@ -272,8 +273,7 @@ class CountVecFeaturizer(TextFeaturizer):
                 vec_vocab = self._get_vocab_from_featurizer()
                 self._persist_vocab(vocab=vec_vocab)
     
-    # ver qué devuelve 
-    def process(self, corpus):
+    def process(self, corpus: List[str]) -> Union(List[str], ndarray):
         """
         """        
         if self.featurizer is None:
@@ -490,7 +490,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         self.featurizer = self._create_featurizer()
         self._train()
 
-    def train(self, trainset: List[str], persist: bool = False) -> None:
+    def train(self, trainset: List[str]) -> None:
         """
         """
         self._vocab = trainset     
@@ -502,9 +502,6 @@ class Word2VecFeaturizer(TextFeaturizer):
                 self._train_featurizer_from_scratch()
         else:
             self._train_loaded_featurizer()
-        
-        if persist:
-            self.persist()
 
     def load(self, path_to_trained_model: str = None) -> None:
         """
@@ -516,36 +513,41 @@ class Word2VecFeaturizer(TextFeaturizer):
         else:
             self._check_if_trained_featurizer_exists_and_load_it()
     
-    def persist(self) -> None:
+    def persist(
+        self, 
+        model: bool = True, 
+        vocab: bool = False, 
+        vectors: bool = False
+    ) -> None:
         """
         """
-        # try to save model data
-        TextFeaturizer.data_manager.save_data_from_callable(
-            callback_fn_to_save_data=self.featurizer.save,
-            path_to_save_data=self.path_to_save_model,
-            data_file_name="/word2vec_model.model",
-            alias="word2vec_featurizer"
-        )
+        if model:
+            TextFeaturizer.data_manager.save_data_from_callable(
+                callback_fn_to_save_data=self.featurizer.save,
+                path_to_save_data=self.path_to_save_model,
+                data_file_name="/word2vec_model.model",
+                alias="word2vec_featurizer"
+            )
         
-        # try to save model vectors
-        TextFeaturizer.data_manager.save_data_from_callable(
-            callback_fn_to_save_data=self.featurizer.wv.save,
-            path_to_save_data=self.path_to_save_vectors,
-            data_file_name="/word2vec_vectors.kv",
-            alias="word2vec_featurizer",
-            to_save_vocab=True
-        )
-        
-        # try to save vocab data
-        TextFeaturizer.data_manager.save_data_from_callable(
-            self.featurizer.wv.key_to_index,
-            "w",
-            callback_fn_to_save_data=utils.persist_dict_as_json,
-            path_to_save_data=self.path_to_save_vocabulary,
-            data_file_name="/word2vec_vocab.json",
-            alias="word2vec_featurizer",
-            to_save_vocab=True
-        )
+        if vocab:
+            TextFeaturizer.data_manager.save_data_from_callable(
+                self.featurizer.wv.key_to_index,
+                "w",
+                callback_fn_to_save_data=utils.persist_dict_as_json,
+                path_to_save_data=self.path_to_save_vocabulary,
+                data_file_name="/word2vec_vocab.json",
+                alias="word2vec_featurizer",
+                to_save_vocab=True
+            )
+            
+        if vectors:
+            TextFeaturizer.data_manager.save_data_from_callable(
+                callback_fn_to_save_data=self.featurizer.wv.save,
+                path_to_save_data=self.path_to_save_vectors,
+                data_file_name="/word2vec_vectors.kv",
+                alias="word2vec_featurizer",
+                to_save_vocab=True
+            )
                 
     def load_vectors(self, path_to_vectors: str) -> KeyedVectors:
         """
@@ -573,3 +575,4 @@ class Word2VecFeaturizer(TextFeaturizer):
             return
         else:
             return self.featurizer.wv.__getitem__(key)
+        
