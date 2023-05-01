@@ -9,7 +9,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from src.test import utils
 from src.core.processes.featurization.base import TextFeaturizer
-from src.core.processes.featurization.featurizers import CountVecFeaturizer, Vocabulary
+from src.core.processes.featurization.featurizers import CountVecFeaturizer
+from src.core.processes.featurization.vocabulary import Vocabulary
 
 
 ######################################################################################
