@@ -96,6 +96,7 @@ class CountVecFeaturizer(TextFeaturizer):
         """
         """
         path = self._path_to_get_stored_vocabulary
+        
         if utils.check_if_dir_extension_is('.json', path):
             self.vocab = TextFeaturizer.data_manager.load_data_from_callable(
                 callback_fn_to_load_data=utils.open_json_as_dict,
@@ -113,10 +114,8 @@ class CountVecFeaturizer(TextFeaturizer):
                 f"format: '.txt' or '.json'"
             )
             return False
-        if self.vocab is not None:
-            return True
-        else:
-            return False
+        
+        return self.vocab is not None
                 
     def _set_vocabulary_creator(self) -> None:
         """
