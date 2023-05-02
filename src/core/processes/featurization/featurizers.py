@@ -29,8 +29,22 @@ class CountVecFeaturizer(TextFeaturizer):
         featurizer: CountVectorizer = None,
         alias: str = None
     ) -> None:
-        """Builds a CountVecFeaturizer object by taking configurations
-        from the configs object."""
+        """
+        Builds a CountVecFeaturizer object by taking configurations
+        from the configs object.
+        
+        Args:
+            config: Featurizer configurations.
+        
+            featurizer: Trained or non-trained CountVectorizer object.
+                If the featurizer is not trained, it will be trained 
+                with the 'config' settings. If it is trained, when you 
+                re-train it will do so with the 'config' settings.
+        
+            alias: Alias to recognize the featurizer within a 
+                pipeline (it is None if the featurizer is not 
+                within a pipeline).
+        """
         super().__init__(
             configs=configs,
             alias=alias
@@ -227,8 +241,10 @@ class CountVecFeaturizer(TextFeaturizer):
         Loads CountVectorizer object.
         
         args:
-            featurizer: trained or non-trained CountVectorizer object (if
-                None, it checks if there is one set in the configurations)
+            featurizer: Trained or non-trained CountVectorizer object.
+                If the featurizer is not trained, it will be trained 
+                with the 'config' settings. If it is trained, when you 
+                re-train it will do so with the 'config' settings.
         """
         if isinstance(featurizer, CountVectorizer):
             self.featurizer = featurizer
@@ -310,8 +326,22 @@ class Word2VecFeaturizer(TextFeaturizer):
         featurizer: Word2Vec = None,
         alias: str = None
     ) -> None:
-        """Builds a Word2VecFeaturizer object by taking configurations
-        from the configs object."""
+        """
+        Builds a Word2VecFeaturizer object by taking configurations
+        from the configs object.
+        
+        Args:
+            config: Featurizer configurations.
+        
+            featurizer: Trained or non-trained Word2Vec object.
+                If the featurizer is not trained, it will be trained 
+                with the 'config' settings. If it is trained, when you 
+                re-train it will do so with the 'config' settings.
+        
+            alias: Alias to recognize the featurizer within a 
+                pipeline (it is None if the featurizer is not 
+                within a pipeline).
+        """
         super().__init__(
             configs=configs,
             alias=alias
@@ -522,17 +552,20 @@ class Word2VecFeaturizer(TextFeaturizer):
         else:
             self._train_loaded_featurizer()
 
-    def load(self, path_to_trained_model: str = None) -> None:
+    def load(self, path_to_model: str = None) -> None:
         """
         Loads Word2Vec object.
         
-        args:
-            featurizer: trained or non-trained Word2Vec object (if None,
-                it checks if there is one set in the configurations)
+        args: 
+            path_to_model: Path to trained or non-trained Word2Vec 
+                object. If the featurizer is not trained, it will 
+                be trained with the 'config' settings. If it is 
+                trained, when you re-train it will do so with the
+                'config' settings.
         """
-        if path_to_trained_model is not None:
+        if path_to_model is not None:
             self.featurizer = Word2Vec.load(
-                fname=path_to_trained_model
+                fname=path_to_model
             )
         else:
             self._check_if_trained_featurizer_exists_and_load_it()
