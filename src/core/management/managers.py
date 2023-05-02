@@ -1,3 +1,6 @@
+"""
+The module groups utility classes to manage different processes.
+"""
 from types import GeneratorType
 from typing import List, Any, Union, Optional, Callable, Generator
 
@@ -12,12 +15,28 @@ logger = logging.getLogger(__name__)
 
 class CorpusLazyManager:
     """
+    A lazy manager for reading large corpora efficiently.
+    
+    For efficiency reasons this class doesn't cache the contents, 
+    but rather reads them upon first access, meaning you might 
+    experience some delay for initial loading time when accessing 
+    corpus elements.
     """
     def __init__(self, corpus: Union[List[str], str]) -> None:
+        """
+        Returns a CorpusLazyManager object.
+        
+        args:
+            corpus: lists of strings or path to files containing 
+                the corpus data.
+        """
         self._corpus = corpus
         
     def __iter__(self) -> Generator:
         """
+        Once the class object has been created, its elements can 
+        be accessed iteratively through the iterator protocol, 
+        returned by 'CorpusLazyManager.__iter__'.
         """
         type_handler = {
             list: self._yield_corpus_from_list,
@@ -36,14 +55,12 @@ class CorpusLazyManager:
         yield from generator
         
     def _yield_corpus_from_list(self) -> Generator:
-        """
-        """
+        """Yields over corpus list."""
         for line in self._corpus:
             yield line
     
     def _yield_corpus_from_file(self) -> Generator:
-        """
-        """
+        """Yields over corpus static file."""
         with open(self._corpus, "r") as f:
             for line in f:
                 yield line.strip()
