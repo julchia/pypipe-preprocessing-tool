@@ -8,8 +8,8 @@ from src.core.management.managers import CorpusLazyManager
 
 
 class TextNormalizer(IProcess):
-    """
-    """
+    """Base class for all normalizers that will be implemented 
+    either from pipeline or in an isolated way."""
     def __init__(
         self, 
         configs: OmegaConf, 
@@ -23,12 +23,12 @@ class TextNormalizer(IProcess):
     
     @abstractclassmethod
     def get_isolated_process(cls) -> IProcess:
+        """Returns a TextNormalizer object."""
         ...
     
     @abstractclassmethod 
     def get_default_configs(cls) -> OmegaConf:
-        """
-        """
+        """Returns configurations for TextNormalizer object."""
         ...
     
     @abstractmethod
@@ -36,6 +36,6 @@ class TextNormalizer(IProcess):
         self, 
         corpus: Union[List[str], Iterable]
     ) -> Union[List[str], CorpusLazyManager]:
-        """
-        """
+        """Normalizes the given corpus to remove unwanted characters 
+        or symbols from it."""
         ...
