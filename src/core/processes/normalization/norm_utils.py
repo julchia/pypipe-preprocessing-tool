@@ -1,3 +1,5 @@
+from typing import Tuple, Dict
+
 import re
 from unidecode import unidecode
 from functools import partial
@@ -10,9 +12,12 @@ class SubRegexBuilder(str):
     It extends the str class to implement a builder pattern 
     that allows the sub function to be applied multiple 
     times.
+    
+    args:
+        args: Positional arguments passed to the constructor.
+        kwargs: Keyword arguments passed to the constructor.
     """
-
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Tuple, **kwargs: Dict):
         newobj = str.__new__(cls, *args, **kwargs)
         newobj.sub = lambda fro, to: SubRegexBuilder(re.sub(fro, to, newobj))
         return newobj
@@ -24,16 +29,23 @@ def regex_norm_handler(
     pattern: str, 
     ) -> str:
     """
+    General purpose function that replace occurrences of a 
+    certain pattern in the given text string.
+    
+    This function serves as a base for partially applied 
+    functions.
     """
     return re.sub(pattern, repl, text)
 
 
+# 'mi   nombre  ' -> 'mi nombre'
 whitespaces_handler = partial(
     regex_norm_handler, 
     pattern=constants.WHITE_SPACE_REGEX
 )
 
 
+# 'mi... nombre' -> 'mi nombre'
 punctuaction_handler = partial(
     regex_norm_handler, 
     pattern=constants.PUNCTUTATION_REGEX
@@ -52,36 +64,42 @@ email_handler = partial(
 )
 
 
+# 'mi @nombre' -> 'mi'
 mention_handler = partial(
     regex_norm_handler, 
     pattern=constants.MENTION_REGEX, 
 )
 
 
+# 'mi número 3322' -> 'mi número'
 digit_handler = partial(
     regex_norm_handler, 
     pattern=constants.DIGIT_REGEX, 
 )
 
 
+# 'mi s nombre' -> 'mi nombre'
 single_word_handler = partial(
     regex_norm_handler, 
     pattern=constants.SINGLE_WORD_REGEX, 
 )
 
 
+# 'mi sbl nombre' -> 'mi nombre'
 isolated_consonant_handler = partial(
     regex_norm_handler, 
     pattern=constants.ISOLATED_CONSONANT_REGEX, 
 ) 
 
 
+# 're loco' -> 'loco'
 re_handler = partial(
     regex_norm_handler, 
     pattern=constants.RE_REGEX, 
 ) 
 
 
+# 'muy locoooo' -> 'muy loco'
 duplicated_letter_handler = partial(
     regex_norm_handler,
     repl=r"\1",
@@ -89,6 +107,7 @@ duplicated_letter_handler = partial(
 ) 
 
 
+# 'MI Nombre' -> 'mi nombre'
 def lowercase_diacritic_handler(
     text: str,
     repl=None,
@@ -97,6 +116,8 @@ def lowercase_diacritic_handler(
     return unidecode(text).lower()
 
 
+# 'kien es' -> 'quien es'
+# 'q pasa' -> 'que pasa'
 def q_handler(
     text: str,
     repl = None,
@@ -107,6 +128,8 @@ def q_handler(
         .sub(pattern["quie"], " quie")
         
 
+# 'jajajajajaja' -> 'jaja'
+# 'jaajjajjajaj' -> 'jaja'
 def laught_handler(
     text: str,
     repl = None,
