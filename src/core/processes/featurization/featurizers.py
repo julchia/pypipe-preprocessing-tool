@@ -17,17 +17,20 @@ logger = logging.getLogger(__name__)
 
 class CountVecFeaturizer(TextFeaturizer):
     """
-    """
+    Sparse feautrizer based on Sklearn CountVectorizer.
     
+    Converts a collection of text documents to a matrix of token counts.
+    The implementation produces a sparse representation of the counts 
+    using scipy.sparse.csr_matrix.
+    """
     def __init__(
         self,
         configs: OmegaConf, 
         featurizer: CountVectorizer = None,
         alias: str = None
     ) -> None:
-        """
-        """
-        
+        """Builds a CountVecFeaturizer object by taking configurations
+        from the configs object."""
         super().__init__(
             configs=configs,
             alias=alias
@@ -54,8 +57,7 @@ class CountVecFeaturizer(TextFeaturizer):
         featurizer: CountVectorizer = None,
         alias: str = None,
     ) -> CountVecFeaturizer:
-        """
-        """
+        """Returns non-trained CountVecFeaturizer object"""
         return cls(
             configs=configs,
             featurizer=featurizer,
@@ -64,8 +66,7 @@ class CountVecFeaturizer(TextFeaturizer):
         
     @classmethod
     def get_default_configs(cls) -> DictConfig:
-        """
-        """
+        """Returns configurations for CountVecFeaturizer object"""
         return OmegaConf.create({
             "max_features": None,
             "min_ngram": 1,
@@ -81,8 +82,8 @@ class CountVecFeaturizer(TextFeaturizer):
         })
 
     def _check_if_trained_featurizer_exists_and_load_it(self) -> bool:
-        """
-        """
+        """Checks if a trained featurizer was set in the configurations 
+        and loads it if present."""
         self.featurizer = TextFeaturizer.data_manager.load_data_from_callable(
             "rb",
             callback_fn_to_load_data=utils.load_data_with_pickle,
@@ -93,8 +94,8 @@ class CountVecFeaturizer(TextFeaturizer):
         return True
     
     def _check_if_stored_vocabulary_exists_and_load_it(self) -> bool:
-        """
-        """
+        """Checks if a vocabulary was set in the configurations and
+        loads it if present."""
         path = self._path_to_get_stored_vocabulary
         
         if utils.check_if_dir_extension_is('.json', path):
@@ -119,6 +120,10 @@ class CountVecFeaturizer(TextFeaturizer):
                 
     def _set_vocabulary_creator(self) -> None:
         """
+        Sets the way to create the vocabulary from the trainset corpus.
+        The vocabulary can be created either from the CountVectorizer by 
+        setting 'self.vocab' to None, or from the Vocabulary object by 
+        creating a generator.
         """
         if self._use_own_vocabulary_creator:
             # if self._unk_token is not None:
@@ -139,10 +144,9 @@ class CountVecFeaturizer(TextFeaturizer):
             )
    
     def _load_featurizer_params(self) -> None:
-        """
-        """
+        """Loads necessary parameters to create CountVectorizer object."""
         if not self._check_if_stored_vocabulary_exists_and_load_it():
-            self._set_vocabulary_creator()        
+            self._set_vocabulary_creator()
         
         self._featurizer_params = {
             "max_features": self._configs.max_features,
@@ -155,18 +159,17 @@ class CountVecFeaturizer(TextFeaturizer):
         }
                     
     def _create_featurizer(self) -> CountVectorizer:
-        """
-        """
+        """Returns non-trained CountVectorizer object."""
         return CountVectorizer(**self._featurizer_params)
 
     def _get_vocab_from_featurizer(self) -> Dict[str, int]:
-        """
-        """
+        """Returns the vocabulary that generates CountVectorizer from 
+        loaded vocabulary."""
         return self.featurizer.vocabulary_
 
     def _get_vocab_from_trainset(self) -> Set[str]:
-        """
-        """
+        """Returns the vocabulary that generates CountVectorizer from 
+        trainset."""
         analizer = self.featurizer.build_analyzer()
         new_vocab = set()
         for sent in self._trainset:
@@ -175,8 +178,8 @@ class CountVecFeaturizer(TextFeaturizer):
         return new_vocab
 
     def _update_loaded_vocabulary(self) -> Dict[str, int]:
-        """
-        """
+        """Updates the loaded vocabulary by adding any non-seen words from 
+        trainset."""
         new_vocab = self._get_vocab_from_trainset()
         vocab_to_update = self._get_vocab_from_featurizer()
         for word in new_vocab:
@@ -186,26 +189,28 @@ class CountVecFeaturizer(TextFeaturizer):
         return vocab_to_update
 
     def _train(self) -> None:
-        """
-        """
+        """Fits CountVectorizer object."""
         logger.info("'CountVecFeaturizer' training has started")        
         self.featurizer.fit(self._trainset)
         logger.info("'CountVecFeaturizer' training finished")
 
     def _train_loaded_featurizer(self) -> None:
-        """
-        """
         self._train()
 
     def _train_featurizer_from_scratch(self) -> None:
-        """
-        """
         self._load_featurizer_params()
         self.featurizer = self._create_featurizer()
         self._train()
 
     def train(self, trainset: List[str]) -> None:
         """
+        Interface that trains CountFeaturizer object.
+        
+        Before training, check if there is a loaded featurizer. If it 
+        does not exist, train from scratch.
+        
+        args:
+            trainset: training corpus, a list of sentences.
         """
         self._trainset = trainset
 
@@ -219,6 +224,11 @@ class CountVecFeaturizer(TextFeaturizer):
 
     def load(self, featurizer: CountVectorizer = None):
         """
+        Loads CountVectorizer object.
+        
+        args:
+            featurizer: trained or non-trained CountVectorizer object (if
+                None, it checks if there is one set in the configurations)
         """
         if isinstance(featurizer, CountVectorizer):
             self.featurizer = featurizer
@@ -226,8 +236,6 @@ class CountVecFeaturizer(TextFeaturizer):
             self._check_if_trained_featurizer_exists_and_load_it()
     
     def _persist_vocab(self, vocab: Dict[int, str]) -> None:
-        """
-        """
         TextFeaturizer.data_manager.save_data_from_callable(
             vocab,
             "w",
@@ -239,8 +247,6 @@ class CountVecFeaturizer(TextFeaturizer):
         )
         
     def _persist_model(self, model: CountVectorizer) -> None:
-        """
-        """
         TextFeaturizer.data_manager.save_data_from_callable(
             model,
             "wb",
@@ -251,8 +257,6 @@ class CountVecFeaturizer(TextFeaturizer):
         )
             
     def persist(self, model=True, vocab=False) -> None:
-        """
-        """
         if model:
             self._persist_model(model=self.featurizer)
             
@@ -274,7 +278,13 @@ class CountVecFeaturizer(TextFeaturizer):
     
     def process(self, corpus: List[str]) -> Union(List[str], ndarray):
         """
-        """        
+        Process a corpus of text and, if there is a trained CountVectorizer 
+        object, converts it to a matrix of token counts.
+
+        Args:
+            corpus: list of sentences. If None, returns the original corpus 
+            without processing.
+        """
         if self.featurizer is None:
             logger.warning(
                 "It's impossible to process the input from 'CountVecFeaturizer' "
