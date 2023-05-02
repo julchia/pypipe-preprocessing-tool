@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 class CorpusLazyManager:
     """
-    A lazy manager for reading large corpora efficiently.
+    The class provides a lazy manager for reading large corpora 
+    efficiently.
     
     For efficiency reasons this class doesn't cache the contents, 
     but rather reads them upon first access, meaning you might 
@@ -67,11 +68,11 @@ class CorpusLazyManager:
 
    
 class ModelDataManager:
-    """
-    """
-        
+    """The class provides utility methods for managing data and models."""
     @staticmethod
     def get_default_model_path_from_constants(alias: str, file_name: str) -> str:
+        """Given an alias and file name, returns the default path to 
+        save the model."""
         try:
             default_model_path = paths.MODEL_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_model_path)
@@ -86,6 +87,8 @@ class ModelDataManager:
                 
     @staticmethod
     def get_default_vocab_path_from_constants(alias: str, file_name: str) -> str:
+        """Given an alias and file name, returns the default path to 
+        save the vocabulary."""
         try:
             default_vocab_path = paths.VOCAB_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_vocab_path)
@@ -104,6 +107,8 @@ class ModelDataManager:
         callback_fn_to_load_data: Callable[..., None], 
         path_to_load_data: str
     ) -> Optional[Any]:
+        """Given a path to load data, calls a callback function to load the data 
+        and returns it."""
         if path_to_load_data is None:
             return
         try:
@@ -128,6 +133,10 @@ class ModelDataManager:
         to_save_vocab: bool = False 
     ) -> None:
         """
+        Given a path to save data and a callback function to save the data, 
+        saves the data.
+        If no path is provided, saves the data to the default path based on 
+        the alias and file name.
         """
         if to_save_vocab:
             fn_to_get_default_path = self.get_default_vocab_path_from_constants
