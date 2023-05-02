@@ -583,7 +583,7 @@ class Word2VecFeaturizer(TextFeaturizer):
                                        
     def get_word_vector_object(self) -> Optional[KeyedVectors]:
         """Returns KeyedVectors object (see Gensim 4.x models.keyedvectors).
-        If there is no trained featurizer, returns None"""
+        If there is no trained featurizer, returns None."""
         if self.featurizer is None:
             logger.warning(
                 "It's impossible to get 'KeyedVectors' from 'Word2VecFeaturizer' "
@@ -599,6 +599,8 @@ class Word2VecFeaturizer(TextFeaturizer):
         """
         Given a word learned during training, returns its corresponding dense vector
         (1D if key_or_keys is single key, otherwise - 2D).
+
+        If there is no trained featurizer, returns None.
 
         Args:
             key: requested key or list-of-keys.
