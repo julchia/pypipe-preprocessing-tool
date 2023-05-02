@@ -15,7 +15,17 @@ class TextNormalizer(IProcess):
         configs: OmegaConf, 
         alias: str = None
         ) -> None:
+        """
+        Builds a TextNormalizer object.
+
+        Args:
+            alias: alias to recognize the normalizer within 
+                a pipeline (it is None if the normalizer is not 
+                within a pipeline).
+                
+            config: normalizer configurations.
         
+        """
         if alias is not None:
             self._configs = configs.pipeline[alias]
         else:
