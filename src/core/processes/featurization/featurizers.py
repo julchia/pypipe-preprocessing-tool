@@ -299,17 +299,19 @@ class CountVecFeaturizer(TextFeaturizer):
 
 class Word2VecFeaturizer(TextFeaturizer):
     """
-    """
+    Dense feautrizer based on Gensim 4.x Word2Vec.
     
+    The Gensim word2vec algorithms include skip-gram and CBOW models, using
+    either hierarchical softmax or negative sampling.
+    """
     def __init__(
         self,
         configs: OmegaConf, 
         featurizer: Word2Vec = None,
         alias: str = None
     ) -> None:
-        """
-        """
-        
+        """Builds a Word2VecFeaturizer object by taking configurations
+        from the configs object."""
         super().__init__(
             configs=configs,
             alias=alias
@@ -348,8 +350,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         featurizer: Word2Vec = None,
         alias: str = None
     ) -> Word2VecFeaturizer:
-        """
-        """
+        """Returns non-trained Word2VecFeaturizer object"""
         return cls(
             configs=configs,
             featurizer=featurizer,
@@ -358,8 +359,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         
     @classmethod
     def get_default_configs(cls) -> OmegaConf:
-        """
-        """
+        """Returns configurations for Word2VecFeaturizer object"""
         return OmegaConf.create({
             "method": "cbow",
             "ignore_freq_higher_than": 1,
@@ -375,8 +375,8 @@ class Word2VecFeaturizer(TextFeaturizer):
         })
             
     def _check_if_trained_featurizer_exists_and_load_it(self) -> bool:
-        """
-        """
+        """Checks if a trained featurizer was set in the configurations 
+        and loads it if present."""
         self.featurizer = TextFeaturizer.data_manager.load_data_from_callable(
             callback_fn_to_load_data=Word2Vec.load,
             path_to_load_data=self._path_to_trained_model
@@ -386,8 +386,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         return True
         
     def _load_featurizer_params(self) -> None:        
-        """
-        """
+        """Loads necessary parameters to create Word2Vec object."""
         if self._configs.method == "cbow":
             self._sg = 1
             logger.info(
@@ -412,6 +411,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         }
     
     def _load_train_params(self) -> None:
+        """Loads necessary parameters to train Word2Vec object."""
         self._train_params = {
             "corpus_iterable": self._vocab,
             "total_examples": self.featurizer.corpus_count,
@@ -421,16 +421,16 @@ class Word2VecFeaturizer(TextFeaturizer):
         }
     
     def _load_vectors(self, path_to_vectors: str) -> KeyedVectors:
-        """
-        """
+        """Loads KeyedVectors object from configuratios with a representation 
+        of trained dense vectors."""
         if utils.check_if_dir_extension_is('.bin', path_to_vectors):
             return KeyedVectors.load_word2vec_format(path_to_vectors, binary=True)
         else:
             return KeyedVectors.load(path_to_vectors)
     
     def _prepare_vocabulary_from_loaded_vocab(self, update: bool) -> None:
-        """
-        """
+        """Loads word-freq dictionary from configuratios and and sets it 
+        as Word2Vec vocab."""
         from json import load
         
         with open(self._path_to_get_stored_vocabulary, 'r') as f:
@@ -442,8 +442,8 @@ class Word2VecFeaturizer(TextFeaturizer):
         )  
     
     def _prepare_vocabulary_from_pretrained_vectors(self, update: bool) -> None:
-        """
-        """
+        """Loads pretrained vectors from configuratios and sets it as Word2Vec
+        vocab."""
         wv = self._load_vectors(self._path_to_get_trained_vectors)
         
         self.featurizer.build_vocab_from_freq(
@@ -455,6 +455,11 @@ class Word2VecFeaturizer(TextFeaturizer):
         
     def _prepare_vocabulary(self) -> None:
         """
+        Prepares the vocabulary to initialize the Word2Vec object. The vocabulary 
+        can be loaded in different ways: 
+        - from pre-trained dense vectors
+        - from a frequency dictionary
+        - from the generator created by the Vocabulary object.
         """
         self._vocab = super().create_vocab(
             corpus=self._vocab, 
@@ -478,9 +483,11 @@ class Word2VecFeaturizer(TextFeaturizer):
             )
     
     def _create_featurizer(self) -> Word2Vec:
+        """Returns non-trained Word2Vec object."""
         return Word2Vec(**self._featurizer_params)
     
     def _train(self) -> None:
+        """Trains Word2Vec object."""
         self._prepare_vocabulary()
         self._load_train_params()
         logger.info("'Word2VecFeaturizer' training has started")
@@ -488,19 +495,22 @@ class Word2VecFeaturizer(TextFeaturizer):
         logger.info("'Word2VecFeaturizer' training finished")
     
     def _train_loaded_featurizer(self) -> None:
-        """
-        """        
         self._train()
         
     def _train_featurizer_from_scratch(self) -> None:
-        """
-        """
         self._load_featurizer_params()
         self.featurizer = self._create_featurizer()
         self._train()
 
     def train(self, trainset: List[str]) -> None:
         """
+        Interface that trains Word2Vec object.
+        
+        Before training, check if there is a loaded featurizer. If it 
+        does not exist, train from scratch.
+        
+        args:
+            trainset: training corpus, a list of sentences.
         """
         self._vocab = trainset     
         
@@ -514,6 +524,11 @@ class Word2VecFeaturizer(TextFeaturizer):
 
     def load(self, path_to_trained_model: str = None) -> None:
         """
+        Loads Word2Vec object.
+        
+        args:
+            featurizer: trained or non-trained Word2Vec object (if None,
+                it checks if there is one set in the configurations)
         """
         if path_to_trained_model is not None:
             self.featurizer = Word2Vec.load(
@@ -528,8 +543,6 @@ class Word2VecFeaturizer(TextFeaturizer):
         vocab: bool = False, 
         vectors: bool = False
     ) -> None:
-        """
-        """
         if model:
             TextFeaturizer.data_manager.save_data_from_callable(
                 callback_fn_to_save_data=self.featurizer.save,
@@ -560,10 +573,16 @@ class Word2VecFeaturizer(TextFeaturizer):
                 
     def load_vectors(self, path_to_vectors: str) -> KeyedVectors:
         """
+        Interface to load KeyedVectors object from configuratios with a 
+        representation of trained dense vectors.
+        
+        args:
+            path_to_vectors: path to get vectors.
         """
         return self._load_vectors(path_to_vectors)
                                        
     def get_word_vector_object(self) -> Optional[KeyedVectors]:
+        """Returns KeyedVectors object (see Gensim 4.x models.keyedvectors)"""
         if self.featurizer is None:
             logger.warning(
                 "It's impossible to get 'KeyedVectors' from 'Word2VecFeaturizer' "
@@ -572,9 +591,16 @@ class Word2VecFeaturizer(TextFeaturizer):
             return
         return self.featurizer.wv
     
-    def get_vector_by_key(self, key: Union[str, List[str]]):
+    def get_vector_by_key(
+        self, 
+        key: Union[str, List[str]]
+    ) -> Union(List[str], ndarray):
         """
-        return <class 'numpy.ndarray'>
+        Given a word learned during training, returns its corresponding dense vector
+        (1D if key_or_keys is single key, otherwise - 2D).
+
+        Args:
+            key: requested key or list-of-keys.
         """
         if self.featurizer is None:
             logger.warning(
