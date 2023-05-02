@@ -6,8 +6,7 @@ from typing import List, Dict, Union
 from omegaconf import OmegaConf, DictConfig
 
 from src.core.interfaces import IProcess
-from src.core.management.managers import ModelDataManager
-from src.core.processes.featurization.vocabulary import Vocabulary
+from src.core.management.managers import ModelDataManager, VocabularyManager
 
 
 class TextFeaturizer(IProcess):
@@ -47,9 +46,9 @@ class TextFeaturizer(IProcess):
         diacritic: bool = False,
         lower_case: bool = False,
         norm_punct: bool = False
-    ) -> Vocabulary:
-        """Returns a Vocabulary type generator"""
-        return Vocabulary(
+    ) -> VocabularyManager:
+        """Returns a VocabularyManager type generator"""
+        return VocabularyManager(
             corpus,
             corpus2sent,
             text2idx,
