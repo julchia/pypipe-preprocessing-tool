@@ -13,6 +13,12 @@ logger = logging.getLogger(__name__)
 
 class PipeHandler(IProcessHandler):
     """
+    The class implements the Chain of Responsibility 
+    design pattern, that allows sequential execution 
+    of processes set in a pipeline.
+    
+    The chain can be composed dynamically at runtime with 
+    any handler that follows a standard handler interface.
     """
     _prev_handler: IProcessHandler = None
     _next_handler: IProcessHandler = None
@@ -32,21 +38,19 @@ class PipeHandler(IProcessHandler):
             )
             
     def set_next(self, handler: IProcessHandler) -> IProcessHandler:
-        """
-        """
+        """Sets the next handler in the chain."""
         self._next_handler = handler
         return handler
 
 
 class TextNormalizerHandler(PipeHandler):
-    """
-    """ 
+    """Concrete handler to integrate any TextNormalizer into 
+    the pipeline sequence."""
     def __init__(self, processor: TextNormalizer):
         self._processor = processor
        
     def process(self, corpus: Union[Iterable[str], List[str]]) -> CorpusLazyManager:
-        """
-        """
+        """Interface to the 'normalize_text' method."""
         PipeHandler._prev_handler = self
         if super()._check_if_input_type_is_iterable(iter_corpus=corpus):
             self._prev_handler = self
@@ -54,14 +58,13 @@ class TextNormalizerHandler(PipeHandler):
 
 
 class TextFeaturizerHandler(PipeHandler):
-    """
-    """
+    """Concrete handler to integrate any TextFeaturizer into 
+    the pipeline sequence."""
     def __init__(self, processor: TextFeaturizer):
         self._processor = processor
     
     def process(self, corpus: Union[Iterable[str], List[str]]) -> None:
-        """
-        """       
+        """Interface to the 'train' method."""    
         if not isinstance(self._prev_handler, TextFeaturizerHandler):
             PipeHandler._prev_handler = self
             if super()._check_if_input_type_is_iterable(iter_corpus=corpus):    
