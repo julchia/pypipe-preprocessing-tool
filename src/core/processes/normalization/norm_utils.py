@@ -19,10 +19,12 @@ class SubRegexBuilder(str):
     """
     def __new__(cls, *args: Tuple, **kwargs: Dict):
         newobj = str.__new__(cls, *args, **kwargs)
-        newobj.sub = lambda fro, to: SubRegexBuilder(re.sub(fro, to, newobj))
+        newobj.sub = lambda fr_, tn_: SubRegexBuilder(
+            re.sub(fr_, tn_, newobj)
+        )
         return newobj
-
-
+    
+    
 def regex_norm_handler(
     text: str,
     repl: str,
