@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 class RegexNormalizer(TextNormalizer):
     """
+    Text normalizer using regex handlers that are stored
+    in the constant 'REGEX_NORMALIZATION_HANDLERS'.
     """
     regex_handlers = REGEX_NORMALIZATION_HANDLERS
     
@@ -24,7 +26,17 @@ class RegexNormalizer(TextNormalizer):
         configs: OmegaConf, 
         alias: str = None
     ) -> None:
+        """
+        Builds a RegexNormalizer object by taking configurations
+        from the configs object.
         
+        args:
+            config: Normalizer configurations.
+            
+            alias: Alias to recognize the normalizer within a 
+                pipeline (it is None if the normalizer is not 
+                within a pipeline).
+        """
         super().__init__(
             configs=configs,
             alias=alias
@@ -37,16 +49,14 @@ class RegexNormalizer(TextNormalizer):
         cls, 
         configs: OmegaConf,
     ) -> RegexNormalizer:
-        """
-        """
+        """Returns a RegexNormalizer object."""
         return cls(
             configs=configs
         )
         
     @classmethod
     def get_default_configs(cls) -> OmegaConf:
-        """
-        """
+        """Returns configurations for a RegexNormalizer object."""
         return OmegaConf.create({
             "normalize_laught": {
                 "active": True,
@@ -104,6 +114,9 @@ class RegexNormalizer(TextNormalizer):
     
     def _compile_regex_handlers(self) -> None:
         """
+        Compiles regular expression handlers and adds them to the 
+        list of compilation handlers ('compile_handlers'), assuming
+        configuration is active.
         """
         for regex_handler, spec in self._configs.handlers.items():
             if self._configs.active:
@@ -119,6 +132,17 @@ class RegexNormalizer(TextNormalizer):
         compile_handlers: tuple[Callable[[str, str], str], str]
     ) -> str:
         """
+        Performs an string substitution operation where it uses 
+        the provided compile_handlers tuple to apply the regular 
+        expression patterns to the input text.
+
+        args:
+            text: A string representing the input text to be normalized.
+            
+            compile_handlers: A tuple containing two elements: 0) function, 
+                1) string. The function applies the compiled regular 
+                expression to the input text, while the string represents 
+                the replacement pattern used during normalization.
         """
         handler, repl = compile_handlers
         return handler(
@@ -127,6 +151,12 @@ class RegexNormalizer(TextNormalizer):
         )
 
     def _standard_normalization(self, corpus: List[str]) -> List[str]:
+        """
+        Iterates over a list of strings and normalize each string.
+        
+        args:
+            corpus: List of string to normalize.
+        """
         norm_corpus = []
         for sent in corpus:
             norm_corpus.append(
@@ -139,6 +169,13 @@ class RegexNormalizer(TextNormalizer):
         return norm_corpus
     
     def _lazy_normalization(self, corpus: Iterable) -> Generator:
+        """
+        Iterates over a list of strings and performs a lazy normalization
+        by yield each element in the list.
+        
+        args:
+            corpus: Iterable to normalize.
+        """
         for sent in corpus:
             yield reduce(
                 self._normalize, 
@@ -152,6 +189,19 @@ class RegexNormalizer(TextNormalizer):
         repl: str = None
     ) -> None:
         """
+        Adds a custom regular expression handler to the list of compilation 
+        handlers ('compile_handlers').
+        
+        args:
+            handler: Callable that takes as arguments: 0) a string to normalize 
+                by substitution, 1) substitution element; and should return a 
+                string.
+
+            repl: Substitution element
+            
+            e.g.:
+                def regex_norm_handler(text: str, repl: str) -> str:    
+                    return re.sub(pattern, repl, text)
         """
         self.compile_handlers.append((handler, repl))
     
@@ -160,6 +210,19 @@ class RegexNormalizer(TextNormalizer):
         corpus: Union[List[str], Iterable]
     ) -> Union[List[str], CorpusLazyManager]:
         """
+        Normalizes the given corpus by compiling regex handlers set on 
+        configurations. Returns either a list or CorpusLazyManager object
+        depending on whether the given corpus is a list or iterable.
+        
+        Args:
+            corpus: The text to be normalized. Can accept lists or iterables 
+                containing string elements.
+
+        Returns:
+            Union[List[str], CorpusLazyManager]: The normalized text as a Python 
+            list or a manager object with a generator-like interface providing 
+            lazily generated normalized texts. If a list of strings is inputted, 
+            returns a list; otherwise a manager object.
         """
         if not isinstance(corpus, (Iterable, List)):
             raise ValueError(
