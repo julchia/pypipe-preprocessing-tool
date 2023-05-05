@@ -65,8 +65,8 @@
             "remove_spanish_stop_words": false,
             "unk_token": "<<UNK>>",
             "use_own_vocabulary_creator": true,
-            "path_to_save_model": "src/data/models/pruebas",
-            "path_to_save_vocabulary": "src/data/models/pruebas",
+            "path_to_save_model": null,
+            "path_to_save_vocabulary": null,
             "path_to_get_trained_model": null,
             "path_to_get_stored_vocabulary": null,
             "update_stored_vocabulary": false
