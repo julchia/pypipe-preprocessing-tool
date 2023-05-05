@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict, Set, Any, Union, Optional
+from typing import List, Dict, Set, Union, Optional
 
 import logging
 from omegaconf import OmegaConf, DictConfig
