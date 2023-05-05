@@ -5,8 +5,8 @@
 ## In progess:
 
 - Unit tests
-- Run bash commands
-- Documentation for main objects
+- Build package
+- Cli commands
 - Write a real readme 😅
 
 ## About the project
