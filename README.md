@@ -1,4 +1,4 @@
-# Spanish Text Preprocessing Tool
+#Text Preprocessing Tool
 
 ### 🛠️ Work in progress 🛠️
 
@@ -11,11 +11,11 @@
 
 ## About the project
 
-<p align='justify'>The Spanish Text Preprocessing Tool is designed to facilitate the preprocessing of text data through the execution of isolated or sequential processes.</p>
+<p align='justify'>The Text Preprocessing Tool is designed to facilitate the preprocessing of text data through the execution of isolated or sequential processes. At the moment, designed mainly to work with text in Spanish</p>
 
 <p align='justify'>The project was born as a personal hobby that I use to learn and have fun in my free time, along with the need to combine processes and tools into a single service that I use daily in other personal projects.</p>
 
-<p align='justify'>In short, the Spanish Text Preprocessing Tool is a service that allows users to manage and dynamically create different pipelines for text data preprocessing simply by setting a configuration inside a static file (src/configs/preprocessing.json). This static file triggers the creation of a pipeline that allows the processes that appear in the configuration to be used individually or sequentially (although sequential functionality is not yet implemented). It is worth mentioning that each process can work as an isolated object, allowing them to work in a decoupled way from the configuration.</p>
+<p align='justify'>In short, the Text Preprocessing Tool is a service that allows users to manage and dynamically create different pipelines for text data preprocessing simply by setting a configuration inside a static file (src/configs/preprocessing.json). This static file triggers the creation of a pipeline that allows the processes that appear in the configuration to be used individually or sequentially (although sequential functionality is not yet implemented). It is worth mentioning that each process can work as an isolated object, allowing them to work in a decoupled way from the configuration.</p>
 
 <p align='justify'>At present, I haven't yet focused on developing commands that automate flows. However, I'll provide a simple example of a possible use of the tool:</p>
 
