@@ -103,9 +103,7 @@ class CountVecFeaturizer(TextFeaturizer):
             callback_fn_to_load_data=utils.load_data_with_pickle,
             path_to_load_data=self._path_to_get_trained_model
         )
-        if self.featurizer is None:
-            return False
-        return True
+        return self.featurizer is not None
     
     def _check_if_stored_vocabulary_exists_and_load_it(self) -> bool:
         """Checks if a vocabulary was set in the configurations and
@@ -410,9 +408,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             callback_fn_to_load_data=Word2Vec.load,
             path_to_load_data=self._path_to_trained_model
         )
-        if self.featurizer is None:
-            return False
-        return True
+        return self.featurizer is not None
         
     def _load_featurizer_params(self) -> None:        
         """Loads necessary parameters to create Word2Vec object."""
