@@ -8,9 +8,9 @@ from omegaconf import OmegaConf, DictConfig
 from sklearn.feature_extraction.text import CountVectorizer
 
 from src.test import utils
+from src.core.management.managers import VocabularyManager
 from src.core.processes.featurization.base import TextFeaturizer
 from src.core.processes.featurization.featurizers import CountVecFeaturizer
-from src.core.processes.featurization.vocabulary import Vocabulary
 
 
 ######################################################################################
@@ -249,7 +249,7 @@ def test__set_vocabulary_creator_when_use_own_vocabulary_creator_is_False_and__t
             
     featurizer._set_vocabulary_creator()
     
-    assert isinstance(featurizer.vocab, Vocabulary)
+    assert isinstance(featurizer.vocab, VocabularyManager)
 
 
 def test__set_vocabulary_creator_method_when_use_own_vocabulary_creator_is_False_and__trainset_is_given_expected_supercall_create_vocab(
