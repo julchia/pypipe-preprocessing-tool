@@ -199,7 +199,6 @@ class CountVecFeaturizer(TextFeaturizer):
         for word in new_vocab:
             if word not in vocab_to_update:
                 vocab_to_update[word] = len(vocab_to_update)
-        print(vocab_to_update)
         return vocab_to_update
 
     def _train(self) -> None:
