@@ -4,14 +4,14 @@ from typing import List, Union, Iterable
 from omegaconf import OmegaConf
 
 from src.core.interfaces import IProcess
-from src.core.management.managers import ModelDataManager, CorpusLazyManager
+from src.core.management.managers import ProcessDataManager, CorpusLazyManager
 
 
 class TextNormalizer(IProcess):
     """Base class for all normalizers that will be implemented 
     either from pipeline or in an isolated way."""
     
-    data_manager = ModelDataManager()
+    data_manager = ProcessDataManager()
     
     def __init__(
         self, 
