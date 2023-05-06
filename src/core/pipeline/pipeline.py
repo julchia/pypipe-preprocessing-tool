@@ -77,6 +77,9 @@ class Pipeline:
         Args:
             corpus: The corpus to be processed. Can be a list
             of str or a path to static corpus file.  
+            
+            persist: If there are paths set in the configurations, persists
+            all outputs of all processes in the executed sequence.
         """
         processed_corpus = self._corpus_generator(corpus)
         for alias, spec in self._pipeline_process.items():
