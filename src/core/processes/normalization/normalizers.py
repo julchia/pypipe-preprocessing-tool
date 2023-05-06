@@ -5,6 +5,7 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
+from src.core.processes import utils
 from src.core.management.managers import CorpusLazyManager
 from src.core.processes.normalization.base import TextNormalizer
 from src.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
@@ -43,6 +44,8 @@ class RegexNormalizer(TextNormalizer):
         )
         
         self.compile_handlers: List = []
+        
+        self._path_to_save_normcorpus = self._configs.path_to_save_normcorpus
         
     @classmethod
     def get_isolated_process(
@@ -204,6 +207,15 @@ class RegexNormalizer(TextNormalizer):
                     return re.sub(pattern, repl, text)
         """
         self.compile_handlers.append((handler, repl))
+    
+    def persist(self, data: Iterable):
+        TextNormalizer.data_manager.save_data_from_callable(
+            data,
+            callback_fn_to_save_data=utils.persist_iterable_as_txtfile,
+            path_to_save_data=self._path_to_save_normcorpus,
+            data_file_name="/normcorpus.txt",
+            alias="regex_norm"
+        )
     
     def normalize_text(
         self, 

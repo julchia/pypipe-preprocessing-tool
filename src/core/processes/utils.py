@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict, Set, Any
+from typing import List, Dict, Set, Any, Iterable
 import os
 import pickle
 import json
@@ -32,6 +32,13 @@ def open_json_as_dict(file_dir: str) -> Dict[str, Any]:
         with open(file_dir) as f:
             return json.load(f)
 
+
+def persist_iterable_as_txtfile(data: Iterable, file_dir: str) -> None:
+    """
+    """
+    with open(file_dir, 'w') as file:
+        for item in data:
+            file.write(str(item) + '\n')
 
 def persist_dict_as_json(
     file: Dict[str, Any], 
