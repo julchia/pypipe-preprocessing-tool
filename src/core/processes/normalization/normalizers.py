@@ -153,7 +153,7 @@ class RegexNormalizer(TextNormalizer):
             repl=repl
         )
 
-    def _standard_normalization(self, corpus: List[str]) -> List[str]:
+    def _standard_normalization(self, corpus: List[str], persist: bool = False) -> List[str]:
         """
         Iterates over a list of strings and normalize each string.
         
@@ -169,9 +169,11 @@ class RegexNormalizer(TextNormalizer):
                     sent
                 )
             )
+        if persist:
+            self.persist(data=norm_corpus)
         return norm_corpus
     
-    def _lazy_normalization(self, corpus: Iterable) -> Generator:
+    def _lazy_normalization(self, corpus: Iterable, persist: bool = False) -> Generator:
         """
         Iterates over a list of strings and performs a lazy normalization
         by yield each element in the list.
@@ -180,11 +182,14 @@ class RegexNormalizer(TextNormalizer):
             corpus: Iterable to normalize.
         """
         for sent in corpus:
-            yield reduce(
+            normalized_sent = reduce(
                 self._normalize, 
                 self.compile_handlers, 
                 sent
             )
+            if persist:
+                self.persist(data=[normalized_sent])
+            yield normalized_sent
 
     def add_regex_handler(
         self, 
@@ -219,7 +224,8 @@ class RegexNormalizer(TextNormalizer):
     
     def normalize_text(
         self, 
-        corpus: Union[List[str], Iterable]
+        corpus: Union[List[str], Iterable],
+        persist: bool = False
     ) -> Union[List[str], CorpusLazyManager]:
         """
         Normalizes the given corpus by compiling regex handlers set on 
@@ -247,7 +253,7 @@ class RegexNormalizer(TextNormalizer):
         self._compile_regex_handlers()
                 
         if isinstance(corpus, List):
-            return self._standard_normalization(corpus=corpus)
+            return self._standard_normalization(corpus=corpus, persist=persist)
         else:
-            return CorpusLazyManager(self._lazy_normalization(corpus=corpus))
+            return CorpusLazyManager(self._lazy_normalization(corpus=corpus, persist=persist))
 
