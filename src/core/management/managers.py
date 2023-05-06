@@ -250,7 +250,7 @@ class VocabularyManager:
 
 
 class ProcessDataManager:
-    """The class provides utility methods for managing data and processes."""
+    """The class provides utility methods for managing data from processes."""
     @staticmethod
     def get_default_process_path_from_constants(alias: str, file_name: str) -> str:
         """Given an alias and file name, returns the default path to 
