@@ -49,12 +49,16 @@ class TextNormalizerHandler(PipeHandler):
     def __init__(self, processor: TextNormalizer):
         self._processor = processor
        
-    def process(self, corpus: Union[Iterable[str], List[str]]) -> CorpusLazyManager:
+    def process(
+        self, 
+        corpus: Union[Iterable[str], List[str]], 
+        persist: bool = False
+    ) -> CorpusLazyManager:
         """Interface to the 'normalize_text' method."""
         PipeHandler._prev_handler = self
         if super()._check_if_input_type_is_iterable(iter_corpus=corpus):
             self._prev_handler = self
-            return self._processor.normalize_text(corpus=corpus)
+            return self._processor.normalize_text(corpus=corpus, persist=persist)
 
 
 class TextFeaturizerHandler(PipeHandler):
@@ -63,12 +67,16 @@ class TextFeaturizerHandler(PipeHandler):
     def __init__(self, processor: TextFeaturizer):
         self._processor = processor
     
-    def process(self, corpus: Union[Iterable[str], List[str]]) -> None:
+    def process(
+        self, 
+        corpus: Union[Iterable[str], List[str]], 
+        persist: bool = False
+    ) -> None:
         """Interface to the 'train' method."""    
         if not isinstance(self._prev_handler, TextFeaturizerHandler):
             PipeHandler._prev_handler = self
             if super()._check_if_input_type_is_iterable(iter_corpus=corpus):    
-                return self._processor.train(trainset=corpus)
+                return self._processor.train(trainset=corpus, persist=persist)
         else:
             logger.info(
                 f"{self._processor} was not integrated into sequential execution "

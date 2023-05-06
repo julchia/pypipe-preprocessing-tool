@@ -213,7 +213,7 @@ class CountVecFeaturizer(TextFeaturizer):
         self.featurizer = self._create_featurizer()
         self._train()
 
-    def train(self, trainset: List[str]) -> None:
+    def train(self, trainset: List[str], persist: bool = False) -> None:
         """
         Interface that trains CountFeaturizer object.
         
@@ -232,6 +232,9 @@ class CountVecFeaturizer(TextFeaturizer):
                 self._train_featurizer_from_scratch()
         else:
             self._train_loaded_featurizer()
+            
+        if persist:
+            self.persist(model=True, vocab=True)
 
     def load(self, featurizer: CountVectorizer = None):
         """
@@ -527,7 +530,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         self.featurizer = self._create_featurizer()
         self._train()
 
-    def train(self, trainset: List[str]) -> None:
+    def train(self, trainset: List[str], persist: bool = False) -> None:
         """
         Interface that trains Word2Vec object.
         
@@ -546,6 +549,9 @@ class Word2VecFeaturizer(TextFeaturizer):
                 self._train_featurizer_from_scratch()
         else:
             self._train_loaded_featurizer()
+        
+        if persist:
+            self.persist(model=True, vocab=True, vectors=True)
 
     def load(self, path_to_model: str = None) -> None:
         """
