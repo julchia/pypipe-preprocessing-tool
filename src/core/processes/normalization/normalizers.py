@@ -5,6 +5,7 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
+from src.core.processes import utils
 from src.core.management.managers import CorpusLazyManager
 from src.core.processes.normalization.base import TextNormalizer
 from src.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
@@ -43,6 +44,9 @@ class RegexNormalizer(TextNormalizer):
         )
         
         self.compile_handlers: List = []
+        
+        self._data_file_name = "/normcorpus.txt"
+        self._path_to_save_normcorpus = self._configs.path_to_save_normcorpus
         
     @classmethod
     def get_isolated_process(
@@ -150,25 +154,34 @@ class RegexNormalizer(TextNormalizer):
             repl=repl
         )
 
-    def _standard_normalization(self, corpus: List[str]) -> List[str]:
+    def _normalize_text(self, text):
+        """
+            Normalizes a given input text by applying a series of regular 
+            expression patterns using the '_normalize' function. The method 
+            returns the normalized text.
+
+            Args:
+                text: A string representing the input text to be normalized.
+        """
+        return reduce(
+            self._normalize, 
+            self.compile_handlers, 
+            text
+        )
+
+    def _standard_normalization(self, corpus: List[str], persist: bool = False) -> List[str]:
         """
         Iterates over a list of strings and normalize each string.
         
         args:
             corpus: List of string to normalize.
         """
-        norm_corpus = []
-        for sent in corpus:
-            norm_corpus.append(
-                reduce(
-                    self._normalize, 
-                    self.compile_handlers, 
-                    sent
-                )
-            )
+        norm_corpus = [self._normalize_text(sent) for sent in corpus]
+        if persist:
+            self.persist(data=norm_corpus)
         return norm_corpus
     
-    def _lazy_normalization(self, corpus: Iterable) -> Generator:
+    def _lazy_normalization(self, corpus: Iterable, persist: bool = False) -> Generator:   
         """
         Iterates over a list of strings and performs a lazy normalization
         by yield each element in the list.
@@ -176,12 +189,17 @@ class RegexNormalizer(TextNormalizer):
         args:
             corpus: Iterable to normalize.
         """
-        for sent in corpus:
-            yield reduce(
-                self._normalize, 
-                self.compile_handlers, 
-                sent
-            )
+        path = self._path_to_save_normcorpus + self._data_file_name
+        if persist:
+            writer = utils.lazy_writer(file_path=path)
+            next(writer)
+            for sent in corpus:
+                normalized_sent = self._normalize_text(sent)
+                writer.send(normalized_sent)
+                yield normalized_sent
+        else:
+            for sent in corpus:
+                yield self._normalize_text(sent)
 
     def add_regex_handler(
         self, 
@@ -205,9 +223,19 @@ class RegexNormalizer(TextNormalizer):
         """
         self.compile_handlers.append((handler, repl))
     
+    def persist(self, data: Iterable):
+        TextNormalizer.data_manager.save_data_from_callable(
+            data,
+            callback_fn_to_save_data=utils.persist_iterable_as_txtfile,
+            path_to_save_data=self._path_to_save_normcorpus,
+            data_file_name=self._data_file_name,
+            alias="regex_norm"
+        )
+    
     def normalize_text(
         self, 
-        corpus: Union[List[str], Iterable]
+        corpus: Union[List[str], Iterable],
+        persist: bool = False
     ) -> Union[List[str], CorpusLazyManager]:
         """
         Normalizes the given corpus by compiling regex handlers set on 
@@ -235,7 +263,7 @@ class RegexNormalizer(TextNormalizer):
         self._compile_regex_handlers()
                 
         if isinstance(corpus, List):
-            return self._standard_normalization(corpus=corpus)
+            return self._standard_normalization(corpus=corpus, persist=persist)
         else:
-            return CorpusLazyManager(self._lazy_normalization(corpus=corpus))
+            return CorpusLazyManager(self._lazy_normalization(corpus=corpus, persist=persist))
 

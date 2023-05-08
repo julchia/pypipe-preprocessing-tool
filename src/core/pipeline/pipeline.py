@@ -19,7 +19,7 @@ class Pipeline:
     """
     def __init__(
         self, 
-        config_path: str, 
+        config_path: str,
         pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS,
         corpus_generator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
     ) -> None:
@@ -67,7 +67,8 @@ class Pipeline:
         
     def _get_processes_sequentially(
         self, 
-        corpus: Union[List[str], str]
+        corpus: Union[List[str], str],
+        persist: bool = False,
     ) -> Optional[Any]:
         """
         Process the corpus through the pipeline in sequential 
@@ -76,6 +77,9 @@ class Pipeline:
         Args:
             corpus: The corpus to be processed. Can be a list
             of str or a path to static corpus file.  
+            
+            persist: If there are paths set in the configurations, persists
+            all outputs of all processes in the executed sequence.
         """
         processed_corpus = self._corpus_generator(corpus)
         for alias, spec in self._pipeline_process.items():
@@ -84,7 +88,10 @@ class Pipeline:
                 active_handler = handler(
                     processor=self.__dict__[alias]
                 )
-                processed_corpus = active_handler.process(processed_corpus)
+                processed_corpus = active_handler.process(
+                    corpus=processed_corpus,
+                    persist=persist
+                )
         return processed_corpus
            
     def create_pipeline(self) -> Pipeline:
@@ -94,7 +101,8 @@ class Pipeline:
     
     def process_corpus_sequentially(
         self, 
-        corpus: Union[List[str], str]
+        corpus: Union[List[str], str],
+        persist: bool = False,
     ) -> Optional[Any]:
         """Interfaces to process the corpus through the pipeline 
         in sequential order."""
@@ -104,5 +112,8 @@ class Pipeline:
                 "to create a pipeline by calling 'create_pipeline()'"
             )
         else:
-            return self._get_processes_sequentially(corpus=corpus)
+            return self._get_processes_sequentially(
+                corpus=corpus,
+                persist=persist
+            )
     

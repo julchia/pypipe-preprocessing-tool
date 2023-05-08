@@ -1,8 +1,9 @@
 from __future__ import annotations
-from typing import List, Dict, Set, Any
+from typing import List, Dict, Set, Any, Iterable
 import os
 import pickle
 import json
+from contextlib import contextmanager
 
 
 def create_dir_if_not_exists(path: str) -> None:
@@ -32,6 +33,13 @@ def open_json_as_dict(file_dir: str) -> Dict[str, Any]:
         with open(file_dir) as f:
             return json.load(f)
 
+
+def persist_iterable_as_txtfile(data: Iterable, file_dir: str) -> None:
+    """
+    """
+    with open(file_dir, 'w') as file:
+        for item in data:
+            file.write(str(item) + '\n')
 
 def persist_dict_as_json(
     file: Dict[str, Any], 
@@ -73,4 +81,38 @@ def check_if_dir_extension_is(to_check: str, dir_path: str) -> bool:
     else:
         return False
     
+
+def lazy_writer(file_path: str, sep: str ="\n") -> None:
+    """
+    A function that lazily writes input texts to a text file.
+
+    It uses the internal function '_lazy_write' to handle file opening and 
+    closing. It also uses a yield construct to allow data to bewritten to
+    the file lazily.
+
+    The function is initialized using the following code:
+
+        writer = lazy_writer(file_path)
+        next(writer)
+
+    and allows input texts to be added using a call to sent():
+
+        writer.send(str_obj)
+
+    Args:
+        file_path: The path where the text strings will be stored.
+
+        sep: Text separator.
+    """
+    @contextmanager
+    def _lazy_write(file_path=file_path):
+        with open(file_path, "w") as f:
+            try:
+                yield f
+            finally:
+                f.flush()
     
+    with _lazy_write(file_path) as f:
+        while True:
+            text = yield
+            f.write(text + sep)

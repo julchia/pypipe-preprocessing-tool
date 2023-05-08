@@ -249,22 +249,22 @@ class VocabularyManager:
         return self._idx2text[index]
 
 
-class ModelDataManager:
-    """The class provides utility methods for managing data and models."""
+class ProcessDataManager:
+    """The class provides utility methods for managing data from processes."""
     @staticmethod
-    def get_default_model_path_from_constants(alias: str, file_name: str) -> str:
+    def get_default_process_path_from_constants(alias: str, file_name: str) -> str:
         """Given an alias and file name, returns the default path to 
-        save the model."""
+        save the process."""
         try:
-            default_model_path = paths.MODEL_DEFAULT_PATHS[alias]
-            utils.create_dir_if_not_exists(default_model_path)
+            default_process_path = paths.MODEL_DEFAULT_PATHS[alias]
+            utils.create_dir_if_not_exists(default_process_path)
             logger.info(
-                f"Default model path '{default_model_path}' will be create"
+                f"Default process path '{default_process_path}' will be create"
             )
-            return default_model_path + file_name
+            return default_process_path + file_name
         except KeyError:
             raise ValueError(
-                f"The alias {alias} is invalid, could not access default model path"
+                f"The alias {alias} is invalid, could not access default process path"
             )
                 
     @staticmethod
@@ -324,15 +324,15 @@ class ModelDataManager:
             fn_to_get_default_path = self.get_default_vocab_path_from_constants
             logger_msg_word = "vocab"
         else:
-            fn_to_get_default_path = self.get_default_model_path_from_constants
-            logger_msg_word = "model"
+            fn_to_get_default_path = self.get_default_process_path_from_constants
+            logger_msg_word = "process"
         
         if isinstance(path_to_save_data, str):
             path = path_to_save_data + data_file_name
             try:
                 callback_fn_to_save_data(*callback_args, path)
                 logger.info(
-                    f"{logger_msg_word} alias '{alias}' will be stored "
+                    f"Output from {logger_msg_word} alias '{alias}' will be stored "
                     f"in path '{path_to_save_data}{data_file_name}'"
                 )
             except FileNotFoundError:
@@ -346,7 +346,7 @@ class ModelDataManager:
                 )
                 callback_fn_to_save_data(*callback_args, path)
                 logger.info(
-                    f"{logger_msg_word} alias '{alias}' will be stored "
+                    f"Output {logger_msg_word} alias '{alias}' will be stored "
                     f"in path '{path_to_save_data}{data_file_name}'"
                 )
         else:

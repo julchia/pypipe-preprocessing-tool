@@ -2,6 +2,7 @@
     "pipeline": {
         "regex_norm": {
             "active": true,
+            "path_to_save_normcorpus": null,
             "handlers": {
                 "normalize_laught": {
                     "active": true,
@@ -31,7 +32,7 @@
                     "active": true,
                     "replacement": "<<EMAIL>>"
                 },
-                "normalize_url":  {
+                "normalize_url": {
                     "active": true,
                     "replacement": "<<URL>>"
                 },
@@ -87,7 +88,6 @@
             "path_to_get_stored_vocabulary": null,
             "path_to_get_trained_vectors": null,
             "update_stored_vocabulary": false
-
         }
     }
 }

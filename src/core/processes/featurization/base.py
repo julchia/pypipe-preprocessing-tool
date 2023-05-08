@@ -6,14 +6,14 @@ from typing import List, Dict, Union
 from omegaconf import OmegaConf, DictConfig
 
 from src.core.interfaces import IProcess
-from src.core.management.managers import ModelDataManager, VocabularyManager
+from src.core.management.managers import ProcessDataManager, VocabularyManager
 
 
 class TextFeaturizer(IProcess):
     """Base class for all featurizers that will be implemented 
     either from pipeline or in an isolated way"""
     
-    data_manager = ModelDataManager()
+    data_manager = ProcessDataManager()
     
     def __init__(
         self, 
