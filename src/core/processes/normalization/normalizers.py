@@ -45,6 +45,7 @@ class RegexNormalizer(TextNormalizer):
         
         self.compile_handlers: List = []
         
+        self._data_file_name = "/normcorpus.txt"
         self._path_to_save_normcorpus = self._configs.path_to_save_normcorpus
         
     @classmethod
@@ -153,6 +154,21 @@ class RegexNormalizer(TextNormalizer):
             repl=repl
         )
 
+    def _normalize_text(self, text):
+        """
+            Normalizes a given input text by applying a series of regular 
+            expression patterns using the '_normalize' function. The method 
+            returns the normalized text.
+
+            Args:
+                text: A string representing the input text to be normalized.
+        """
+        return reduce(
+            self._normalize, 
+            self.compile_handlers, 
+            text
+        )
+
     def _standard_normalization(self, corpus: List[str], persist: bool = False) -> List[str]:
         """
         Iterates over a list of strings and normalize each string.
@@ -160,20 +176,12 @@ class RegexNormalizer(TextNormalizer):
         args:
             corpus: List of string to normalize.
         """
-        norm_corpus = []
-        for sent in corpus:
-            norm_corpus.append(
-                reduce(
-                    self._normalize, 
-                    self.compile_handlers, 
-                    sent
-                )
-            )
+        norm_corpus = [self._normalize_text(sent) for sent in corpus]
         if persist:
             self.persist(data=norm_corpus)
         return norm_corpus
     
-    def _lazy_normalization(self, corpus: Iterable, persist: bool = False) -> Generator:
+    def _lazy_normalization(self, corpus: Iterable, persist: bool = False) -> Generator:   
         """
         Iterates over a list of strings and performs a lazy normalization
         by yield each element in the list.
@@ -181,15 +189,17 @@ class RegexNormalizer(TextNormalizer):
         args:
             corpus: Iterable to normalize.
         """
-        for sent in corpus:
-            normalized_sent = reduce(
-                self._normalize, 
-                self.compile_handlers, 
-                sent
-            )
-            if persist:
-                self.persist(data=[normalized_sent])
-            yield normalized_sent
+        path = self._path_to_save_normcorpus + self._data_file_name
+        if persist:
+            writer = utils.lazy_writer(file_path=path)
+            next(writer)
+            for sent in corpus:
+                normalized_sent = self._normalize_text(sent)
+                writer.send(normalized_sent)
+                yield normalized_sent
+        else:
+            for sent in corpus:
+                yield self._normalize_text(sent)
 
     def add_regex_handler(
         self, 
@@ -218,7 +228,7 @@ class RegexNormalizer(TextNormalizer):
             data,
             callback_fn_to_save_data=utils.persist_iterable_as_txtfile,
             path_to_save_data=self._path_to_save_normcorpus,
-            data_file_name="/normcorpus.txt",
+            data_file_name=self._data_file_name,
             alias="regex_norm"
         )
     
