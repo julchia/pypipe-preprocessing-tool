@@ -189,13 +189,15 @@ class RegexNormalizer(TextNormalizer):
         args:
             corpus: Iterable to normalize.
         """
-        path = self._path_to_save_normcorpus + self._data_file_name
         if persist:
-            writer = utils.lazy_writer(file_path=path)
-            next(writer)
+            writer = TextNormalizer.data_manager.get_lazy_file_writer(
+                path_to_save_data=self._path_to_save_normcorpus,
+                data_file_name=self._data_file_name,
+                alias="regex_norm"
+            )
             for sent in corpus:
                 normalized_sent = self._normalize_text(sent)
-                writer.send(normalized_sent)
+                if writer is not None: writer.send(normalized_sent)
                 yield normalized_sent
         else:
             for sent in corpus:
