@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import List, Dict, Any, Optional, Union, Callable, Iterable
+from typing import List, Dict, Any, Union, Callable, Iterable
 
 import logging
 from omegaconf import OmegaConf, DictConfig
 
 from src.core import constants
+from src.core.interfaces import IProcess
 from src.core.management.managers import CorpusLazyManager
 
 
@@ -40,7 +41,6 @@ class Pipeline:
         self._config = self._format_config(config=config_path)
         self._pipeline_process = pipeline_process
         self._corpus_generator = corpus_generator
-        self._pipiline_was_created: bool = False
     
     @staticmethod
     def _format_config(config: str) -> DictConfig: 
@@ -52,32 +52,20 @@ class Pipeline:
         """
         return OmegaConf.load(config)
     
-    def _create_pipeline_process(self, alias: str) -> None:
-        """Create a pipeline process and set it as an attribute of the 
-        Pipeline object."""
+    def create_pipeline_process(self, alias: str) -> IProcess:
+        """Returns a pipeline process."""
         if alias in self._pipeline_process:
             if self._config.pipeline[alias].active:
                 _, processor = self._pipeline_process[alias]
-                setattr(
-                    self, 
-                    alias, 
-                    processor(
-                        alias=alias, 
-                        configs=self._config
-                    )
-                )
+                process = processor(alias=alias, configs=self._config)
                 self._pipiline_was_created = True
-            
-    def _set_pipeline_processes(self) -> None:
-        """Set up pipeline processes as attributes of the Pipeline object."""
-        for alias in self._pipeline_process.keys():
-            self._create_pipeline_process(alias)
-        
-    def _get_processes_sequentially(
+                return process
+                
+    def run_processes_sequentially(
         self, 
-        corpus: Union[List[str], str],
+        corpus: Union[Iterable[str], str],
         persist: bool = False,
-    ) -> Optional[Any]:
+    ) -> Union[Iterable[str], str]:
         """
         Process the corpus through the pipeline in sequential 
         order.
@@ -91,37 +79,13 @@ class Pipeline:
         """
         processed_corpus = self._corpus_generator(corpus)
         for alias, spec in self._pipeline_process.items():
-            if alias in self.__dict__:
+            if self._config.pipeline[alias].active:
+                process = self.create_pipeline_process(alias)
                 handler, _ = spec
-                active_handler = handler(
-                    processor=self.__dict__[alias]
-                )
+                active_handler = handler(processor=process)
                 processed_corpus = active_handler.process(
                     corpus=processed_corpus,
                     persist=persist
-                )
+                )   
         return processed_corpus
-           
-    def create_pipeline(self) -> Pipeline:
-        """Returns the Pipeline object."""
-        self._set_pipeline_processes()
-        return self
-    
-    def process_corpus_sequentially(
-        self, 
-        corpus: Union[List[str], str],
-        persist: bool = False,
-    ) -> Optional[Any]:
-        """Interfaces to process the corpus through the pipeline 
-        in sequential order."""
-        if not self._pipiline_was_created:
-            logger.info(
-                "To run processes sequentially, it is first necessary "
-                "to create a pipeline by calling 'create_pipeline()'"
-            )
-        else:
-            return self._get_processes_sequentially(
-                corpus=corpus,
-                persist=persist
-            )
-    
+            
