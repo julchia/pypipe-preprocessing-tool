@@ -52,18 +52,26 @@ class Pipeline:
         """
         return OmegaConf.load(config)
     
-    def _set_pipeline_processes(self) -> None:
-        """Set up pipeline processes as attributes of the Pipeline 
-        object."""
-        for alias, spec in self._pipeline_process.items():
-            if alias in self._config.pipeline:
-                if self._config.pipeline[alias].active:
-                    _, processor = spec
-                    self.__dict__[alias] = processor(
-                        alias=alias,
+    def _create_pipeline_process(self, alias: str) -> None:
+        """Create a pipeline process and set it as an attribute of the 
+        Pipeline object."""
+        if alias in self._pipeline_process:
+            if self._config.pipeline[alias].active:
+                _, processor = self._pipeline_process[alias]
+                setattr(
+                    self, 
+                    alias, 
+                    processor(
+                        alias=alias, 
                         configs=self._config
                     )
+                )
             self._pipiline_was_created = True
+            
+    def _set_pipeline_processes(self) -> None:
+        """Set up pipeline processes as attributes of the Pipeline object."""
+        for alias in self._pipeline_process.keys():
+            self._create_pipeline_process(alias)
         
     def _get_processes_sequentially(
         self, 
