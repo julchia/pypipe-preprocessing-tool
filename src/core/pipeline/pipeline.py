@@ -66,7 +66,7 @@ class Pipeline:
                         configs=self._config
                     )
                 )
-            self._pipiline_was_created = True
+                self._pipiline_was_created = True
             
     def _set_pipeline_processes(self) -> None:
         """Set up pipeline processes as attributes of the Pipeline object."""
