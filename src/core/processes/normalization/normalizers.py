@@ -5,6 +5,7 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
+from src.core import constants
 from src.core.processes import utils
 from src.core.management.managers import CorpusLazyManager
 from src.core.processes.normalization.base import TextNormalizer
@@ -42,6 +43,8 @@ class RegexNormalizer(TextNormalizer):
             configs=configs,
             alias=alias
         )
+        
+        self._alias = constants.REGEX_NORMALIZER_ALIAS if alias is None else alias
         
         self.compile_handlers: List = []
         
@@ -193,7 +196,7 @@ class RegexNormalizer(TextNormalizer):
             writer = TextNormalizer.data_manager.get_lazy_file_writer(
                 path_to_save_data=self._path_to_save_normcorpus,
                 data_file_name=self._data_file_name,
-                alias="regex_norm"
+                alias=self._alias
             )
             for sent in corpus:
                 normalized_sent = self._normalize_text(sent)
@@ -231,7 +234,7 @@ class RegexNormalizer(TextNormalizer):
             callback_fn_to_save_data=utils.persist_iterable_as_txtfile,
             path_to_save_data=self._path_to_save_normcorpus,
             data_file_name=self._data_file_name,
-            alias="regex_norm"
+            alias=self._alias
         )
     
     def normalize_text(

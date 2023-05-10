@@ -7,6 +7,7 @@ from numpy import ndarray
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import Word2Vec, KeyedVectors
 
+from src.core import constants
 from src.core.processes import utils
 from src.core.processes.featurization.base import TextFeaturizer
 
@@ -49,6 +50,8 @@ class CountVecFeaturizer(TextFeaturizer):
             configs=configs,
             alias=alias
         )
+        
+        self._alias = constants.COUNTVEC_FEATURIZER_ALIAS if alias is None else alias
         
         self.featurizer = featurizer
         
@@ -258,7 +261,7 @@ class CountVecFeaturizer(TextFeaturizer):
             callback_fn_to_save_data=utils.persist_dict_as_json,
             path_to_save_data=self.path_to_save_vocabulary,
             data_file_name="/vocab.json",
-            alias="countvec_featurizer",
+            alias=self._alias,
             to_save_vocab=True
         )
         
@@ -269,7 +272,7 @@ class CountVecFeaturizer(TextFeaturizer):
             callback_fn_to_save_data=utils.persist_data_with_pickle,
             path_to_save_data=self.path_to_save_model,
             data_file_name="/vocabularies.pkl",
-            alias="countvec_featurizer"
+            alias=self._alias
         )
             
     def persist(self, model=True, vocab=False) -> None:
@@ -346,6 +349,8 @@ class Word2VecFeaturizer(TextFeaturizer):
             configs=configs,
             alias=alias
         )
+        
+        self._alias = constants.WORD2VEC_FEATURIZER_ALIAS if alias is None else alias
         
         self.featurizer = featurizer
         
@@ -582,7 +587,7 @@ class Word2VecFeaturizer(TextFeaturizer):
                 callback_fn_to_save_data=self.featurizer.save,
                 path_to_save_data=self.path_to_save_model,
                 data_file_name="/word2vec_model.model",
-                alias="word2vec_featurizer"
+                alias=self._alias
             )
         
         if vocab:
@@ -592,7 +597,7 @@ class Word2VecFeaturizer(TextFeaturizer):
                 callback_fn_to_save_data=utils.persist_dict_as_json,
                 path_to_save_data=self.path_to_save_vocabulary,
                 data_file_name="/word2vec_vocab.json",
-                alias="word2vec_featurizer",
+                alias=self._alias,
                 to_save_vocab=True
             )
             
@@ -601,7 +606,7 @@ class Word2VecFeaturizer(TextFeaturizer):
                 callback_fn_to_save_data=self.featurizer.wv.save,
                 path_to_save_data=self.path_to_save_vectors,
                 data_file_name="/word2vec_vectors.kv",
-                alias="word2vec_featurizer",
+                alias=self._alias,
                 to_save_vocab=True
             )
                 
