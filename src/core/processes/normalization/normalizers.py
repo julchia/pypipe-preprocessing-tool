@@ -65,58 +65,61 @@ class RegexNormalizer(TextNormalizer):
     def get_default_configs(cls) -> OmegaConf:
         """Returns configurations for a RegexNormalizer object."""
         return OmegaConf.create({
-            "normalize_laught": {
-                "active": True,
-                "replacement": None
-            },
-            "normalize_re": {
-                "active": True,
-                "replacement": "muy"
-            },
-            "normalize_q": {
-                "active": True,
-                "replacement": None
-            },
-            "normalize_isolated_consonant": {
-                "active": True,
-                "replacement": ""
-            },
-            "normalize_single_word": {
-                "active": True,
-                "replacement": " "
-            },
-            "normalize_digit": {
-                "active": True,
-                "replacement": ""
-            },
-            "normalize_email": {
-                "active": True,
-                "replacement": "<<EMAIL>>"
-            },
-            "normalize_url":  {
-                "active": True,
-                "replacement": "<<URL>>"
-            },
-            "normalize_mention": {
-                "active": True,
-                "replacement": "<<MENTION>>"
-            },
-            "normalize_duplicated_letter": {
-                "active": True,
-                "replacement": r"\1"
-            },
-            "normalize_lowercase_diacritic": {
-                "active": True,
-                "replacement": None
-            },
-            "normalize_punctuation": {
-                "active": True,
-                "replacement": ""
-            },
-            "normalize_white_spaces": {
-                "active": True,
-                "replacement": " "
-            },
+            "path_to_save_normcorpus": None, 
+            "handlers": {
+                "normalize_laught": {
+                    "active": True,
+                    "replacement": None
+                },
+                "normalize_re": {
+                    "active": True,
+                    "replacement": "muy"
+                },
+                "normalize_q": {
+                    "active": True,
+                    "replacement": None
+                },
+                "normalize_isolated_consonant": {
+                    "active": True,
+                    "replacement": ""
+                },
+                "normalize_single_word": {
+                    "active": True,
+                    "replacement": " "
+                },
+                "normalize_digit": {
+                    "active": True,
+                    "replacement": ""
+                },
+                "normalize_email": {
+                    "active": True,
+                    "replacement": "<<EMAIL>>"
+                },
+                "normalize_url":  {
+                    "active": True,
+                    "replacement": "<<URL>>"
+                },
+                "normalize_mention": {
+                    "active": True,
+                    "replacement": "<<MENTION>>"
+                },
+                "normalize_duplicated_letter": {
+                    "active": True,
+                    "replacement": r"\1"
+                },
+                "normalize_lowercase_diacritic": {
+                    "active": True,
+                    "replacement": None
+                },
+                "normalize_punctuation": {
+                    "active": True,
+                    "replacement": ""
+                },
+                "normalize_white_spaces": {
+                    "active": True,
+                    "replacement": " "
+                },
+            }
         })
     
     def _compile_regex_handlers(self) -> None:
