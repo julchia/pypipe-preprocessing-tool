@@ -7,7 +7,7 @@ from pytest_mock import mocker
 from omegaconf import OmegaConf, DictConfig
 from sklearn.feature_extraction.text import CountVectorizer
 
-from pypipe.test import utils
+from pypipe.tests import utils
 from pypipe.core.management.managers import VocabularyManager
 from pypipe.core.processes.featurization.base import TextFeaturizer
 from pypipe.core.processes.featurization.featurizers import CountVecFeaturizer
