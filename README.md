@@ -16,7 +16,9 @@
 
 <p align='justify'>The project was born as a hobby, so don't expect constant regularity! 😅 However, it is also true that Pypipe provides a solution for certain needs in some of my other projects.</p>
 
-<p align='justify'>In short, Pypipe is a service that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
+## About Pypipe
+
+<p align='justify'>Pypipe is a NLP tool that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
 
 ## Some uses
 
