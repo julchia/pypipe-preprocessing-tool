@@ -1,36 +1,37 @@
+import sys
+import argparse
+
 from pypipe.core import paths
 from pypipe.core.pipeline.pipeline import Pipeline
 
 
-def main() -> None:
+def main():
+    """
+    """
+    config_alias = {
+        "preprocessing_1": paths.PREPROCESSING_CONFIG_PATH
+    }
     
-    corpus = [
-        "HOLA!!1111 gente lindaaaaa!!!",
-        "el nombre essssss @Pedro re loco jjajajajjja",
-        "mi correo es pedrito@gmail.com",
-        "su página es www.pedrito.com ...."
-    ]
+    parser = argparse.ArgumentParser(description="Pipeline CLI")
+    parser.add_argument("config", help="Alias of configuration file or path to configuration file")
+    parser.add_argument("--corpus", "-c", help="Path to corpus file")
+    parser.add_argument("--store", "-s", action="store_true", help="Persist output of each process")
+    parser.add_argument("--process", "-p", help="Alias of the pipeline process to run")
+    parser.add_argument("--method", "-m", required="--process" in sys.argv, help="Method to execute for the specified pipeline process")
+    args = parser.parse_args()
     
-    pipe_1 = Pipeline(
-        corpus=corpus,
-        config_path=paths.PREPROCESSING_CONFIG_PATH
-    )
-        
-    pipe_1.run_processes_sequentially(persist=True)
+    if args.config in config_alias:
+        config_path = config_alias[args.config]
+    else:
+        config_path = args.config
     
-    unseen_corpus = [
-        "hola gente",
-        "jaja su nombre es pedro",
-        "el correo de pedro es MAIL"
-    ]
+    pipeline = Pipeline(config_path, corpus=args.corpus)
     
-    countvec = pipe_1.create_pipeline_process(alias="countvec")
-    
-    countvec.load()
-    
-    vectors = countvec.process(corpus=unseen_corpus)
-
-    print(vectors.toarray())
+    if args.process:
+        process = pipeline.create_pipeline_process(args.process)
+        getattr(process, args.method)(corpus=pipeline._corpus, persist=args.store)
+    else:
+        pipeline.run_processes_sequentially(persist=args.store)
 
 
 if __name__ == "__main__":
