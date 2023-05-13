@@ -7,6 +7,31 @@ from pypipe.core.pipeline.pipeline import Pipeline
 
 def main():
     """
+    Pypipe Pipeline CLI.
+
+    Parses command line arguments, loads configuration file, and runs the 
+    specified or sequentially pipeline processes.
+
+    Usage:
+    python -m pypipe <config_alias or config_path> [--corpus <path_to_corpus>] [--store] 
+                [--process <alias_of_pipeline_process> --method <method_to_execute>] 
+
+    args:
+        <config_alias or config_path>: Alias of configuration file or path to 
+            configuration file.
+            
+        --corpus <path_to_corpus>: Path to corpus file.
+        
+        --store: Persist output of each process.
+        
+        --process <alias_of_pipeline_process>: Alias of the pipeline process 
+            to run.
+            
+        --method <method_to_execute>: Method to execute for the specified 
+            pipeline process.
+
+    Returns:
+        None
     """
     config_alias = {
         "preprocessing_1": paths.PREPROCESSING_CONFIG_PATH
