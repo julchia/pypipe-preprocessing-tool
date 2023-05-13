@@ -5,6 +5,7 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
+from src.core import constants
 from src.core.processes import utils
 from src.core.management.managers import CorpusLazyManager
 from src.core.processes.normalization.base import TextNormalizer
@@ -43,6 +44,8 @@ class RegexNormalizer(TextNormalizer):
             alias=alias
         )
         
+        self._alias = constants.REGEX_NORMALIZER_ALIAS if alias is None else alias
+        
         self.compile_handlers: List = []
         
         self._data_file_name = "/normcorpus.txt"
@@ -62,58 +65,61 @@ class RegexNormalizer(TextNormalizer):
     def get_default_configs(cls) -> OmegaConf:
         """Returns configurations for a RegexNormalizer object."""
         return OmegaConf.create({
-            "normalize_laught": {
-                "active": True,
-                "replacement": None
-            },
-            "normalize_re": {
-                "active": True,
-                "replacement": "muy"
-            },
-            "normalize_q": {
-                "active": True,
-                "replacement": None
-            },
-            "normalize_isolated_consonant": {
-                "active": True,
-                "replacement": ""
-            },
-            "normalize_single_word": {
-                "active": True,
-                "replacement": " "
-            },
-            "normalize_digit": {
-                "active": True,
-                "replacement": ""
-            },
-            "normalize_email": {
-                "active": True,
-                "replacement": "<<EMAIL>>"
-            },
-            "normalize_url":  {
-                "active": True,
-                "replacement": "<<URL>>"
-            },
-            "normalize_mention": {
-                "active": True,
-                "replacement": "<<MENTION>>"
-            },
-            "normalize_duplicated_letter": {
-                "active": True,
-                "replacement": r"\1"
-            },
-            "normalize_lowercase_diacritic": {
-                "active": True,
-                "replacement": None
-            },
-            "normalize_punctuation": {
-                "active": True,
-                "replacement": ""
-            },
-            "normalize_white_spaces": {
-                "active": True,
-                "replacement": " "
-            },
+            "path_to_save_normcorpus": None, 
+            "handlers": {
+                "normalize_laught": {
+                    "active": True,
+                    "replacement": None
+                },
+                "normalize_re": {
+                    "active": True,
+                    "replacement": "muy"
+                },
+                "normalize_q": {
+                    "active": True,
+                    "replacement": None
+                },
+                "normalize_isolated_consonant": {
+                    "active": True,
+                    "replacement": ""
+                },
+                "normalize_single_word": {
+                    "active": True,
+                    "replacement": " "
+                },
+                "normalize_digit": {
+                    "active": True,
+                    "replacement": ""
+                },
+                "normalize_email": {
+                    "active": True,
+                    "replacement": "<<EMAIL>>"
+                },
+                "normalize_url":  {
+                    "active": True,
+                    "replacement": "<<URL>>"
+                },
+                "normalize_mention": {
+                    "active": True,
+                    "replacement": "<<MENTION>>"
+                },
+                "normalize_duplicated_letter": {
+                    "active": True,
+                    "replacement": r"\1"
+                },
+                "normalize_lowercase_diacritic": {
+                    "active": True,
+                    "replacement": None
+                },
+                "normalize_punctuation": {
+                    "active": True,
+                    "replacement": ""
+                },
+                "normalize_white_spaces": {
+                    "active": True,
+                    "replacement": " "
+                },
+            }
         })
     
     def _compile_regex_handlers(self) -> None:
@@ -189,13 +195,15 @@ class RegexNormalizer(TextNormalizer):
         args:
             corpus: Iterable to normalize.
         """
-        path = self._path_to_save_normcorpus + self._data_file_name
         if persist:
-            writer = utils.lazy_writer(file_path=path)
-            next(writer)
+            writer = TextNormalizer.data_manager.get_lazy_file_writer(
+                path_to_save_data=self._path_to_save_normcorpus,
+                data_file_name=self._data_file_name,
+                alias=self._alias
+            )
             for sent in corpus:
                 normalized_sent = self._normalize_text(sent)
-                writer.send(normalized_sent)
+                if writer is not None: writer.send(normalized_sent)
                 yield normalized_sent
         else:
             for sent in corpus:
@@ -229,7 +237,7 @@ class RegexNormalizer(TextNormalizer):
             callback_fn_to_save_data=utils.persist_iterable_as_txtfile,
             path_to_save_data=self._path_to_save_normcorpus,
             data_file_name=self._data_file_name,
-            alias="regex_norm"
+            alias=self._alias
         )
     
     def normalize_text(

@@ -304,7 +304,7 @@ class ProcessDataManager:
                 f"No data to load in dir '{path_to_load_data}'"
             )
             return
-        
+    
     def save_data_from_callable(
         self, 
         *callback_args,
@@ -352,3 +352,52 @@ class ProcessDataManager:
         else:
             return
 
+    def get_lazy_file_writer(
+        self, 
+        path_to_save_data: str, 
+        data_file_name: str,
+        alias: str,
+        sep: str = "\n"
+    ) -> Optional(Generator):
+        """
+        Creates a lazy file writer generator for the given file path, based on
+        'utils.lazy_writer'. Its function is to lazily store text strings to a 
+        text file.
+
+        e.g.:
+            writer = get_lazy_file_writer(...)
+            for i in corpus:
+                y = foo(i)
+                if writer is not None: writer.send(y)
+
+        Args:
+            path_to_save_data: Path where the data will be stored.
+            data_file_name: Name of the data file.
+            alias: Alias for the process.
+            sep: Separator for the data file. Defaults to "\n".
+
+        Returns:
+            Optional: Generator object for lazy writing to the file.
+            Returns None if the path_to_save_data is not a string.
+        """
+        if isinstance(path_to_save_data, str):
+            path = path_to_save_data + data_file_name
+            try:
+                writer = utils.lazy_writer(file_path=path, sep=sep)
+                next(writer)
+            except FileNotFoundError:
+                logger.warning(
+                    f"No valid path found in '{path_to_save_data}' to store "
+                    f"data from alias '{alias}'"
+                )
+                path = self.get_default_process_path_from_constants(
+                    alias=alias,
+                    file_name=data_file_name
+                )
+                writer = utils.lazy_writer(file_path=path, sep=sep)
+                next(writer)
+            return writer
+        else:
+            return
+        
+       
