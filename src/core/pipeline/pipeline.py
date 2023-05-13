@@ -19,8 +19,9 @@ class Pipeline:
     processes.
     """
     def __init__(
-        self, 
+        self,
         config_path: str,
+        corpus: Union[Iterable[str], str] = None,
         pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS,
         corpus_generator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
     ) -> None:
@@ -41,6 +42,8 @@ class Pipeline:
         self._config = self._format_config(config=config_path)
         self._pipeline_process = pipeline_process
         self._corpus_generator = corpus_generator
+        if corpus is not None:
+            self._corpus = self._corpus_generator(corpus)
     
     @staticmethod
     def _format_config(config: str) -> DictConfig: 
@@ -63,7 +66,7 @@ class Pipeline:
                    
     def run_processes_sequentially(
         self, 
-        corpus: Union[Iterable[str], str],
+        corpus: Union[Iterable[str], str] = None,
         persist: bool = False,
     ) -> Union[Iterable[str], str]:
         """
@@ -77,7 +80,11 @@ class Pipeline:
             persist: If there are paths set in the configurations, persists
             all outputs of all processes in the executed sequence.
         """
-        processed_corpus = self._corpus_generator(corpus)
+        if corpus is not None:
+            self._corpus = self._corpus_generator(corpus)
+        
+        processed_corpus = self._corpus
+        
         for alias, spec in self._pipeline_process.items():
             if self._config.pipeline[alias].active:
                 process = self.create_pipeline_process(alias)
@@ -87,5 +94,6 @@ class Pipeline:
                     corpus=processed_corpus,
                     persist=persist
                 )   
+                
         return processed_corpus
             
