@@ -30,7 +30,10 @@ class Pipeline:
         
         Args:
             config_path: The path to the configuration file.
-            
+
+            corpus: The corpus to be processed. Can be a list
+            of str or a path to static corpus file. 
+
             pipeline_process: A dictionary containing the alias and
                 specification of each process in the pipeline. The
                 specifications are a tuple with: 0) a PipeHandler object 
