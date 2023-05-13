@@ -60,7 +60,7 @@ class Pipeline:
                 process = processor(alias=alias, configs=self._config)
                 self._pipiline_was_created = True
                 return process
-                
+                   
     def run_processes_sequentially(
         self, 
         corpus: Union[Iterable[str], str],
