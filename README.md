@@ -1,4 +1,4 @@
-# Text Preprocessing Tool
+# Pypipe: Text Preprocessing Tool
 
 ### 🛠️ Work in progress 🛠️
 
@@ -18,7 +18,7 @@
 
 ## About Pypipe
 
-<p align='justify'>Pypipe is a NLP tool that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
+<p align='justify'>Pypipe is an NLP tool that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
 
 ## Some uses
 
