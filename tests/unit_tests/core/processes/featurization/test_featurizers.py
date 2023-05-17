@@ -7,15 +7,16 @@ from pytest_mock import mocker
 from omegaconf import OmegaConf, DictConfig
 from sklearn.feature_extraction.text import CountVectorizer
 
-from pypipe.tests import utils
+from tests import utils
+
 from pypipe.core.management.managers import VocabularyManager
 from pypipe.core.processes.featurization.base import TextFeaturizer
 from pypipe.core.processes.featurization.featurizers import CountVecFeaturizer
 
 
-######################################################################################
-###################################### Fixtures ######################################
-######################################################################################
+############################################################################
+############################# Fixtures #####################################
+############################################################################
 
 
 @pytest.fixture
@@ -83,9 +84,9 @@ def get_CountVectorizer_instance_for_testing(
     return featurizer._create_featurizer()
 
 
-###################################################################################
-###################################### Tests ###################################### 
-###################################################################################
+############################################################################
+################################ Tests #####################################
+############################################################################
 
 
 ################## CountVecFeaturizer ##################
