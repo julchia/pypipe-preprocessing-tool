@@ -4,13 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-unidecode = "*"
-omegaconf = "*"
-gensim = "*"
-pytest = "*"
-pytest-mock = "*"
+unidecode = ">=1.3.6"
+omegaconf = ">=2.3.0"
+gensim = "==4.3.1"
+scikit-learn = ">=1.2"
 
 [dev-packages]
+pytest = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.8"
