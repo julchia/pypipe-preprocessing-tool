@@ -1,4 +1,4 @@
-# Text Preprocessing Tool
+# Pypipe: Text Preprocessing Tool
 
 ### 🛠️ Work in progress 🛠️
 
@@ -12,11 +12,13 @@
 
 <p align='justify'>Pypipe is a text preprocessing tool designed to facilitate the preprocessing of text data through the execution of isolated or sequential processes. Pypipe is designed to function as a base architecture that decouples text normalization and preprocessing processes from any NLP context.</p>
 
-<p align='justify'>You can take this base architecture to remove or add additional processes, or simply take Pypipe so you don't have to start a normalization or preprocessing job from scratch.</p>
-
 <p align='justify'>The project was born as a hobby, so don't expect constant regularity! 😅 However, it is also true that Pypipe provides a solution for certain needs in some of my other projects.</p>
 
-<p align='justify'>In short, Pypipe is a service that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
+## About Pypipe
+
+<p align='justify'>Pypipe is an NLP tool that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
+
+<p align='justify'>You can take Pypipe base architecture to remove or add additional processes, or simply take Pypipe so you don't have to start a normalization or preprocessing job from scratch.</p>
 
 ## Some uses
 
