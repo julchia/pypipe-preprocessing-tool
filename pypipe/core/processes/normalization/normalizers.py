@@ -5,7 +5,7 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
-from pypipe.configs import constants
+from pypipe.configs import config_const
 from pypipe.core.processes import utils
 from pypipe.core.management.managers import CorpusLazyManager
 from pypipe.core.processes.normalization.base import TextNormalizer
@@ -44,7 +44,7 @@ class RegexNormalizer(TextNormalizer):
             alias=alias
         )
         
-        self._alias = constants.REGEX_NORMALIZER_ALIAS if alias is None else alias
+        self._alias = config_const.REGEX_NORMALIZER_ALIAS if alias is None else alias
         
         self.compile_handlers: List = []
         

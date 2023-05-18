@@ -7,7 +7,7 @@ from numpy import ndarray
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import Word2Vec, KeyedVectors
 
-from pypipe.configs import constants
+from pypipe.configs import config_const
 from pypipe.core.processes import utils
 from pypipe.core.processes.featurization.base import TextFeaturizer
 
@@ -51,7 +51,7 @@ class CountVecFeaturizer(TextFeaturizer):
             alias=alias
         )
         
-        self._alias = constants.COUNTVEC_FEATURIZER_ALIAS if alias is None else alias
+        self._alias = config_const.COUNTVEC_FEATURIZER_ALIAS if alias is None else alias
         
         self.featurizer = featurizer
         
@@ -350,7 +350,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             alias=alias
         )
         
-        self._alias = constants.WORD2VEC_FEATURIZER_ALIAS if alias is None else alias
+        self._alias = config_const.WORD2VEC_FEATURIZER_ALIAS if alias is None else alias
         
         self.featurizer = featurizer
         

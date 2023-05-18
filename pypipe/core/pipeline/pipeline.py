@@ -4,8 +4,9 @@ from typing import List, Dict, Any, Union, Callable, Iterable
 import logging
 from omegaconf import OmegaConf, DictConfig
 
+from pypipe.configs import config_const
+from pypipe.core.pipeline import pipeline_const
 from pypipe.core.interfaces import IProcess
-from pypipe.core.pipeline import constants
 from pypipe.core.management.managers import CorpusLazyManager
 
 
@@ -18,21 +19,24 @@ class Pipeline:
     processing textual data through a set of sequential 
     processes.
     """
+    _config_alias: Dict[str, str] = config_const.CONFIG_ALIAS
+    _pipeline_process: Dict[str, Any] = pipeline_const.PIPELINE_PROCESS_ALIAS
+    
     def __init__(
         self,
-        config_path: str,
+        config: str,
         corpus: Union[Iterable[str], str] = None,
-        pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS,
         corpus_generator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
     ) -> None:
         """
         Builds a Pipeline object.
         
         Args:
-            config_path: The path to the configuration file.
+            config: The alias of configuration file or path to configuration 
+                file.
 
             corpus: The corpus to be processed. Can be a list
-            of str or a path to static corpus file. 
+                of str or a path to static corpus file. 
 
             pipeline_process: A dictionary containing the alias and
                 specification of each process in the pipeline. The
@@ -42,8 +46,7 @@ class Pipeline:
             corpus_generator: A callable object that returns an iterable
                  corpus
         """
-        self._config = self._format_config(config=config_path)
-        self._pipeline_process = pipeline_process
+        self._config = self._format_config(config=config)
         self._corpus_generator = corpus_generator
         if corpus is not None:
             self._corpus = self._corpus_generator(corpus)
@@ -56,13 +59,22 @@ class Pipeline:
         Args:
             config: The path to the configuration file.
         """
-        return OmegaConf.load(config)
-    
+        if config in Pipeline._config_alias:
+            config_path = Pipeline._config_alias[config]
+            return OmegaConf.load(config_path)
+        else:
+            try:
+                return OmegaConf.load(config)
+            except FileNotFoundError:
+                raise KeyError(
+                    f"{config} is not a configuration alias."
+                )
+            
     def create_pipeline_process(self, alias: str) -> IProcess:
         """Returns a pipeline process."""
-        if alias in self._pipeline_process:
+        if alias in Pipeline._pipeline_process:
             if self._config.pipeline[alias].active:
-                _, processor = self._pipeline_process[alias]
+                _, processor = Pipeline._pipeline_process[alias]
                 process = processor(alias=alias, configs=self._config)
                 self._pipiline_was_created = True
                 return process
@@ -88,7 +100,7 @@ class Pipeline:
         
         processed_corpus = self._corpus
         
-        for alias, spec in self._pipeline_process.items():
+        for alias, spec in Pipeline._pipeline_process.items():
             if self._config.pipeline[alias].active:
                 process = self.create_pipeline_process(alias)
                 handler, _ = spec
