@@ -7,15 +7,16 @@ from pytest_mock import mocker
 from omegaconf import OmegaConf, DictConfig
 from sklearn.feature_extraction.text import CountVectorizer
 
-from src.test import utils
-from src.core.management.managers import VocabularyManager
-from src.core.processes.featurization.base import TextFeaturizer
-from src.core.processes.featurization.featurizers import CountVecFeaturizer
+from tests import utils
+
+from pypipe.core.management.managers import VocabularyManager
+from pypipe.core.processes.featurization.base import TextFeaturizer
+from pypipe.core.processes.featurization.featurizers import CountVecFeaturizer
 
 
-######################################################################################
-###################################### Fixtures ######################################
-######################################################################################
+############################################################################
+############################# Fixtures #####################################
+############################################################################
 
 
 @pytest.fixture
@@ -83,9 +84,9 @@ def get_CountVectorizer_instance_for_testing(
     return featurizer._create_featurizer()
 
 
-###################################################################################
-###################################### Tests ###################################### 
-###################################################################################
+############################################################################
+################################ Tests #####################################
+############################################################################
 
 
 ################## CountVecFeaturizer ##################
@@ -655,7 +656,7 @@ def test__persist_model_method_expected_call_save_data_from_callable_with_correc
     )
 
     mocked_persist_data_with_pickle_fn = mocker.patch(
-        "src.core.processes.utils.persist_data_with_pickle"
+        "pypipe.core.processes.utils.persist_data_with_pickle"
     )
     
     countvec._persist_model(model=model)
@@ -666,7 +667,7 @@ def test__persist_model_method_expected_call_save_data_from_callable_with_correc
         callback_fn_to_save_data=mocked_persist_data_with_pickle_fn,
         path_to_save_data=temp_pkl_file,
         data_file_name="/vocabularies.pkl",
-        alias="countvec_featurizer"
+        alias="countvec"
     )
     
     os.remove(temp_pkl_file)
@@ -694,7 +695,7 @@ def test__persist_vocab_method_expected_call_save_data_from_callable_with_correc
     )
 
     mocked_persist_dict_as_json_fn = mocker.patch(
-        "src.core.processes.utils.persist_dict_as_json"
+        "pypipe.core.processes.utils.persist_dict_as_json"
     )
     
     countvec._persist_vocab(vocab=vocab)
@@ -705,7 +706,7 @@ def test__persist_vocab_method_expected_call_save_data_from_callable_with_correc
         callback_fn_to_save_data=mocked_persist_dict_as_json_fn,
         path_to_save_data=temp_json_file,
         data_file_name="/vocab.json",
-        alias="countvec_featurizer",
+        alias="countvec",
         to_save_vocab=True
     )
     

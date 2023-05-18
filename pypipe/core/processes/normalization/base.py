@@ -3,15 +3,15 @@ from typing import List, Union, Iterable
 
 from omegaconf import OmegaConf
 
-from src.core.interfaces import IProcess
-from src.core.management.managers import ProcessDataManager, CorpusLazyManager
+from pypipe.core.interfaces import IProcess
+from pypipe.core.management.managers import DataStorageManager, DataLazyManager
 
 
 class TextNormalizer(IProcess):
     """Base class for all normalizers that will be implemented 
     either from pipeline or in an isolated way."""
     
-    data_manager = ProcessDataManager()
+    data_manager = DataStorageManager()
     
     def __init__(
         self, 
@@ -53,7 +53,7 @@ class TextNormalizer(IProcess):
     def normalize_text(
         self, 
         corpus: Union[List[str], Iterable]
-    ) -> Union[List[str], CorpusLazyManager]:
+    ) -> Union[List[str], DataLazyManager]:
         """Normalizes the given corpus to remove unwanted characters 
         or symbols from it."""
         ...

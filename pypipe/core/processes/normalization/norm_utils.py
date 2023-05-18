@@ -4,7 +4,7 @@ import re
 from unidecode import unidecode
 from functools import partial
 
-from src.core.processes.normalization import constants
+from pypipe.core.processes.normalization import constants
 
 
 class SubRegexBuilder(str):

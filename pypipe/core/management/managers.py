@@ -17,9 +17,9 @@ from typing import (
 
 import logging
 
-from src.core import paths
-from src.core.processes import utils
-from src.core.processes.normalization.norm_utils import (
+from pypipe.configs import config_const
+from pypipe.core.processes import utils
+from pypipe.core.processes.normalization.norm_utils import (
     punctuaction_handler, 
     lowercase_diacritic_handler
 )
@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class CorpusLazyManager:
+class DataLazyManager:
     """
     The class provides a lazy manager for reading large corpora 
     efficiently.
@@ -37,48 +37,48 @@ class CorpusLazyManager:
     For efficiency reasons this class doesn't cache the contents, 
     but rather reads them upon first access, meaning you might 
     experience some delay for initial loading time when accessing 
-    corpus elements.
+    data corpus elements.
     """
-    def __init__(self, corpus: Union[List[str], str]) -> None:
+    def __init__(self, data: Union[List[str], str]) -> None:
         """
-        Returns a CorpusLazyManager object.
+        Returns a DataLazyManager object.
         
         args:
-            corpus: lists of strings or path to files containing 
-                the corpus data.
+            data: lists of strings or path to files containing 
+                the data corpus.
         """
-        self._corpus = corpus
+        self._data = data
         
     def __iter__(self) -> Generator:
         """
         Once the class object has been created, its elements can 
         be accessed iteratively through the iterator protocol, 
-        returned by 'CorpusLazyManager.__iter__'.
+        returned by 'DataLazyManager.__iter__'.
         """
         type_handler = {
-            list: self._yield_corpus_from_list,
-            str: self._yield_corpus_from_file,
-            GeneratorType: lambda: self._corpus
+            list: self._yield_data_from_list,
+            str: self._yield_data_from_file,
+            GeneratorType: lambda: self._data
         }
         
-        if type(self._corpus) not in type_handler:
+        if type(self._data) not in type_handler:
             raise ValueError(
                 f"Invalid input type. Expected list, str or GeneratorType. "
-                f"Received {type(self._corpus)}"
+                f"Received {type(self._data)}"
             )
             
-        generator = type_handler[type(self._corpus)]()
+        generator = type_handler[type(self._data)]()
         
         yield from generator
         
-    def _yield_corpus_from_list(self) -> Generator:
-        """Yields over corpus list."""
-        for line in self._corpus:
+    def _yield_data_from_list(self) -> Generator:
+        """Yields over data corpus list."""
+        for line in self._data:
             yield line
     
-    def _yield_corpus_from_file(self) -> Generator:
-        """Yields over corpus static file."""
-        with open(self._corpus, "r") as f:
+    def _yield_data_from_file(self) -> Generator:
+        """Yields over data corpus static file."""
+        with open(self._data, "r") as f:
             for line in f:
                 yield line.strip()
 
@@ -88,28 +88,28 @@ class VocabularyManager:
     by implementing standard int2text-text2int bijection."""
     def __init__(
         self, 
-        corpus: Union[List[str], str],
-        corpus2sent: bool = False,
+        data: Union[List[str], str],
+        data2sent: bool = False,
         text2idx: Dict[str, int] = None,
         add_unk: bool = True, 
         unk_text: str = "<<UNK>>",
         diacritic: bool = False,
         lower_case: bool = False,
         norm_punct: bool = False,
-        corpus_iterator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
+        data_iterator: Callable[[Union[List[str], str]], Iterable] = DataLazyManager
         ) -> None:
         """
         Builds a VocabularyManager object.
         
-        If 'corpus2sent' is False: variable 'text' is equivalent to 
+        If 'data2sent' is False: variable 'text' is equivalent to 
         one unique token.
-        If 'corpus2sent' is True: variable 'text' is equivalent to 
+        If 'data2sent' is True: variable 'text' is equivalent to 
         entire unique sentence.
         
         args:
-            corpus: List or path to static file (txt or 
+            data: List or path to static file (txt or 
                 json) of texts to build the vocabulary from.
-            corpus2sent: Whether to treat each sentence as a token. 
+            data2sent: Whether to treat each sentence as a token. 
                 Defaults to False
             text2idx: A dictionary mapping tokens to their index in 
                 the vocabulary. Defaults to None.
@@ -122,12 +122,12 @@ class VocabularyManager:
                 to False.
             norm_punct: Whether to to handle punctuation. Defaults 
                 to False.
-            corpus_iterator: Object in charge of managing the lazy creation 
-                of a data generator. Defaults to CorpusLazyManager.
+            data_iterator: Object in charge of managing the lazy creation 
+                of a data generator. Defaults to DataLazyManager.
         """
-        self._corpus_iterator = corpus_iterator
+        self._data_iterator = data_iterator
         
-        self._corpus2sent = corpus2sent
+        self._data2sent = data2sent
         
         self._norm_punct = norm_punct
         self._lower_case = lower_case
@@ -158,7 +158,7 @@ class VocabularyManager:
             self.unk_idx = self.add_text(unk_text)
         
         self.__init_vocab_from_iterable(
-            self._corpus_iterator(corpus)
+            self._data_iterator(data)
         )
     
     def __str__(self) -> str:
@@ -173,10 +173,10 @@ class VocabularyManager:
         """
         Allows iteration over the VocabularyManager object. For each 
         unique text in the vocabulary, it yields the text itself 
-        or a list of individual tokens if '_corpus2sent' is True.
+        or a list of individual tokens if '_data2sent' is True.
         """
         for text in self._text2idx.keys():
-            if self._corpus2sent:
+            if self._data2sent:
                 text = text.split()
             yield text
 
@@ -187,12 +187,12 @@ class VocabularyManager:
         """
         Iterates over the given iterable and adds each unique text 
         to the VocabularyManager object. If the VocabularyManager 
-        was initialized with corpus2sent=True, each unique text is 
+        was initialized with data2sent=True, each unique text is 
         split into a list of words before being added to the 
         VocabularyManager.
          
         Args:
-            iterable: Iterable with corpus of texts.
+            iterable: Iterable with data corpus of texts.
         """
         for text in iterable:
             self.add_text(text)
@@ -204,7 +204,7 @@ class VocabularyManager:
         a new index to it.
         
         args:
-            text: Sentence or token present in the corpus.
+            text: Sentence or token present in the data corpus.
         """
         if self._lower_case or self._diacritic:
             text = lowercase_diacritic_handler(text=text)
@@ -249,14 +249,14 @@ class VocabularyManager:
         return self._idx2text[index]
 
 
-class ProcessDataManager:
+class DataStorageManager:
     """The class provides utility methods for managing data from processes."""
     @staticmethod
     def get_default_process_path_from_constants(alias: str, file_name: str) -> str:
         """Given an alias and file name, returns the default path to 
         save the process."""
         try:
-            default_process_path = paths.MODEL_DEFAULT_PATHS[alias]
+            default_process_path = config_const.MODEL_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_process_path)
             logger.info(
                 f"Default process path '{default_process_path}' will be create"
@@ -272,7 +272,7 @@ class ProcessDataManager:
         """Given an alias and file name, returns the default path to 
         save the vocabulary."""
         try:
-            default_vocab_path = paths.VOCAB_DEFAULT_PATHS[alias]
+            default_vocab_path = config_const.VOCAB_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_vocab_path)
             logger.info(
                 f"Default vocab path '{default_vocab_path}' will be create"
@@ -366,7 +366,7 @@ class ProcessDataManager:
 
         e.g.:
             writer = get_lazy_file_writer(...)
-            for i in corpus:
+            for i in data:
                 y = foo(i)
                 if writer is not None: writer.send(y)
 

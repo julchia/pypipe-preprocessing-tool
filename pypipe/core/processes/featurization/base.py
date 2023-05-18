@@ -5,15 +5,15 @@ from typing import List, Dict, Union
 
 from omegaconf import OmegaConf, DictConfig
 
-from src.core.interfaces import IProcess
-from src.core.management.managers import ProcessDataManager, VocabularyManager
+from pypipe.core.interfaces import IProcess
+from pypipe.core.management.managers import DataStorageManager, VocabularyManager
 
 
 class TextFeaturizer(IProcess):
     """Base class for all featurizers that will be implemented 
     either from pipeline or in an isolated way"""
     
-    data_manager = ProcessDataManager()
+    data_manager = DataStorageManager()
     
     def __init__(
         self, 
@@ -38,8 +38,8 @@ class TextFeaturizer(IProcess):
                 
     @staticmethod    
     def create_vocab(
-        corpus: Union[List[str], str],
-        corpus2sent: bool = False,
+        data: Union[List[str], str],
+        data2sent: bool = False,
         text2idx: Dict[str, int] = None, 
         add_unk: bool = True, 
         unk_text: str = "<<UNK>>",
@@ -49,8 +49,8 @@ class TextFeaturizer(IProcess):
     ) -> VocabularyManager:
         """Returns a VocabularyManager type generator"""
         return VocabularyManager(
-            corpus,
-            corpus2sent,
+            data,
+            data2sent,
             text2idx,
             add_unk,
             unk_text,

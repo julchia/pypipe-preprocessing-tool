@@ -5,11 +5,11 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
-from src.core import constants
-from src.core.processes import utils
-from src.core.management.managers import CorpusLazyManager
-from src.core.processes.normalization.base import TextNormalizer
-from src.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
+from pypipe.configs import config_const
+from pypipe.core.processes import utils
+from pypipe.core.management.managers import DataLazyManager
+from pypipe.core.processes.normalization.base import TextNormalizer
+from pypipe.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
 
 
 logging.basicConfig(level=logging.INFO)
@@ -44,7 +44,7 @@ class RegexNormalizer(TextNormalizer):
             alias=alias
         )
         
-        self._alias = constants.REGEX_NORMALIZER_ALIAS if alias is None else alias
+        self._alias = config_const.REGEX_NORMALIZER_ALIAS if alias is None else alias
         
         self.compile_handlers: List = []
         
@@ -175,25 +175,25 @@ class RegexNormalizer(TextNormalizer):
             text
         )
 
-    def _standard_normalization(self, corpus: List[str], persist: bool = False) -> List[str]:
+    def _standard_normalization(self, data: List[str], persist: bool = False) -> List[str]:
         """
         Iterates over a list of strings and normalize each string.
         
         args:
-            corpus: List of string to normalize.
+            data: List of string to normalize.
         """
-        norm_corpus = [self._normalize_text(sent) for sent in corpus]
+        norm_data = [self._normalize_text(sent) for sent in data]
         if persist:
-            self.persist(data=norm_corpus)
-        return norm_corpus
+            self.persist(data=norm_data)
+        return norm_data
     
-    def _lazy_normalization(self, corpus: Iterable, persist: bool = False) -> Generator:   
+    def _lazy_normalization(self, data: Iterable, persist: bool = False) -> Generator:   
         """
         Iterates over a list of strings and performs a lazy normalization
         by yield each element in the list.
         
         args:
-            corpus: Iterable to normalize.
+            data: Iterable to normalize.
         """
         if persist:
             writer = TextNormalizer.data_manager.get_lazy_file_writer(
@@ -201,12 +201,12 @@ class RegexNormalizer(TextNormalizer):
                 data_file_name=self._data_file_name,
                 alias=self._alias
             )
-            for sent in corpus:
+            for sent in data:
                 normalized_sent = self._normalize_text(sent)
                 if writer is not None: writer.send(normalized_sent)
                 yield normalized_sent
         else:
-            for sent in corpus:
+            for sent in data:
                 yield self._normalize_text(sent)
 
     def add_regex_handler(
@@ -242,36 +242,36 @@ class RegexNormalizer(TextNormalizer):
     
     def normalize_text(
         self, 
-        corpus: Union[List[str], Iterable],
+        data: Union[List[str], Iterable],
         persist: bool = False
-    ) -> Union[List[str], CorpusLazyManager]:
+    ) -> Union[List[str], DataLazyManager]:
         """
-        Normalizes the given corpus by compiling regex handlers set on 
-        configurations. Returns either a list or CorpusLazyManager object
-        depending on whether the given corpus is a list or iterable.
+        Normalizes the given data corpus by compiling regex handlers set on 
+        configurations. Returns either a list or DataLazyManager object
+        depending on whether the given data corpus is a list or iterable.
         
         Args:
-            corpus: The text to be normalized. Can accept lists or iterables 
+            data: The text to be normalized. Can accept lists or iterables 
                 containing string elements.
 
         Returns:
-            Union[List[str], CorpusLazyManager]: The normalized text as a Python 
+            Union[List[str], DataLazyManager]: The normalized text as a Python 
             list or a manager object with a generator-like interface providing 
             lazily generated normalized texts. If a list of strings is inputted, 
             returns a list; otherwise a manager object.
         """
-        if not isinstance(corpus, (Iterable, List)):
+        if not isinstance(data, (Iterable, List)):
             raise ValueError(
                 f"Invalid input type. Expected Iterable or List[str]. "
-                f"Received {type(corpus)}"
+                f"Received {type(data)}"
             )
         
         logger.info("'RegexNormalizer' normalization has started")
         
         self._compile_regex_handlers()
                 
-        if isinstance(corpus, List):
-            return self._standard_normalization(corpus=corpus, persist=persist)
+        if isinstance(data, List):
+            return self._standard_normalization(data=data, persist=persist)
         else:
-            return CorpusLazyManager(self._lazy_normalization(corpus=corpus, persist=persist))
+            return DataLazyManager(self._lazy_normalization(data=data, persist=persist))
 
