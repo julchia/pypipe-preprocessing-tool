@@ -27,12 +27,12 @@
 - Execute a pipeline sequentially and store it results:
 
 ```
-python -m pypipe prepros_1 --corpus path/to/corpus.txt --store 
+python -m pypipe prepros_1 --data path/to/corpus.txt --store 
 ```
 - Create a decoupled process set in the configurations, run it, and save its result:
 
 ```
-python -m pypipe prepros_1 --corpus path/to/corpus.txt --process regex_norm --method normalize_text --store
+python -m pypipe prepros_1 --data path/to/corpus.txt --process regex_norm --method normalize_text --store
 ```
 <p align='justify'>Without using the command line, we can implement processes in an isolated way without necessarily depending on a pipeline. Each processor is designed to work with generators and process the corpus lazily for better memory management.</p>
 
@@ -42,14 +42,14 @@ Let's suppose you want to use the regex normalizer:
 config = RegexNormalizer.get_default_configs()
 regex_norm = RegexNormalizer.get_isolated_process(config)
 
-corpus = [
+data = [
     "HOLA!!1111 gente lindaaaaa!!!",
     "el nombre essssss @Pedro re loco jjajajajjja",
     "mi correo es pedrito@gmail.com",
     "su página es www.pedrito.com ...."
 ]
 
-regex_norm.normalize_text(corpus, persist=True)
+regex_norm.normalize_text(data, persist=True)
 ```
 Output:
 
