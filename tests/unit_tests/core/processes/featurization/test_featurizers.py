@@ -667,7 +667,7 @@ def test__persist_model_method_expected_call_save_data_from_callable_with_correc
         callback_fn_to_save_data=mocked_persist_data_with_pickle_fn,
         path_to_save_data=temp_pkl_file,
         data_file_name="/vocabularies.pkl",
-        alias="countvec_featurizer"
+        alias="countvec"
     )
     
     os.remove(temp_pkl_file)
@@ -706,7 +706,7 @@ def test__persist_vocab_method_expected_call_save_data_from_callable_with_correc
         callback_fn_to_save_data=mocked_persist_dict_as_json_fn,
         path_to_save_data=temp_json_file,
         data_file_name="/vocab.json",
-        alias="countvec_featurizer",
+        alias="countvec",
         to_save_vocab=True
     )
     
