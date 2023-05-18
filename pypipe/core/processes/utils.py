@@ -9,7 +9,7 @@ from contextlib import contextmanager
 
 def create_dir_if_not_exists(path: str) -> None:
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path, exist_ok=True)    
 
 
 def open_line_by_line_txt_file(
