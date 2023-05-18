@@ -7,7 +7,7 @@ from omegaconf import OmegaConf, DictConfig
 from pypipe.configs import config_const
 from pypipe.core.pipeline import pipeline_const
 from pypipe.core.interfaces import IProcess
-from pypipe.core.management.managers import CorpusLazyManager
+from pypipe.core.management.managers import DataLazyManager
 
 
 logging.basicConfig(level=logging.INFO)
@@ -25,8 +25,8 @@ class Pipeline:
     def __init__(
         self,
         config: str,
-        corpus: Union[Iterable[str], str] = None,
-        corpus_generator: Callable[[Union[List[str], str]], Iterable] = CorpusLazyManager
+        data: Union[Iterable[str], str] = None,
+        data_generator: Callable[[Union[List[str], str]], Iterable] = DataLazyManager
     ) -> None:
         """
         Builds a Pipeline object.
@@ -35,21 +35,21 @@ class Pipeline:
             config: The alias of configuration file or path to configuration 
                 file.
 
-            corpus: The corpus to be processed. Can be a list
-                of str or a path to static corpus file. 
+            data: The data to be processed. Can be a list
+                of str or a path to static data corpus file. 
 
             pipeline_process: A dictionary containing the alias and
                 specification of each process in the pipeline. The
                 specifications are a tuple with: 0) a PipeHandler object 
                 and 1) a Processor object.
                 
-            corpus_generator: A callable object that returns an iterable
-                 corpus
+            data_generator: A callable object that returns an iterable
+                 data corpus
         """
         self._config = self._format_config(config=config)
-        self._corpus_generator = corpus_generator
-        if corpus is not None:
-            self._corpus = self._corpus_generator(corpus)
+        self._data_generator = data_generator
+        if data is not None:
+            self._data = self._data_generator(data)
     
     @staticmethod
     def _format_config(config: str) -> DictConfig: 
@@ -81,34 +81,34 @@ class Pipeline:
                    
     def run_processes_sequentially(
         self, 
-        corpus: Union[Iterable[str], str] = None,
+        data: Union[Iterable[str], str] = None,
         persist: bool = False,
     ) -> Union[Iterable[str], str]:
         """
-        Process the corpus through the pipeline in sequential 
+        Process the data corpus through the pipeline in sequential 
         order.
 
         Args:
-            corpus: The corpus to be processed. Can be a list
-            of str or a path to static corpus file.  
+            data: The data corpus to be processed. Can be a list
+            of str or a path to static data corpus file.  
             
             persist: If there are paths set in the configurations, persists
             all outputs of all processes in the executed sequence.
         """
-        if corpus is not None:
-            self._corpus = self._corpus_generator(corpus)
+        if data is not None:
+            self._data = self._data_generator(data)
         
-        processed_corpus = self._corpus
+        processed_data = self._data
         
         for alias, spec in Pipeline._pipeline_process.items():
             if self._config.pipeline[alias].active:
                 process = self.create_pipeline_process(alias)
                 handler, _ = spec
                 active_handler = handler(processor=process)
-                processed_corpus = active_handler.process(
-                    corpus=processed_corpus,
+                processed_data = active_handler.process(
+                    data=processed_data,
                     persist=persist
                 )   
                 
-        return processed_corpus
+        return processed_data
             

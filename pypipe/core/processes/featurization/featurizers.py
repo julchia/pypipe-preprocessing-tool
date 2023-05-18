@@ -135,7 +135,7 @@ class CountVecFeaturizer(TextFeaturizer):
                 
     def _set_vocabulary_creator(self) -> None:
         """
-        Sets the way to create the vocabulary from the trainset corpus.
+        Sets the way to create the vocabulary from the trainset data corpus.
         The vocabulary can be created either from the CountVectorizer by 
         setting 'self.vocab' to None, or from the Vocabulary object by 
         creating a generator.
@@ -150,7 +150,7 @@ class CountVecFeaturizer(TextFeaturizer):
             )
         else:
             self.vocab = super().create_vocab(
-                corpus=self._trainset,
+                data=self._trainset,
                 unk_text=self._unk_token
             )
             logger.info(
@@ -224,7 +224,7 @@ class CountVecFeaturizer(TextFeaturizer):
         does not exist, train from scratch.
         
         args:
-            trainset: training corpus, a list of sentences.
+            trainset: training data corpus, a list of sentences.
         """
         self._trainset = trainset
 
@@ -295,13 +295,13 @@ class CountVecFeaturizer(TextFeaturizer):
                 vec_vocab = self._get_vocab_from_featurizer()
                 self._persist_vocab(vocab=vec_vocab)
     
-    def process(self, corpus: List[str]) -> Union(List[str], ndarray):
+    def process(self, data: List[str]) -> Union(List[str], ndarray):
         """
-        Process a corpus of text and, if there is a trained CountVectorizer 
+        Process a data corpus of text and, if there is a trained CountVectorizer 
         object, converts it to a matrix of token counts.
 
         Args:
-            corpus: list of sentences. If None, returns the original corpus 
+            data: list of sentences. If None, returns the original data corpus 
             without processing.
         """
         if self.featurizer is None:
@@ -309,11 +309,11 @@ class CountVecFeaturizer(TextFeaturizer):
                 "It's impossible to process the input from 'CountVecFeaturizer' "
                 "because there is no trained model"
             )
-            return corpus
+            return data
 
-        corpus = self.featurizer.transform(corpus)
+        data = self.featurizer.transform(data)
         
-        return corpus
+        return data
     
 
 class Word2VecFeaturizer(TextFeaturizer):
@@ -495,8 +495,8 @@ class Word2VecFeaturizer(TextFeaturizer):
         - from the generator created by the Vocabulary object.
         """
         self._vocab = super().create_vocab(
-            corpus=self._vocab, 
-            corpus2sent=True,
+            data=self._vocab, 
+            data2sent=True,
             unk_text=self._unk_token
         )
         
@@ -511,7 +511,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             self._prepare_vocabulary_from_loaded_vocab(update)
         else:       
             self.featurizer.build_vocab(
-                corpus_iterable=self._vocab,
+                data_iterable=self._vocab,
                 update=update
             )
     
@@ -543,7 +543,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         does not exist, train from scratch.
         
         args:
-            trainset: training corpus, a list of sentences.
+            trainset: training data corpus, a list of sentences.
         """
         self._vocab = trainset     
         

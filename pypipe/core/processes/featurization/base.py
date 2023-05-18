@@ -38,8 +38,8 @@ class TextFeaturizer(IProcess):
                 
     @staticmethod    
     def create_vocab(
-        corpus: Union[List[str], str],
-        corpus2sent: bool = False,
+        data: Union[List[str], str],
+        data2sent: bool = False,
         text2idx: Dict[str, int] = None, 
         add_unk: bool = True, 
         unk_text: str = "<<UNK>>",
@@ -49,8 +49,8 @@ class TextFeaturizer(IProcess):
     ) -> VocabularyManager:
         """Returns a VocabularyManager type generator"""
         return VocabularyManager(
-            corpus,
-            corpus2sent,
+            data,
+            data2sent,
             text2idx,
             add_unk,
             unk_text,
