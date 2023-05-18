@@ -6,14 +6,14 @@ from typing import List, Dict, Union
 from omegaconf import OmegaConf, DictConfig
 
 from pypipe.core.interfaces import IProcess
-from pypipe.core.management.managers import ProcessDataManager, VocabularyManager
+from pypipe.core.management.managers import DataStorageManager, VocabularyManager
 
 
 class TextFeaturizer(IProcess):
     """Base class for all featurizers that will be implemented 
     either from pipeline or in an isolated way"""
     
-    data_manager = ProcessDataManager()
+    data_manager = DataStorageManager()
     
     def __init__(
         self, 

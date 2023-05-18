@@ -249,7 +249,7 @@ class VocabularyManager:
         return self._idx2text[index]
 
 
-class ProcessDataManager:
+class DataStorageManager:
     """The class provides utility methods for managing data from processes."""
     @staticmethod
     def get_default_process_path_from_constants(alias: str, file_name: str) -> str:
