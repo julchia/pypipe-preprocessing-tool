@@ -239,19 +239,21 @@ class CountVecFeaturizer(TextFeaturizer):
         if persist:
             self.persist(model=True, vocab=True)
 
-    def load(self, featurizer: CountVectorizer = None):
+    def load(self, data: Optional(str, CountVectorizer) = None):
         """
         Loads CountVectorizer object.
         
         args:
-            featurizer: Trained or non-trained CountVectorizer object.
-                If the featurizer is not trained, it will be trained 
-                with the 'config' settings. If it is trained, when you 
-                re-train it will do so with the 'config' settings.
+            data: Can be trained or non-trained CountVectorizer object or 
+            path to trained model. If the featurizer is not trained, it will 
+            be trained with the 'config' settings. If it is trained, when you 
+            re-train it will do so with the 'config' settings.
         """
-        if isinstance(featurizer, CountVectorizer):
-            self.featurizer = featurizer
+        if isinstance(data, CountVectorizer):
+            self.featurizer = data
         else:
+            if isinstance(data, str):
+                self._path_to_get_trained_model = data
             self._check_if_trained_featurizer_exists_and_load_it()
     
     def _persist_vocab(self, vocab: Dict[int, str]) -> None:
@@ -558,20 +560,20 @@ class Word2VecFeaturizer(TextFeaturizer):
         if persist:
             self.persist(model=True, vocab=True, vectors=True)
 
-    def load(self, path_to_model: str = None) -> None:
+    def load(self, data: str = None) -> None:
         """
         Loads Word2Vec object.
         
         args: 
-            path_to_model: Path to trained or non-trained Word2Vec 
+            data: Path to trained or non-trained Word2Vec 
                 object. If the featurizer is not trained, it will 
                 be trained with the 'config' settings. If it is 
                 trained, when you re-train it will do so with the
                 'config' settings.
         """
-        if path_to_model is not None:
+        if data is not None:
             self.featurizer = Word2Vec.load(
-                fname=path_to_model
+                fname=data
             )
         else:
             self._check_if_trained_featurizer_exists_and_load_it()
@@ -610,15 +612,15 @@ class Word2VecFeaturizer(TextFeaturizer):
                 to_save_vocab=True
             )
                 
-    def load_vectors(self, path_to_vectors: str) -> KeyedVectors:
+    def load_vectors(self, data: str) -> KeyedVectors:
         """
         Interface to load KeyedVectors object from configuratios with a 
         representation of trained dense vectors.
         
         args:
-            path_to_vectors: path to get vectors.
+            data: path to get vectors.
         """
-        return self._load_vectors(path_to_vectors)
+        return self._load_vectors(data)
                                        
     def get_word_vector_object(self) -> Optional[KeyedVectors]:
         """Returns KeyedVectors object (see Gensim 4.x models.keyedvectors).
@@ -633,7 +635,7 @@ class Word2VecFeaturizer(TextFeaturizer):
     
     def get_vector_by_key(
         self, 
-        key: Union[str, List[str]]
+        data: Union[str, List[str]]
     ) -> Union(str, List[str], ndarray):
         """
         Given a word learned during training, returns its corresponding dense vector
@@ -642,7 +644,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         If there is no trained featurizer, returns None.
 
         Args:
-            key: requested key or list-of-keys.
+            data: requested key or list-of-keys.
         """
         if self.featurizer is None:
             logger.warning(
@@ -651,5 +653,5 @@ class Word2VecFeaturizer(TextFeaturizer):
             )
             return
         else:
-            return self.featurizer.wv.__getitem__(key)
+            return self.featurizer.wv.__getitem__(data)
         
