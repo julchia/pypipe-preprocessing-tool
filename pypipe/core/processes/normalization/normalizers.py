@@ -5,7 +5,7 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
-from pypipe.core import constants
+from pypipe.configs import constants
 from pypipe.core.processes import utils
 from pypipe.core.management.managers import CorpusLazyManager
 from pypipe.core.processes.normalization.base import TextNormalizer

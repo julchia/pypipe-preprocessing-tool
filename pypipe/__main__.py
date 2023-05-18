@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from pypipe.core import paths
+from pypipe.configs import constants
 from pypipe.core.pipeline.pipeline import Pipeline
 
 
@@ -32,11 +32,7 @@ def main():
 
     Returns:
         None
-    """
-    config_alias = {
-        "preprocessing_1": paths.PREPROCESSING_CONFIG_PATH
-    }
-    
+    """    
     parser = argparse.ArgumentParser(description="Pipeline CLI")
     parser.add_argument("config", help="Alias of configuration file or path to configuration file")
     parser.add_argument("--corpus", "-c", help="Path to corpus file")
@@ -45,8 +41,8 @@ def main():
     parser.add_argument("--method", "-m", required="--process" in sys.argv, help="Method to execute for the specified pipeline process")
     args = parser.parse_args()
     
-    if args.config in config_alias:
-        config_path = config_alias[args.config]
+    if args.config in constants.CONFIG_ALIAS:
+        config_path = constants.CONFIG_ALIAS[args.config]
     else:
         config_path = args.config
     

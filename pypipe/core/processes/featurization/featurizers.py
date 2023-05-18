@@ -7,7 +7,7 @@ from numpy import ndarray
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import Word2Vec, KeyedVectors
 
-from pypipe.core import constants
+from pypipe.configs import constants
 from pypipe.core.processes import utils
 from pypipe.core.processes.featurization.base import TextFeaturizer
 

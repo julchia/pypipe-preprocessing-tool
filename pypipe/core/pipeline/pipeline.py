@@ -4,8 +4,8 @@ from typing import List, Dict, Any, Union, Callable, Iterable
 import logging
 from omegaconf import OmegaConf, DictConfig
 
-from pypipe.core import constants
 from pypipe.core.interfaces import IProcess
+from pypipe.core.pipeline import constants
 from pypipe.core.management.managers import CorpusLazyManager
 
 
