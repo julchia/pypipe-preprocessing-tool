@@ -1,7 +1,6 @@
 import sys
 import argparse
 
-from pypipe.configs import config_const
 from pypipe.core.pipeline.pipeline import Pipeline
 
 
