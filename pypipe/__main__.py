@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from pypipe.configs import constants
+from pypipe.configs import config_const
 from pypipe.core.pipeline.pipeline import Pipeline
 
 
@@ -40,13 +40,8 @@ def main():
     parser.add_argument("--process", "-p", help="Alias of the pipeline process to run")
     parser.add_argument("--method", "-m", required="--process" in sys.argv, help="Method to execute for the specified pipeline process")
     args = parser.parse_args()
-    
-    if args.config in constants.CONFIG_ALIAS:
-        config_path = constants.CONFIG_ALIAS[args.config]
-    else:
-        config_path = args.config
-    
-    pipeline = Pipeline(config_path, corpus=args.corpus)
+        
+    pipeline = Pipeline(args.config, corpus=args.corpus)
     
     if args.process:
         process = pipeline.create_pipeline_process(args.process)
