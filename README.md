@@ -26,11 +26,11 @@
 ```
 git clone https://github.com/julchia/pypipe-preprocessing-tool.git
 ```
-Then, if you uses pipenv:
+Then, if you use pipenv:
 ```
 pipenv install --dev
 ```
-If you don't uses pipenv just:
+If you don't use pipenv just:
 ```
 pip install -r requirements.txt
 ```
