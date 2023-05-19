@@ -1,6 +1,6 @@
 ###### Paths to pipeline configurations ######
 
-PREPRO_1_CONFIG_PATH = "pypipe/configs/pipe_configs/preprocessing_1.json"
+PREPRO1_CONFIG_PATH = "configs/prepro1.yml"
 
 ###### Paths to model resources ######
 
@@ -18,7 +18,7 @@ VOCAB_DEFAULT_PATHS = {
 ###### Config alias ######
 
 CONFIG_ALIAS = {
-    "prepro_1": PREPRO_1_CONFIG_PATH
+    "prepro1": PREPRO1_CONFIG_PATH
 }
 
 ###### Process alias ######

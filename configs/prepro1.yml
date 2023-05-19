@@ -1,0 +1,73 @@
+pipeline:
+  regex_norm:
+    active: true
+    path_to_save_normcorpus: pypipe/data/corpus/regex
+    handlers:
+      normalize_laught:
+        active: true
+        replacement: null
+      normalize_re:
+        active: true
+        replacement: muy
+      normalize_q:
+        active: true
+        replacement: null
+      normalize_isolated_consonant:
+        active: true
+        replacement: ""
+      normalize_single_word:
+        active: true
+        replacement: " "
+      normalize_digit:
+        active: true
+        replacement: ""
+      normalize_email:
+        active: true
+        replacement: "<<EMAIL>>"
+      normalize_url:
+        active: true
+        replacement: "<<URL>>"
+      normalize_mention:
+        active: true
+        replacement: "<<MENTION>>"
+      normalize_duplicated_letter:
+        active: true
+        replacement: "\\1"
+      normalize_lowercase_diacritic:
+        active: true
+        replacement: null
+      normalize_punctuation:
+        active: true
+        replacement: ""
+      normalize_white_spaces:
+        active: true
+        replacement: " "
+  countvec:
+    active: true
+    max_features: null
+    min_ngram: 1
+    max_ngram: 1
+    remove_spanish_stop_words: false
+    unk_token: "<<UNK>>"
+    use_own_vocabulary_creator: true
+    path_to_save_model: pypipe/data/corpus/countvec
+    path_to_save_vocabulary: pypipe/data/corpus/countvec
+    path_to_get_trained_model: null
+    path_to_get_stored_vocabulary: null
+    update_stored_vocabulary: false
+  word2vec:
+    active: true
+    method: cbow
+    ignore_freq_higher_than: 1
+    embeddings_size: 64
+    window: 5
+    epochs: 5
+    seed: null
+    unk_token: "<<UNK>>"
+    path_to_save_model: null
+    path_to_save_vocabulary: null
+    path_to_save_vectors: null
+    path_to_get_trained_model: null
+    path_to_get_stored_vocabulary: null
+    path_to_get_trained_vectors: null
+    update_stored_vocabulary: false
