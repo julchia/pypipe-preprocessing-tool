@@ -37,17 +37,17 @@ pip install -r requirements.txt
 
 ## Some uses
 
-<p align='justify'>From the command line, it is possible to both execute a pipeline sequentially or create and execute isolated processes. Assuming that the configuration corresponding to the alias 'prepro_1' was set, you can:</p>
+<p align='justify'>From the command line, it is possible to both execute a pipeline sequentially or create and execute isolated processes. Assuming that the configuration corresponding to the alias 'prepro1' was set, you can:</p>
 
 - Execute a pipeline sequentially and store it results:
 
 ```
-python -m pypipe prepro_1 --data path/to/corpus.txt --store 
+python -m pypipe prepro1 --data path/to/corpus.txt --store 
 ```
 - Create a decoupled process set in the configurations, run it, and save its result:
 
 ```
-python -m pypipe prepro_1 --data path/to/corpus.txt --process regex_norm --method normalize_text --store
+python -m pypipe prepro1 --data path/to/corpus.txt --process regex_norm --method normalize_text --store
 ```
 <p align='justify'>Without using the command line, we can implement processes in an isolated way without necessarily depending on a pipeline. Each processor is designed to work with generators and process the corpus lazily for better memory management.</p>
 
