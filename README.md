@@ -16,7 +16,7 @@
 
 ## About Pypipe
 
-<p align='justify'>Pypipe is an NLP tool that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a static file (pypipe/configs/preprocessing.json), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
+<p align='justify'>Pypipe is an NLP tool that enables users to manage and create different pipelines for text data preprocessing dynamically. By setting a configuration inside a yaml file (configs/), users can trigger the creation of a pipeline that allows the processes in the configuration to be used individually or sequentially. Notably, each process can work as an isolated object, allowing for decoupled operation from the configuration.</p>
 
 <p align='justify'>You can take Pypipe base architecture to remove or add additional processes, or simply take Pypipe so you don't have to start a normalization or preprocessing job from scratch.</p>
 
