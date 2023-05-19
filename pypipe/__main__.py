@@ -4,7 +4,7 @@ import argparse
 from pypipe.core.pipeline.pipeline import Pipeline
 
 
-def main():
+def main() -> None:
     """
     Pypipe Pipeline CLI.
 
