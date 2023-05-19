@@ -20,6 +20,21 @@
 
 <p align='justify'>You can take Pypipe base architecture to remove or add additional processes, or simply take Pypipe so you don't have to start a normalization or preprocessing job from scratch.</p>
 
+## Installation
+
+#### From repository:
+```
+git clone https://github.com/julchia/pypipe-preprocessing-tool.git
+```
+Then, if you uses pipenv:
+```
+pipenv install --dev
+```
+If you don't uses pipenv just:
+```
+pip install -r requirements.txt
+```
+
 ## Some uses
 
 <p align='justify'>From the command line, it is possible to both execute a pipeline sequentially or create and execute isolated processes. Assuming that the configuration corresponding to the alias 'prepro_1' was set, you can:</p>
