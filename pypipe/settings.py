@@ -22,6 +22,7 @@ CONFIG_ALIAS = {
 }
 
 ###### Process alias ######
+
 # The assigned alias must match the name of the process set in a pipeline 
 # configurations.
 
