@@ -5,7 +5,7 @@ import logging
 from omegaconf import OmegaConf, DictConfig
 
 from pypipe import settings
-from pypipe.core.pipeline import pipeline_const
+from pypipe.core.pipeline import constants
 from pypipe.core.interfaces import IProcess
 from pypipe.core.management.managers import DataLazyManager
 
@@ -20,7 +20,7 @@ class Pipeline:
     processes.
     """
     _config_alias: Dict[str, str] = settings.CONFIG_ALIAS
-    _pipeline_process: Dict[str, Any] = pipeline_const.PIPELINE_PROCESS_ALIAS
+    _pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS
     
     def __init__(
         self,
