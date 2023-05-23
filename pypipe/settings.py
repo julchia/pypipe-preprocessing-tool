@@ -1,3 +1,7 @@
+import logging
+import os
+
+
 ###### Paths to pipeline configurations ######
 
 PREPRO1_CONFIG_PATH = "configs/prepro1.yml"
@@ -32,4 +36,10 @@ VOCAB_DEFAULT_PATHS = {
     COUNTVEC_FEATURIZER_ALIAS: "pypipe/data/corpus/countvec",
     WORD2VEC_FEATURIZER_ALIAS: "pypipe/data/corpus/word2vec"
 }
+
+
+###### Log handling ######
+
+LOG_LEVEL = "WARNING"
+os.environ["LOG_LEVEL"] = LOG_LEVEL
 

@@ -12,7 +12,7 @@ from pypipe.core.processes import utils
 from pypipe.core.processes.featurization.base import TextFeaturizer
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 

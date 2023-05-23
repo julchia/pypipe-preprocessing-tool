@@ -10,7 +10,7 @@ from pypipe.core.interfaces import IProcess
 from pypipe.core.management.managers import DataLazyManager
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 class Pipeline:

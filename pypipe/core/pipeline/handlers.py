@@ -2,13 +2,14 @@ from typing import List, Union, Iterable
 
 import logging
 
+from pypipe import settings
 from pypipe.core.interfaces import IProcessHandler
 from pypipe.core.management.managers import DataLazyManager
 from pypipe.core.processes.normalization.normalizers import TextNormalizer
 from pypipe.core.processes.featurization.featurizers import TextFeaturizer
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 class PipeHandler(IProcessHandler):

@@ -25,7 +25,7 @@ from pypipe.core.processes.normalization.norm_utils import (
 )
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
