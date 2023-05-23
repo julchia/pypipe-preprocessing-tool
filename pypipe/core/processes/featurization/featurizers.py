@@ -307,7 +307,7 @@ class CountVecFeaturizer(TextFeaturizer):
             without processing.
         """
         if self.featurizer is None:
-            logger.warning(
+            print(
                 "It's impossible to process the input from 'CountVecFeaturizer' "
                 "because there is no trained model"
             )
@@ -626,7 +626,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         """Returns KeyedVectors object (see Gensim 4.x models.keyedvectors).
         If there is no trained featurizer, returns None."""
         if self.featurizer is None:
-            logger.warning(
+            print(
                 "It's impossible to get 'KeyedVectors' from 'Word2VecFeaturizer' "
                 "object because there is no trained model"
             )
@@ -647,7 +647,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             data: requested key or list-of-keys.
         """
         if self.featurizer is None:
-            logger.warning(
+            print(
                 "It's impossible to get vector items from 'Word2VecFeaturizer' "
                 "object because there is no trained model"
             )

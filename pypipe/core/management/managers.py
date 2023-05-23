@@ -258,7 +258,7 @@ class DataStorageManager:
         try:
             default_process_path = settings.MODEL_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_process_path)
-            logger.info(
+            logger.warning(
                 f"Default process path '{default_process_path}' will be create"
             )
             return default_process_path + file_name
@@ -274,7 +274,7 @@ class DataStorageManager:
         try:
             default_vocab_path = settings.VOCAB_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_vocab_path)
-            logger.info(
+            logger.warning(
                 f"Default vocab path '{default_vocab_path}' will be create"
             )
             return default_vocab_path + file_name

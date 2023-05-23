@@ -79,7 +79,7 @@ class TextFeaturizerHandler(PipeHandler):
             if super()._check_if_input_type_is_iterable(iter_data=data):    
                 return self._processor.train(trainset=data, persist=persist)
         else:
-            logger.info(
+            logger.warning(
                 f"{self._processor} was not integrated into sequential execution "
                 f"because it is preceded by another featurizer in the workflow"
             )
