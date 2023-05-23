@@ -4,13 +4,13 @@ from typing import List, Dict, Any, Union, Callable, Iterable
 import logging
 from omegaconf import OmegaConf, DictConfig
 
-from pypipe.configs import config_const
-from pypipe.core.pipeline import pipeline_const
+from pypipe import settings
+from pypipe.core.pipeline import constants
 from pypipe.core.interfaces import IProcess
 from pypipe.core.management.managers import DataLazyManager
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 class Pipeline:
@@ -19,8 +19,8 @@ class Pipeline:
     processing textual data through a set of sequential 
     processes.
     """
-    _config_alias: Dict[str, str] = config_const.CONFIG_ALIAS
-    _pipeline_process: Dict[str, Any] = pipeline_const.PIPELINE_PROCESS_ALIAS
+    _config_alias: Dict[str, str] = settings.CONFIG_ALIAS
+    _pipeline_process: Dict[str, Any] = constants.PIPELINE_PROCESS_ALIAS
     
     def __init__(
         self,

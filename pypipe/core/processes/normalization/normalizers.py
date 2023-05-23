@@ -5,14 +5,14 @@ import logging
 from functools import reduce
 from omegaconf import OmegaConf
 
-from pypipe.configs import config_const
+from pypipe import settings
 from pypipe.core.processes import utils
 from pypipe.core.management.managers import DataLazyManager
 from pypipe.core.processes.normalization.base import TextNormalizer
 from pypipe.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +44,7 @@ class RegexNormalizer(TextNormalizer):
             alias=alias
         )
         
-        self._alias = config_const.REGEX_NORMALIZER_ALIAS if alias is None else alias
+        self._alias = settings.REGEX_NORMALIZER_ALIAS if alias is None else alias
         
         self.compile_handlers: List = []
         

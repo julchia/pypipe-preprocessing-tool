@@ -1,0 +1,7 @@
+pipeline:
+  process_1:
+    config_1: null
+    config_2: null
+  process_2:
+    config_1: null
+    config_2: null

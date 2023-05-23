@@ -17,7 +17,7 @@ from typing import (
 
 import logging
 
-from pypipe.configs import config_const
+from pypipe import settings
 from pypipe.core.processes import utils
 from pypipe.core.processes.normalization.norm_utils import (
     punctuaction_handler, 
@@ -25,7 +25,7 @@ from pypipe.core.processes.normalization.norm_utils import (
 )
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
@@ -256,9 +256,9 @@ class DataStorageManager:
         """Given an alias and file name, returns the default path to 
         save the process."""
         try:
-            default_process_path = config_const.MODEL_DEFAULT_PATHS[alias]
+            default_process_path = settings.MODEL_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_process_path)
-            logger.info(
+            logger.warning(
                 f"Default process path '{default_process_path}' will be create"
             )
             return default_process_path + file_name
@@ -272,9 +272,9 @@ class DataStorageManager:
         """Given an alias and file name, returns the default path to 
         save the vocabulary."""
         try:
-            default_vocab_path = config_const.VOCAB_DEFAULT_PATHS[alias]
+            default_vocab_path = settings.VOCAB_DEFAULT_PATHS[alias]
             utils.create_dir_if_not_exists(default_vocab_path)
-            logger.info(
+            logger.warning(
                 f"Default vocab path '{default_vocab_path}' will be create"
             )
             return default_vocab_path + file_name

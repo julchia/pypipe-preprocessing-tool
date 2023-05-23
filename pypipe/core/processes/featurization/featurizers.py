@@ -7,12 +7,12 @@ from numpy import ndarray
 from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import Word2Vec, KeyedVectors
 
-from pypipe.configs import config_const
+from pypipe import settings
 from pypipe.core.processes import utils
 from pypipe.core.processes.featurization.base import TextFeaturizer
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
@@ -51,7 +51,7 @@ class CountVecFeaturizer(TextFeaturizer):
             alias=alias
         )
         
-        self._alias = config_const.COUNTVEC_FEATURIZER_ALIAS if alias is None else alias
+        self._alias = settings.COUNTVEC_FEATURIZER_ALIAS if alias is None else alias
         
         self.featurizer = featurizer
         
@@ -307,7 +307,7 @@ class CountVecFeaturizer(TextFeaturizer):
             without processing.
         """
         if self.featurizer is None:
-            logger.warning(
+            print(
                 "It's impossible to process the input from 'CountVecFeaturizer' "
                 "because there is no trained model"
             )
@@ -352,7 +352,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             alias=alias
         )
         
-        self._alias = config_const.WORD2VEC_FEATURIZER_ALIAS if alias is None else alias
+        self._alias = settings.WORD2VEC_FEATURIZER_ALIAS if alias is None else alias
         
         self.featurizer = featurizer
         
@@ -626,7 +626,7 @@ class Word2VecFeaturizer(TextFeaturizer):
         """Returns KeyedVectors object (see Gensim 4.x models.keyedvectors).
         If there is no trained featurizer, returns None."""
         if self.featurizer is None:
-            logger.warning(
+            print(
                 "It's impossible to get 'KeyedVectors' from 'Word2VecFeaturizer' "
                 "object because there is no trained model"
             )
@@ -647,7 +647,7 @@ class Word2VecFeaturizer(TextFeaturizer):
             data: requested key or list-of-keys.
         """
         if self.featurizer is None:
-            logger.warning(
+            print(
                 "It's impossible to get vector items from 'Word2VecFeaturizer' "
                 "object because there is no trained model"
             )
