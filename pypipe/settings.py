@@ -1,7 +1,3 @@
-import logging
-import os
-
-
 ###### Paths to pipeline configurations ######
 
 PREPRO1_CONFIG_PATH = "configs/prepro1.yml"
