@@ -9,7 +9,7 @@ from pypipe.core.processes.normalization.normalizers import TextNormalizer
 from pypipe.core.processes.featurization.featurizers import TextFeaturizer
 
 
-logging.basicConfig(filemode=settings.LOG_DIR,  level=settings.LOG_LEVEL)
+logging.basicConfig(filename=settings.LOG_DIR,  level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 class PipeHandler(IProcessHandler):
