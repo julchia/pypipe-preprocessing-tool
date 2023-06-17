@@ -12,7 +12,7 @@ from pypipe.core.processes.normalization.base import TextNormalizer
 from pypipe.core.processes.normalization.norm_utils import REGEX_NORMALIZATION_HANDLERS
 
 
-logging.basicConfig(filename=settings.LOG_DIR,  level=settings.LOG_LEVEL)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
