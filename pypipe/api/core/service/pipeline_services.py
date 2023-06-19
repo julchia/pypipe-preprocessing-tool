@@ -12,6 +12,17 @@ def get_output_from_specific_pipeline_process(
     persist: bool = False
 ) -> Response:
     """
+    Get the output from a specific process within a pipeline and return it as 
+    a JSON response.
+
+    Parameters:
+    - config: The path to the configuration file for the pipeline.
+    - data: The input data to be processed by the pipeline.
+    - process_alias: The alias of the specific process to retrieve the output from.
+    - persist: Flag indicating whether to persist the output of the process.
+
+    Returns:
+    - Response: A Flask response object containing the JSON response.
     """
     service = Pipeline(config=config)
     specific_process = service.create_pipeline_process(alias=process_alias)
@@ -29,6 +40,16 @@ def get_output_from_pipeline_processes_sequence(
     persist: bool = False
 ) -> Response:
     """
+    Get the output from all processes within a pipeline and return it as 
+    a JSON response.
+
+    Parameters:
+    - config: The path to the configuration file for the pipeline.
+    - data: The input data to be processed by the pipeline.
+    - persist: Flag indicating whether to persist the output of the process.
+
+    Returns:
+    - Response: A Flask response object containing the JSON response.
     """
     service = Pipeline(config=config)
     processed_data = service.run_processes_sequentially(
