@@ -42,6 +42,6 @@ VOCAB_DEFAULT_PATHS = {
 LOG_LEVEL = "WARNING"
 os.environ["LOG_LEVEL"] = LOG_LEVEL
 
-LOG_DIR = "pypipe/log/pypipe.log"
-os.environ["LOG_DIR"] = LOG_DIR
+# LOG_DIR = "pypipe/log/pypipe.log"
+# os.environ["LOG_DIR"] = LOG_DIR
 
