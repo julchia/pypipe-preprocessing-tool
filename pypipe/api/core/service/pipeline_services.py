@@ -2,7 +2,6 @@ from typing import Union, Iterable
 
 from flask import Response, jsonify
 
-from pypipe.core.interfaces import IProcess
 from pypipe.core.pipeline.pipeline import Pipeline
 
 
