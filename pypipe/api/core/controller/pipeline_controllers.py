@@ -1,5 +1,5 @@
 from flask import request
-from flask_restplus import Resource
+from flask_restx import Resource
 
 from pypipe.api.core.utils import dto
 from pypipe.api.core.service.pipeline_services import (
