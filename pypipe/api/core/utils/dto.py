@@ -1,7 +1,16 @@
+"""
+This module provides Data transfer objects (DTOs) that define the data 
+structures used for transferring data between different components of the 
+application.
+"""
+
 from flask_restx import Namespace, fields
 
 
 class PipelineDTO:
+    """
+    DTO for the Text Preprocessing Pipeline API.
+    """
     api = Namespace(
         'preprocessing-pipeline', 
         description='Text Preprocessing Pipeline API'
